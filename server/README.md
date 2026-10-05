@@ -6,40 +6,33 @@ REST API для застосунку MuseClass: акаунти, класи з к
 Spring Boot 4.1 · Java 21 · PostgreSQL 16 · Flyway · JWT (HS256) · Docker Compose.
 Назовні — через Tailscale Funnel, білий IP не потрібен.
 
-## Запуск на Windows 10/11 (робочий ПК)
+## Структура
 
-Повна окрема копія сервера під ПК — у [`pc/`](pc/README.md), з власним
-`compose.yaml`, `.env.example`, `backup.ps1` і інструкцією. Веде її чат про
-сервер.
+Тут лише спільне: `pom.xml`, `src/`, `Dockerfile`, `dev/`. Деплой — окремо на
+машину, у кожній теці 4 файли (`compose.yaml` з `build: ..`, `.env.example`,
+скрипт бекапу, README). Специфікація —
+[`docs/stan/server-layout.md`](../docs/stan/server-layout.md).
 
-## Запуск на Linux (малина)
+| Тека | Машина | Веде |
+|---|---|---|
+| [`pc/`](pc/README.md) | робочий ПК, Windows 10/11 | чат про сервер |
+| [`pi/`](pi/README.md) | малина і будь-який Linux (NUC) | чат про малину |
 
-Усе для малини (і будь-якого Linux-сервера, напр. NUC) — у [`pi/`](pi/README.md):
-свій `compose.yaml`, `.env.example`, `backup.sh` і покрокова інструкція.
+`docker compose` запускається з `pc/` або `pi/`, `mvn` — звідси, з `server/`.
+Правка спільних файлів зачіпає обидві машини — окремим комітом з позначкою
+«спільне».
 
-## Розробка
+## Розробка і тести
 
-На тому самому ПК, де крутиться бойовий сервер, dev-версію запускай на
-іншому порту й з окремою базою, щоб не зачепити справжні дані:
+З цієї теки: `mvn verify`. Наскрізний `ApiFlowTest` піднімає свій Postgres через
+Testcontainers, тому Docker має бути запущений. Бойову базу тест не чіпає.
+Запуск dev-версії поруч із бойовою на тому ж ПК — у [`pc/`](pc/README.md),
+на Linux — у [`pi/`](pi/README.md).
 
-```powershell
-docker run -d --name museclass-dev-db -p 5433:5432 `
-  -e POSTGRES_DB=museclass -e POSTGRES_USER=museclass -e POSTGRES_PASSWORD=museclass postgres:16-alpine
-
-$env:DB_URL = "jdbc:postgresql://localhost:5433/museclass"
-$env:JWT_SECRET = "dev-secret-dev-secret-dev-secret-123"
-$env:SERVER_PORT = "8081"
-mvn spring-boot:run       # або Run у IntelliJ з тими ж змінними
-```
-
-Емулятор Android бачить комп'ютер за адресою `10.0.2.2` (dev — `:8081`), телефон
-у тій самій Wi-Fi — за локальною IP комп'ютера. Бойовий сервер — за адресою
-Funnel. Базову адресу API в застосунку тримай у `BuildConfig` (через
-`buildConfigField` у Gradle), щоб перемикання було одним рядком.
-
-Тести: `mvn verify`. Наскрізний `ApiFlowTest` піднімає свій Postgres через
-Testcontainers, тому Docker Desktop має бути запущений. Бойову базу тест не
-чіпає.
+Емулятор Android бачить комп'ютер за адресою `10.0.2.2`, телефон у тій самій
+Wi-Fi — за локальною IP комп'ютера, бойовий сервер — за адресою Funnel. Базову
+адресу API в застосунку тримай у `BuildConfig` (через `buildConfigField` у
+Gradle), щоб перемикання було одним рядком.
 
 ## API
 
@@ -168,11 +161,11 @@ updatedAt, ownerId, ownerName, instruments[], fits}`.
   обробляється. Ще перевірено захист від XXE і zip-бомби.
 - **Типи.** Код компілюється з заглушками API Spring.
 
-Не перевірено: скрипти під Windows (`backup.ps1`, команди PowerShell у цьому
-README) — PowerShell там, де це писалося, не було. І справжня збірка Maven та
-запуск Spring. Maven Central був
+Інструменти цих перевірок — у [`dev/`](dev/README.md).
+
+Не перевірено: справжня збірка Maven і запуск Spring. Maven Central був
 недоступний там, де це писалося, тому перший `mvn verify` буде на твоїй
-машині. Якщо щось не збереться, найімовірніше це назви стартерів Spring Boot 4
+машині. Скрипти бекапу перевіряються в README своєї машини. Якщо щось не збереться, найімовірніше це назви стартерів Spring Boot 4
 або модулів Testcontainers 2 у `pom.xml`.
 
 ## Чого поки немає

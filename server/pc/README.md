@@ -1,16 +1,9 @@
-# MuseClass — сервер, копія під робочий ПК (Windows 10/11)
+# MuseClass — деплой на робочий ПК (Windows 10/11)
 
-REST API для застосунку MuseClass: акаунти, класи з кодами, партитури MusicXML
-з рівнями доступу, видача нот класу, публічний каталог з ранжуванням під інструмент.
-
-Spring Boot 4.1 · Java 21 · PostgreSQL 16 · Flyway · JWT (HS256) · Docker Compose.
-Назовні — через Tailscale Funnel, білий IP не потрібен.
-
-Це **повна копія сервера під ПК-стенд**; веде її чат про сервер. Паралельна копія
-під малину — `server/pi/`, її веде чат про малину. Код у копіях свідомо
-незалежний: правка в одній сама в іншу не потрапляє. Якщо виправляєш баг у
-`src/`, перевір, чи є він у сусідній копії, і запиши це в
-[`docs/stan/open.md`](../../docs/stan/open.md).
+Тільки деплой: `compose.yaml`, `.env.example`, `backup.ps1` і ця інструкція.
+Код, API й перевірки — спільні, у [`server/`](../README.md); compose збирає
+образ звідти (`build: ..`). Деплой малини — [`../pi/`](../pi/README.md). Веде
+цю теку чат про сервер.
 
 ## Запуск на Windows 10/11 (робочий ПК)
 
@@ -89,12 +82,12 @@ Register-ScheduledTask -TaskName MuseClassBackup -Action $a -Trigger (New-Schedu
 Відновлення — у коментарі в самому `backup.ps1`. Дампи бажано час від часу
 копіювати кудись, крім цього ж диска.
 
-`.gitattributes` тримає `Dockerfile`, `.sh` і YAML з LF-кінцями рядків навіть
+`.gitattributes` (спільний, у корені репо й `server/`) тримає `Dockerfile`, `.sh` і YAML з LF-кінцями рядків навіть
 на Windows. Інакше git з `autocrlf` зламав би їх для Linux-контейнерів.
 
 ### Пам'ять
 
-У цій копії за замовчуванням heap API 1 ГБ і `shared_buffers` Postgres 512 МБ.
+На ПК за замовчуванням heap API 1 ГБ і `shared_buffers` Postgres 512 МБ.
 Разом із самим Postgres це близько 2 ГБ усередині WSL. WSL 2 за замовчуванням
 бере до половини RAM ПК, тож на 8 ГБ запас є. Інші значення — у `.env`
 (`API_HEAP`, `PG_SHARED_BUFFERS`), потім `docker compose up -d`, перезбирати не
@@ -103,8 +96,8 @@ Register-ScheduledTask -TaskName MuseClassBackup -Action $a -Trigger (New-Schedu
 ### Ім'я compose-проєкту
 
 `name: museclass-pc` у `compose.yaml`. Том з базою — `museclass-pc_pgdata`, образ —
-`museclass-pc-api`. Окреме ім'я — щоб копія під малину, запущена на тому ж ПК
-для перевірки, не поділила з цією базу.
+`museclass-pc-api`. Окреме ім'я — щоб деплой малини, запущений на тому ж ПК
+для перевірки, не поділив з цим базу.
 
 ## Розробка
 
@@ -118,6 +111,7 @@ docker run -d --name museclass-dev-db -p 5433:5432 `
 $env:DB_URL = "jdbc:postgresql://localhost:5433/museclass"
 $env:JWT_SECRET = "dev-secret-dev-secret-dev-secret-123"
 $env:SERVER_PORT = "8081"
+cd C:\MuseClass\server
 mvn spring-boot:run       # або Run у IntelliJ з тими ж змінними
 ```
 
@@ -126,147 +120,12 @@ mvn spring-boot:run       # або Run у IntelliJ з тими ж змінним
 Funnel. Базову адресу API в застосунку тримай у `BuildConfig` (через
 `buildConfigField` у Gradle), щоб перемикання було одним рядком.
 
-Тести: `mvn verify`. Наскрізний `ApiFlowTest` піднімає свій Postgres через
+Тести: `mvn verify` з `C:\MuseClass\server` (код спільний, у корені `server/`).
+Наскрізний `ApiFlowTest` піднімає свій Postgres через
 Testcontainers, тому Docker Desktop має бути запущений. Бойову базу тест не
 чіпає.
 
-## API
+## Не перевірено
 
-Усе під `/api`, JSON, UTF-8. Крім реєстрації та входу, кожен запит несе
-`Authorization: Bearer <token>`. Токен живе 30 днів (`JWT_TTL`).
-
-Помилки приходять у форматі `application/problem+json`, поле `detail` —
-готовий текст українською, його можна показувати користувачу як є.
-
-| Код | Коли |
-|---|---|
-| 400 | некоректні дані (поле `detail` пояснює що саме) |
-| 401 | немає токена, він прострочений, або невірний пароль |
-| 403 | бачиш ресурс, але змінювати не маєш права |
-| 404 | не існує **або** не маєш доступу (свідомо не розрізняємо) |
-| 409 | пошта зайнята, спроба вступити у власний клас |
-| 413 | файл більший за 5 МБ |
-| 422 | файл не є коректним MusicXML |
-
-### Акаунт
-
-| Метод | Шлях | Тіло / параметри | Відповідь |
-|---|---|---|---|
-| POST | `/auth/register` | `{email, password, displayName}` | 201 `{token, expiresAt, userId, displayName}` |
-| POST | `/auth/login` | `{email, password}` | `{token, expiresAt, userId, displayName}` |
-| GET | `/me` | | `{id, email, displayName, instruments[], createdAt}` |
-| PATCH | `/me` | `{displayName}` | профіль |
-| PUT | `/me/instruments` | `{instruments: ["trumpet", ...]}` | профіль |
-
-Коди інструментів: `piano`, `guitar`, `voice`, `violin`, `trumpet`, `flute`,
-`bass_guitar`, `drums`, `saxophone`, `bandura` — ті самі десять, що в прототипі.
-
-### Класи
-
-| Метод | Шлях | Тіло | Хто |
-|---|---|---|---|
-| POST | `/classes` | `{name, codePrefix?}` → 201 клас | будь-хто (стає викладачем) |
-| POST | `/classes/join` | `{code}` → клас | будь-хто |
-| GET | `/classes` | → мої класи (і ті, що веду, і ті, де вчуся) | |
-| GET | `/classes/{id}` | → клас | учасник |
-| PATCH | `/classes/{id}` | `{name}` | викладач |
-| DELETE | `/classes/{id}` | → 204 | викладач |
-| POST | `/classes/{id}/code` | `{codePrefix?}` → клас з новим кодом, старий перестає працювати | викладач |
-| GET | `/classes/{id}/members` | → `[{userId, displayName, joinedAt}]` | учасник |
-| DELETE | `/classes/{id}/members/{userId}` | → 204 | викладач; учень — тільки себе (вихід з класу) |
-
-Клас: `{id, code, name, teacherId, teacherName, role, students, createdAt}`.
-`role` — `teacher` або `student`. `code` приходить тільки викладачу, учню там `null`.
-
-Код класу має формат `PNO-3A`. Префікс (три латинські літери) викладач може
-задати сам, інакше він випадковий. Сервер прощає введення коду маленькими
-літерами, без дефіса і з кириличними «двійниками» латиниці (Р, О, А з
-української розкладки).
-
-### Партитури
-
-| Метод | Шлях | Що |
-|---|---|---|
-| POST | `/scores` | multipart: `file` + необов'язкові `title`, `composer`, `arranger`, `kind`, `rights`, `visibility` → 201 |
-| GET | `/scores/mine` | мої партитури, будь-який доступ |
-| GET | `/scores/{id}` | `{score, parts[], canEdit}` |
-| GET | `/scores/{id}/file` | оригінальний `.musicxml` або `.mxl`; `ETag` + `If-None-Match` → 304 |
-| PUT | `/scores/{id}/file` | multipart `file`: нова версія з редактора, партії перераховуються |
-| PATCH | `/scores/{id}` | будь-яка підмножина `{title, composer, arranger, kind, rights, visibility}` |
-| DELETE | `/scores/{id}` | 204, тільки автор |
-| GET | `/catalog?q=&kind=&limit=30&offset=0` | публічний каталог |
-
-Порожні поля при завантаженні беруться з файлу: назва — з `work-title` або
-`movement-title`, автори — з `creator`. Партії та їхні інструменти сервер
-визначає сам (за назвою партії, потім за MIDI-програмою).
-
-- `visibility`: `private` (за замовчуванням), `class`, `public`
-- `kind`: `classical`, `folk`, `cover`, `technique`, `other`
-- `rights`: `public_domain`, `folk`, `arrangement`, `original`, `unknown`
-
-**Авторські права.** `public` дозволено тільки з `rights` = `public_domain` або
-`folk`, інакше 400. Це перевіряє і сервіс, і обмеження в самій базі.
-
-**Каталог.** Партитури, де є партія під один з твоїх інструментів, ідуть першими
-(`fits: true`), решта лишається в тих самих результатах. Пошук — за назвою,
-композитором і аранжувальником, без урахування регістру.
-
-Картка у списках: `{id, title, composer, arranger, kind, visibility, measures,
-updatedAt, ownerId, ownerName, instruments[], fits}`.
-
-### Видача класу і бібліотека
-
-| Метод | Шлях | Що |
-|---|---|---|
-| PUT | `/classes/{classId}/scores/{scoreId}` | видати всім учням, 204 (викладач) |
-| DELETE | `/classes/{classId}/scores/{scoreId}` | зняти з видачі, 204 (викладач) |
-| GET | `/classes/{classId}/scores` | що видали в класі |
-| GET | `/me/library` | що видали в усіх моїх класах |
-| GET | `/me/saved` | збережені |
-| PUT / DELETE | `/me/saved/{scoreId}` | зберегти / прибрати, 204 |
-
-Бібліотека: `[{classId, className, assignedAt, score: <картка>}]`.
-
-Видати можна свою партитуру або будь-яку публічну. Своя приватна при видачі
-автоматично стає класною, інакше учні її не побачать.
-
-## Правила доступу
-
-Одне джерело правди — SQL-функція `score_readable(user, score)` у міграції:
-
-- власник бачить свою партитуру завжди;
-- `public` бачать усі;
-- `class` бачать викладач і учні класів, яким її видали;
-- `private` бачить тільки власник.
-
-Змінювати й видаляти може тільки власник. Якщо автор зробить видану партитуру
-приватною, клас її більше не бачить. Запис про видачу лишається, тож після
-повернення доступу партитура з'явиться знову.
-
-## Що перевірено і що ні
-
-Перевірено:
-
-- **SQL.** Схема та всі 40 запитів з репозиторіїв (рядки витягуються прямо з
-  Java-коду) прогнані на справжньому PostgreSQL 16 через prepared statements.
-  61 перевірка: доступи, видача, каталог з ранжуванням, кирилиця в пошуку,
-  екранування `%` і `_`, обмеження бази.
-- **Розбір MusicXML.** 25 модульних тестів плюс прогін по 377 реальних файлах
-  з експортів MuseScore, Finale, Sibelius і Dorico: усі розбираються. Один з
-  них мав `encoding='UTF-16'` у заголовку при UTF-8 вмісті — це тепер
-  обробляється. Ще перевірено захист від XXE і zip-бомби.
-- **Типи.** Код компілюється з заглушками API Spring.
-
-Інструменти цих перевірок — у [`dev/`](dev/README.md).
-
-Не перевірено: скрипти під Windows (`backup.ps1`, команди PowerShell у цьому
-README), бо PowerShell там, де це писалося, не було. І справжня збірка Maven та
-запуск Spring: Maven Central там був недоступний, тому перший `mvn verify` буде
-на твоїй машині. Якщо щось не збереться, найімовірніше це назви стартерів Spring Boot 4
-або модулів Testcontainers 2 у `pom.xml`.
-
-## Чого поки немає
-
-Оновлення токена (refresh) і вихід з усіх пристроїв, скидання пароля поштою,
-обмеження частоти спроб входу, видалення акаунта, лічильник відтворень,
-PDF- і MIDI-вкладення, видача окремим учням (тільки всьому класу).
+`backup.ps1` і PowerShell-команди з цього README ще не запускались: там, де вони
+писалися, PowerShell не було. Перевірити після першого запуску на ПК.

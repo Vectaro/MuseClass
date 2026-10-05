@@ -1,5 +1,0 @@
-# Linux-контейнерам потрібні LF; git з autocrlf на Windows інакше перетворить їх на CRLF
-* text=auto eol=lf
-*.ps1 text eol=crlf
-*.jar binary
-*.mxl binary
