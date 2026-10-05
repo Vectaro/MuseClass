@@ -1,0 +1,2752 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MuseClass</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --amber:#F0B429; --red:#D2483A;
+  --sans:'Instrument Sans',ui-sans-serif,system-ui,'Segoe UI',Roboto,sans-serif;
+  --serif:'Instrument Serif',Georgia,'Times New Roman',serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+  --pult:#F4F2EC; --pult2:#FFFFFF; --pult3:#EAE6DC; --line:#DAD5C7;
+  --paper:#FFFFFF; --peri:#5566D8; --peri-ink:#3C4BC0; --on-peri:#FFFFFF;
+  --text:#1C1C1F; --muted:#66666F; --accent-ink:#8A5D00; --on-accent:#1B1B1E;
+  --page:#E3E0D8; --shadow:rgba(60,55,40,.22); --hair:rgba(0,0,0,.09);
+}
+/* Тема: JS виставляє data-theme при старті. Медіазапит — щоб сторінка мала
+   правильний вигляд ще до першого кадру і без JS. */
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){color-scheme:dark;
+  --pult:#151828; --pult2:#232842; --pult3:#2C3252; --line:#373E62;
+  --paper:#FAF8F3; --peri:#8FA0FF; --peri-ink:#8FA0FF; --on-peri:#141733;
+  --text:#E9EAF3; --muted:#959DBE; --accent-ink:#F0B429; --on-accent:#1B1B1E;
+  --page:#0E1019; --shadow:rgba(0,0,0,.6); --hair:rgba(55,62,98,.55);
+  }
+}
+:root[data-theme="dark"]{color-scheme:dark;
+  --pult:#151828; --pult2:#232842; --pult3:#2C3252; --line:#373E62;
+  --paper:#FAF8F3; --peri:#8FA0FF; --peri-ink:#8FA0FF; --on-peri:#141733;
+  --text:#E9EAF3; --muted:#959DBE; --accent-ink:#F0B429; --on-accent:#1B1B1E;
+  --page:#0E1019; --shadow:rgba(0,0,0,.6); --hair:rgba(55,62,98,.55);
+}
+:root[data-theme="light"]{color-scheme:light;
+  --pult:#F4F2EC; --pult2:#FFFFFF; --pult3:#EAE6DC; --line:#DAD5C7;
+  --paper:#FFFFFF; --peri:#5566D8; --peri-ink:#3C4BC0; --on-peri:#FFFFFF;
+  --text:#1C1C1F; --muted:#66666F; --accent-ink:#8A5D00; --on-accent:#1B1B1E;
+  --page:#E3E0D8; --shadow:rgba(60,55,40,.22); --hair:rgba(0,0,0,.09);
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%;margin:0}
+body{background:var(--page);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.45;
+  -webkit-font-smoothing:antialiased;display:flex;align-items:center;justify-content:center}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+#app{position:relative;width:100%;max-width:440px;height:100%;background:var(--pult);
+  display:flex;flex-direction:column;overflow:hidden}
+@media(min-width:560px) and (min-height:720px){
+  #app{height:min(880px,94vh);border-radius:26px;box-shadow:0 30px 90px var(--shadow)}
+}
+#scr{flex:1;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.pad{padding:18px 18px 28px}
+h1,h2,h3{margin:0;font-weight:400}
+.h-title{font-family:var(--serif);font-size:30px;line-height:1.1}
+.h-sec{font-family:var(--serif);font-size:20px;margin:26px 0 10px}
+.sub{color:var(--muted);font-size:13.5px}
+.staffrule{height:9px;margin:20px 0;background:repeating-linear-gradient(to bottom,var(--line) 0 1px,transparent 1px 3px);opacity:.55}
+
+#tabs{display:flex;border-top:1px solid var(--line);background:var(--pult2)}
+#tabs button{flex:1;padding:11px 4px calc(11px + env(safe-area-inset-bottom,0px));display:flex;
+  flex-direction:column;align-items:center;gap:3px;color:var(--muted);font-size:11.5px}
+#tabs button .ic{font-family:var(--serif);font-size:19px;line-height:1}
+#tabs button[aria-current="true"]{color:var(--accent-ink)}
+#tabs.hide{display:none}
+
+.search{display:flex;align-items:center;gap:9px;background:var(--pult2);border:1px solid var(--line);
+  border-radius:11px;padding:10px 12px;margin-top:14px}
+.search input{flex:1;background:none;border:0;color:var(--text);font:inherit;outline:none;min-width:0}
+.search input::placeholder{color:var(--muted)}
+.chips{display:flex;gap:7px;overflow-x:auto;margin-top:12px;padding-bottom:2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{white-space:nowrap;padding:6px 12px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:12.5px}
+.chip[aria-pressed="true"]{background:var(--amber);border-color:var(--amber);color:var(--on-accent)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:12px 16px;
+  border-radius:11px;background:var(--amber);color:var(--on-accent);font-weight:600;font-size:14.5px;width:100%}
+.btn.ghost{background:none;border:1px solid var(--line);color:var(--text);font-weight:500}
+.btn.peri{background:var(--peri);color:var(--on-peri)}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.row{display:flex;gap:10px}
+
+.rail{display:flex;gap:12px;overflow-x:auto;margin:0 -18px;padding:2px 18px 6px;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.card{flex:0 0 152px;text-align:left}
+.cover{position:relative;height:104px;border-radius:9px;background:var(--paper);overflow:hidden;box-shadow:0 2px 0 rgba(0,0,0,.35)}
+.cover svg{position:absolute;inset:0;width:100%;height:100%}
+.cover .fmt{position:absolute;right:6px;bottom:6px;display:flex;gap:4px}
+.cover .vis{position:absolute;left:6px;top:6px}
+.badge{font-size:9.5px;font-weight:600;padding:2.5px 5px;border-radius:5px}
+.b-int{background:#1B1B1E;color:var(--amber)}
+.b-midi{background:#1B1B1E;color:#9FE8C8}
+.b-pdf{background:#1B1B1E;color:#C9CEEA}
+.b-xml{background:#1B1B1E;color:#F0A8C8}
+.b-class{background:#4A5BD4;color:#FFF}
+.b-me{background:#1B1B1E;color:#EFEBE1}
+.card h4{margin:8px 0 1px;font-size:13.5px;font-weight:600;line-height:1.25}
+.card p{margin:0;font-size:12px;color:var(--muted)}
+.fit{color:var(--accent-ink);font-size:11.5px;margin-top:3px}
+
+.list{display:flex;flex-direction:column;gap:2px;margin-top:6px}
+.item{display:flex;gap:12px;align-items:center;padding:9px 0;text-align:left;width:100%;border-bottom:1px solid var(--hair)}
+.item .mini{flex:0 0 46px;height:46px;border-radius:7px;background:var(--paper);overflow:hidden;position:relative}
+.item .mini svg{position:absolute;inset:0;width:100%;height:100%}
+.item .t{flex:1;min-width:0}
+.item h4{margin:0;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item p{margin:1px 0 0;font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .fmts{display:flex;gap:4px;margin-top:4px}
+
+.onb{min-height:100%;display:flex;flex-direction:column;padding:26px 22px calc(26px + env(safe-area-inset-bottom,0px))}
+.onb .grow{flex:1}
+.mark{font-family:var(--serif);font-size:44px;line-height:1}
+.opt{display:block;width:100%;text-align:left;border:1px solid var(--line);border-radius:13px;padding:14px;margin-bottom:10px;background:var(--pult2)}
+.opt[aria-pressed="true"]{border-color:var(--amber);background:var(--pult3)}
+.opt strong{display:block;font-size:15px;font-weight:600;margin-bottom:2px}
+.opt span{font-size:12.5px;color:var(--muted)}
+.code{width:100%;background:var(--pult2);border:1px solid var(--line);border-radius:11px;padding:13px;
+  color:var(--text);font:inherit;letter-spacing:4px;text-align:center;text-transform:uppercase;outline:none}
+.pick{display:flex;flex-wrap:wrap;gap:8px}
+.pick button{padding:9px 13px;border:1px solid var(--line);border-radius:10px;font-size:13.5px;color:var(--muted)}
+.pick button[aria-pressed="true"]{border-color:var(--amber);color:var(--text);background:var(--pult3)}
+.pick button[aria-pressed="true"]::after{content:' ✓';color:var(--accent-ink)}
+.steps{display:flex;gap:5px;margin-bottom:22px}
+.steps i{height:3px;flex:1;background:var(--line);border-radius:2px}
+.steps i.on{background:var(--amber)}
+
+#viewer{position:absolute;inset:0;background:var(--pult);display:none;flex-direction:column;z-index:20}
+#viewer.open{display:flex}
+.vtop{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.vtop .t{flex:1;min-width:0}
+.vtop h3{font-family:var(--serif);font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vtop p{margin:0;font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.icbtn{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);display:grid;place-items:center;font-size:15px;flex:none}
+.icbtn[aria-pressed="true"]{background:var(--amber);border-color:var(--amber);color:var(--on-accent)}
+.partbar{display:flex;gap:7px;padding:9px 14px;overflow-x:auto;border-bottom:1px solid var(--line);scrollbar-width:none}
+.partbar::-webkit-scrollbar{display:none}
+.partbar button{white-space:nowrap;font-size:12.5px;padding:5px 11px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.partbar button[aria-pressed="true"]{background:var(--pult3);color:var(--text);border-color:var(--pult3)}
+#sheet{flex:1;overflow-y:auto;background:var(--paper);padding:16px 12px 24px}
+.system{position:relative;margin-bottom:14px}
+.system svg{display:block;width:100%;height:auto}
+.mk{position:absolute;top:0;bottom:0;border-radius:4px;pointer-events:none}
+.pdfpage{background:#fff;border-radius:4px;box-shadow:0 1px 6px rgba(0,0,0,.22);padding:26px 22px;color:#1B1B1E;min-height:340px}
+.pdfpage h5{font-family:var(--serif);font-size:22px;margin:0 0 3px;font-weight:400}
+.pdfpage .pl{height:7px;background:repeating-linear-gradient(to bottom,#1B1B1E 0 .8px,transparent .8px 2.6px);opacity:.75;margin:16px 0}
+.dock{border-top:1px solid var(--line);background:var(--pult2);padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px))}
+.dock .r1{display:flex;align-items:center;gap:12px}
+.play{width:46px;height:46px;border-radius:50%;background:var(--amber);color:var(--on-accent);display:grid;place-items:center;font-size:17px;flex:none}
+.tempo{flex:1;min-width:0}
+.tempo input{width:100%;accent-color:var(--amber)}
+.tempo label{font-size:11.5px;color:var(--muted);display:flex;justify-content:space-between}
+.note-hint{font-size:12px;color:var(--muted);padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--pult2)}
+
+.edstaff{background:var(--paper);border-radius:9px;padding:10px;margin-top:12px;overflow-x:auto}
+.edstaff svg{display:block}
+.durpick{display:flex;gap:7px;margin-top:12px}
+.durpick button{flex:1;padding:9px 0;border:1px solid var(--line);border-radius:9px;font-family:var(--serif);font-size:17px;color:var(--muted)}
+.durpick button[aria-pressed="true"]{border-color:var(--amber);color:var(--accent-ink)}
+
+.card2{background:var(--pult2);border:1px solid var(--line);border-radius:13px;padding:14px;margin-top:12px}
+.kv{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--hair);font-size:14px}
+.kv:last-child{border-bottom:0}
+.kv span{color:var(--muted);font-size:13px}
+.sw{width:40px;height:23px;border-radius:999px;background:var(--line);position:relative;flex:none}
+.sw::after{content:'';position:absolute;top:3px;left:3px;width:17px;height:17px;border-radius:50%;background:var(--muted);transition:.15s}
+.sw[aria-pressed="true"]{background:var(--amber)}
+.sw[aria-pressed="true"]::after{left:20px;background:var(--on-accent)}
+.codebox{font-family:var(--serif);font-size:27px;letter-spacing:6px;text-align:center;background:var(--pult);
+  border:1px dashed var(--peri-ink);border-radius:11px;padding:13px;margin-top:10px;color:var(--peri-ink)}
+.empty{text-align:center;color:var(--muted);font-size:13.5px;padding:34px 20px}
+.toast{position:absolute;left:50%;transform:translateX(-50%);bottom:86px;background:var(--pult3);
+  border:1px solid var(--line);padding:9px 15px;border-radius:999px;font-size:13px;z-index:40;
+  opacity:0;pointer-events:none;transition:opacity .2s;max-width:86%;text-align:center}
+.toast.show{opacity:1}
+.hidden{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.sheetpanel{position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;z-index:8}
+.sp-in{width:100%;background:var(--pult2);border-top:1px solid var(--line);border-radius:16px 16px 0 0;
+  padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px))}
+.avatar{display:block;border-radius:50%;object-fit:cover}
+.modal{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;
+  justify-content:center;padding:20px;z-index:60}
+.mbox{width:100%;max-width:340px;background:var(--pult2);border:1px solid var(--line);
+  border-radius:16px;padding:18px}
+.mbox h3{font-family:var(--serif);font-size:20px;margin-bottom:4px}
+.fld{width:100%;background:var(--pult);border:1px solid var(--line);border-radius:10px;
+  padding:11px 12px;color:var(--text);font:inherit;outline:none;margin-top:10px}
+.fld:focus{border-color:var(--amber)}
+.ferr{color:var(--red);font-size:12.5px;min-height:17px;margin:6px 0 0}
+.modebar{display:flex;align-items:center;gap:7px;padding:8px 14px;border-bottom:1px solid var(--line)}
+.modebar button{font-size:12.5px;padding:5px 13px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.modebar button[aria-pressed="true"]{background:var(--amber);border-color:var(--amber);color:var(--on-accent);font-weight:600}
+.modebar .mhint{flex:1;text-align:right;font-size:11.5px;color:var(--muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plist{max-height:46vh;overflow-y:auto;margin:0 -4px}
+.prow{display:flex;align-items:center;gap:8px;padding:2px 4px;border-bottom:1px solid var(--hair)}
+.prow:last-child{border-bottom:0}
+.prow.on{background:var(--pult3);border-radius:9px}
+.pmain{flex:1;min-width:0;text-align:left;padding:9px 6px}
+.pn{display:block;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pn .mine{font-style:normal;font-size:10px;font-weight:600;color:var(--on-accent);background:var(--amber);
+  border-radius:4px;padding:1px 5px;margin-left:5px;vertical-align:1px}
+.ps{display:block;font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="scr"></div>
+  <nav id="tabs" class="hide">
+    <button data-tab="home"><span class="ic">♪</span>Головна</button>
+    <button data-tab="lib"><span class="ic">𝄃𝄃</span>Бібліотека</button>
+    <button data-tab="me"><span class="ic">◍</span>Профіль</button>
+  </nav>
+  <div id="viewer"></div>
+  <div id="modal"></div>
+  <div class="toast" id="toast"></div>
+  <input type="file" id="mxfile" class="hidden" accept=".musicxml,.xml,.mxl,text/xml">
+  <input type="file" id="photofile" class="hidden" accept="image/*">
+</div>
+
+<script>
+'use strict';
+/* =====================================================================
+   MuseClass — прототип
+   Модель партитури сумісна з MusicXML (score-partwise).
+   Нота: {p:[{m,s,a,o}], d}   m=midi, s=ступінь 0..6 (C..B), a=альтерація,
+                              o=октава, d=тривалість у чвертках; p:[] — пауза
+   ===================================================================== */
+
+/* =========================== MusicXML =============================== */
+const ENT={amp:'&',lt:'<',gt:'>',quot:'"',apos:"'"};
+function decode(s){
+  return s.replace(/&(#x?[0-9A-Fa-f]+|\w+);/g,(_,e)=>{
+    if(e[0]==='#')return String.fromCodePoint(e[1]==='x'||e[1]==='X'?parseInt(e.slice(2),16):parseInt(e.slice(1),10));
+    return ENT[e]!==undefined?ENT[e]:_;
+  });
+}
+function parseXML(src){
+  src=String(src).replace(/^﻿/,'').replace(/<\?[\s\S]*?\?>/g,'')
+    .replace(/<!--[\s\S]*?-->/g,'').replace(/<!DOCTYPE[^[>]*(\[[\s\S]*?\])?\s*>/gi,'');
+  const re=/<(\/?)([A-Za-z_][\w.:-]*)((?:\s+[\w.:-]+\s*=\s*(?:"[^"]*"|'[^']*'))*)\s*(\/?)>|([^<]+)/g;
+  const root={name:'#root',attrs:{},kids:[],text:''},stack=[root];
+  let m;
+  while((m=re.exec(src))){
+    if(m[5]!==undefined){stack[stack.length-1].text+=m[5];continue;}
+    if(m[1]){if(stack.length>1)stack.pop();continue;}
+    const node={name:m[2],attrs:{},kids:[],text:''};
+    if(m[3])m[3].replace(/([\w.:-]+)\s*=\s*"([^"]*)"|([\w.:-]+)\s*=\s*'([^']*)'/g,
+      (_,a,b,c,d)=>{node.attrs[a||c]=decode(b!==undefined?b:d);return '';});
+    stack[stack.length-1].kids.push(node);
+    if(!m[4])stack.push(node);
+  }
+  return root.kids[0]||null;
+}
+const kid=(n,name)=>n?n.kids.find(k=>k.name===name)||null:null;
+const kidz=(n,name)=>n?n.kids.filter(k=>k.name===name):[];
+const txt=(n,name)=>{const k=name?kid(n,name):n;return k?decode(k.text).trim():'';};
+const num=(n,name,def)=>{const x=parseFloat(txt(n,name));return isNaN(x)?def:x;};
+
+const STEP_PC={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+const STEP_IX={C:0,D:1,E:2,F:3,G:4,A:5,B:6};
+const IX_STEP='CDEFGAB';
+const SHARP_SPELL={0:[0,0],1:[0,1],2:[1,0],3:[1,1],4:[2,0],5:[3,0],6:[3,1],7:[4,0],8:[4,1],9:[5,0],10:[5,1],11:[6,0]};
+const FLAT_SPELL ={0:[0,0],1:[1,-1],2:[1,0],3:[2,-1],4:[2,0],5:[3,0],6:[4,-1],7:[4,0],8:[5,-1],9:[5,0],10:[6,-1],11:[6,0]};
+function noteFromXML(el){
+  const p=kid(el,'pitch');
+  if(p){
+    const st=txt(p,'step').toUpperCase(),a=num(p,'alter',0),o=num(p,'octave',4);
+    if(STEP_PC[st]===undefined)return null;
+    return {m:(o+1)*12+STEP_PC[st]+a,s:STEP_IX[st],a,o};
+  }
+  /* Ударні: висоти немає, є лише місце на стані. */
+  const u=kid(el,'unpitched');
+  if(u){
+    const st=(txt(u,'display-step')||'B').toUpperCase(),o=num(u,'display-octave',4);
+    return {m:null,u:1,s:STEP_IX[st]!==undefined?STEP_IX[st]:6,a:0,o};
+  }
+  return null;
+}
+function noteFromMidi(m,flat){
+  const pc=((m%12)+12)%12,oct=Math.floor(m/12)-1,[s,a]=(flat?FLAT_SPELL:SHARP_SPELL)[pc];
+  return {m,s,a,o:a===-1&&s===0?oct+1:oct};
+}
+const dia=n=>n.o*7+n.s;
+
+const DUR_TYPES=[[4,'whole'],[2,'half'],[1,'quarter'],[.5,'eighth'],[.25,'16th'],[.125,'32nd']];
+function snapDur(beats){
+  let best=null,err=1e9;
+  for(const [b] of DUR_TYPES)for(const dot of [0,1])for(const tri of [1,2/3]){
+    const v=b*(dot?1.5:1)*tri,e=Math.abs(v-beats);
+    if(e<err){err=e;best=v;}
+  }
+  return err<=.003?best:(Math.round(beats*48)/48||.25);
+}
+function fromMusicXML(src){
+  const root=parseXML(src);
+  if(!root)throw new Error('Це не схоже на XML.');
+  if(root.name==='score-timewise')throw new Error('Це score-timewise. Потрібен score-partwise — MuseScore експортує саме його.');
+  if(root.name!=='score-partwise')throw new Error('Кореневий елемент «'+root.name+'», а має бути score-partwise.');
+  const ident=kid(root,'identification'),creators=kidz(ident,'creator');
+  const byType=t=>{const c=creators.find(c=>(c.attrs.type||'').toLowerCase()===t);return c?decode(c.text).trim():'';};
+  const title=txt(kid(root,'work'),'work-title')||txt(root,'movement-title')||'Без назви';
+  const composer=byType('composer')||(creators[0]?decode(creators[0].text).trim():'')||'невідомий автор';
+  const arranger=byType('arranger')||'';
+  const meta={};
+  kidz(kid(root,'part-list'),'score-part').forEach(sp=>{
+    meta[sp.attrs.id]={name:txt(sp,'part-name')||sp.attrs.id,
+      instrument:txt(kid(sp,'score-instrument'),'instrument-name')};
+  });
+  const parts=[];
+  kidz(root,'part').forEach(partEl=>{
+    const info=meta[partEl.attrs.id]||{name:partEl.attrs.id||'Партія'};
+    let divisions=1,meter=[4,4],fifths=0,transpose=0;
+    const clefs={},staffMeasures={},barAttrs={},staffV2={};
+    kidz(partEl,'measure').forEach((mEl,mi)=>{
+      kidz(mEl,'attributes').forEach(at=>{
+        divisions=num(at,'divisions',divisions);
+        const t=kid(at,'time');
+        if(t){
+          const nm=[num(t,'beats',meter[0]),num(t,'beat-type',meter[1])];
+          if(mi>0&&(nm[0]!==meter[0]||nm[1]!==meter[1])){
+            barAttrs[mi]=barAttrs[mi]||{};barAttrs[mi].meter=nm;
+          }
+          meter=nm;
+        }
+        const k=kid(at,'key');
+        if(k){
+          const nf=num(k,'fifths',fifths);
+          if(mi>0&&nf!==fifths){barAttrs[mi]=barAttrs[mi]||{};barAttrs[mi].fifths=nf;}
+          fifths=nf;
+        }
+        kidz(at,'clef').forEach(c=>{
+          const sign=txt(c,'sign').toUpperCase();
+          clefs[c.attrs.number||'1']=sign==='F'?'bass':(sign==='C'?'alto':(sign==='PERCUSSION'?'perc':'treble'));
+        });
+        const tr=kid(at,'transpose');
+        if(tr)transpose=-(num(tr,'chromatic',0)+12*num(tr,'octave-change',0));
+      });
+      /* тактові атрибути: реприза, вольта, текст, динаміка */
+      const bar={};
+      kidz(mEl,'barline').forEach(bl=>{
+        const r=kid(bl,'repeat');
+        if(r){
+          const dir=r.attrs.direction==='forward'?'start':'end';
+          bar.rep=bar.rep&&bar.rep!==dir?'both':dir;
+        }
+        const en=kid(bl,'ending');
+        if(en&&en.attrs.number){
+          bar.ending=en.attrs.number.split(/[,\s]+/).filter(Boolean).map(Number);
+          if(en.attrs.type==='start')bar.endingStop=false;
+        }
+      });
+      kidz(mEl,'direction').forEach(dr=>{
+        kidz(dr,'direction-type').forEach(dt=>{
+          kidz(dt,'words').forEach(w=>{
+            const t=decode(w.text).trim();
+            if(!t)return;
+            if(/^(D\.?C\.?|D\.?S\.?|Fine|Coda|Segno)/i.test(t))bar.jump=t;
+            else bar.text=t;
+          });
+          const rh=kid(dt,'rehearsal');
+          if(rh&&decode(rh.text).trim())bar.mark=decode(rh.text).trim();
+          const dy=kid(dt,'dynamics');
+          if(dy&&dy.kids.length)bar.dyn=dy.kids[0].name;
+          const wd=kid(dt,'wedge');
+          if(wd){
+            const ty=(wd.attrs.type||'').toLowerCase();
+            if(ty==='stop')bar.hair='stop';
+            else{bar.hair='start';bar.hairKind=ty==='diminuendo'?'dim':'cresc';}
+          }
+          const mm=kid(dt,'metronome');
+          if(mm)bar.text=(bar.text?bar.text+' ':'')+'♩='+txt(mm,'per-minute');
+        });
+      });
+      /* злиття, а не заміна: сюди вже могли потрапити зміна розміру
+         й тональності з <attributes> вище */
+      if(Object.keys(bar).length)barAttrs[mi]=Object.assign(barAttrs[mi]||{},bar);
+      const ev=[];let t=0;const lastByStaff={},pendingGrace={};
+      mEl.kids.forEach(el=>{
+        if(el.name==='backup'){t=Math.max(0,t-num(el,'duration',0));return;}
+        if(el.name==='forward'){t+=num(el,'duration',0);return;}
+        if(el.name!=='note')return;
+        const staff0=txt(el,'staff')||'1';
+        if(kid(el,'grace')){                    /* форшлаг чекає на свою ноту */
+          const n=noteFromXML(el);
+          if(n)(pendingGrace[staff0]=pendingGrace[staff0]||[]).push({p:[n],d:.25});
+          return;
+        }
+        const dur=num(el,'duration',0),staff=staff0,isRest=!!kid(el,'rest');
+        const voice=txt(el,'voice')||'1';
+        if(kid(el,'chord')){
+          const prev=lastByStaff[staff];
+          if(prev&&!prev.rest){const n=noteFromXML(el);if(n)prev.notes.push(n);}
+          return;
+        }
+        const e={staff,voice,t,dur,rest:isRest,notes:[]};
+        if(pendingGrace[staff]&&pendingGrace[staff].length){
+          e.gr=pendingGrace[staff];pendingGrace[staff]=[];
+        }
+        const ly=kid(el,'lyric');
+        if(ly){const tx=txt(ly,'text');if(tx)e.lyric=tx;}
+        if(!isRest){const n=noteFromXML(el);if(n)e.notes.push(n);else e.rest=true;}
+        /* ліги, артикуляція, фермата */
+        const nt=kid(el,'notations');
+        if(nt){
+          const tied=kidz(nt,'tied').map(x=>x.attrs.type).filter(Boolean);
+          if(tied.length)e.tie=tied.length>1?'both':tied[0];
+          const sl=kidz(nt,'slur').map(x=>x.attrs.type).filter(Boolean);
+          if(sl.length)e.slur=sl.length>1?'both':sl[0];
+          const ar=kid(nt,'articulations');
+          if(ar){
+            const map={'accent':'accent','staccato':'staccato','tenuto':'tenuto','strong-accent':'marcato'};
+            const got=ar.kids.map(k=>map[k.name]).filter(Boolean);
+            if(got.length)e.art=got;
+          }
+          if(kid(nt,'fermata'))e.art=(e.art||[]).concat(['fermata']);
+          const tp=kid(nt,'tuplet');
+          if(tp)e.tupPos=tp.attrs.type;
+        }
+        const tm=kid(el,'time-modification');
+        if(tm)e.tup={n:num(tm,'actual-notes',3),of:num(tm,'normal-notes',2)};
+        ev.push(e);lastByStaff[staff]=e;t+=dur;
+      });
+      const staves=[...new Set(ev.map(e=>e.staff))];
+      if(!staves.length)staves.push('1');
+      staves.forEach(sv=>{
+        const all=ev.filter(e=>e.staff===sv);
+        const voices=[...new Set(all.map(e=>e.voice))].sort();
+        const v1=voices[0];
+        const second=voices.length>1
+          ? all.filter(e=>e.voice===voices[1]&&!e.rest)
+               .sort((a,b)=>a.t-b.t)
+               .map(e=>({p:e.notes.slice().sort((x,y)=>(x.m==null?dia(x)*2:x.m)-(y.m==null?dia(y)*2:y.m)),
+                         d:snapDur(e.dur/divisions)}))
+          : null;
+        if(second&&second.length)(staffV2[sv]=staffV2[sv]||{})[mi]=second;
+        const list=all.filter(e=>e.voice===v1).sort((a,b)=>a.t-b.t||b.notes.length-a.notes.length);
+        const out=[];let cur=0;
+        list.forEach(e=>{
+          if(e.t<cur)return;
+          if(e.t>cur)out.push({p:[],d:snapDur((e.t-cur)/divisions)});
+          const nn=e.rest?{p:[],d:snapDur(e.dur/divisions)}
+                         :{p:e.notes.slice().sort((a,b)=>(a.m==null?dia(a)*2:a.m)-(b.m==null?dia(b)*2:b.m)),d:snapDur(e.dur/divisions)};
+          if(e.tie)nn.tie=e.tie;
+          if(e.slur)nn.slur=e.slur;
+          if(e.art)nn.art=e.art;
+          if(e.gr)nn.gr=e.gr;
+          if(e.lyric)nn.lyric=e.lyric;
+          if(e.tup){nn.tup={n:e.tup.n,of:e.tup.of,pos:e.tupPos||'mid'};}
+          out.push(nn);
+          cur=e.t+e.dur;
+        });
+        (staffMeasures[sv]=staffMeasures[sv]||[]).push(out);
+      });
+    });
+    const svs=Object.keys(staffMeasures).sort();
+    svs.forEach(sv=>{
+      const multi=svs.length>1;
+      parts.push({
+        name:info.name+(multi?(clefs[sv]==='bass'?' (ліва рука)':' (права рука)'):''),
+        inst:info.instrument||info.name,
+        clef:clefs[sv]||'treble',meter,fifths,ts:transpose,
+        bars:Object.keys(barAttrs).length?barAttrs:null,
+        v2:(staffV2[sv]&&Object.keys(staffV2[sv]).length)?staffV2[sv]:null,
+        ms:staffMeasures[sv].filter(m=>m.length)
+      });
+    });
+  });
+  if(!parts.length)throw new Error('У файлі немає жодної партії з нотами.');
+  return {title,composer,arranger,parts};
+}
+const DIV=24;
+function typeOf(d){
+  for(const [b,name] of DUR_TYPES){
+    if(Math.abs(d-b)<1e-6)return [name,0];
+    if(Math.abs(d-b*1.5)<1e-6)return [name,1];
+  }
+  return ['quarter',0];
+}
+const xe=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toMusicXML(score){
+  let out='<?xml version="1.0" encoding="UTF-8"?>\n';
+  out+='<!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 4.0 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">\n';
+  out+='<score-partwise version="4.0">\n';
+  out+='  <work><work-title>'+xe(score.title)+'</work-title></work>\n';
+  out+='  <identification>\n    <creator type="composer">'+xe(score.composer||'')+'</creator>\n';
+  if(score.arranger)out+='    <creator type="arranger">'+xe(score.arranger)+'</creator>\n';
+  out+='    <encoding><software>MuseClass</software></encoding>\n  </identification>\n  <part-list>\n';
+  score.parts.forEach((p,i)=>{
+    out+='    <score-part id="P'+(i+1)+'"><part-name>'+xe(p.name)+'</part-name>'
+      +'<score-instrument id="P'+(i+1)+'-I1"><instrument-name>'+xe(p.inst||p.name)+'</instrument-name></score-instrument></score-part>\n';
+  });
+  out+='  </part-list>\n';
+  score.parts.forEach((p,i)=>{
+    out+='  <part id="P'+(i+1)+'">\n';
+    p.ms.forEach((m,mi)=>{
+      out+='    <measure number="'+(mi+1)+'">\n';
+      if(mi===0){
+        out+='      <attributes>\n        <divisions>'+DIV+'</divisions>\n';
+        out+='        <key><fifths>'+(p.fifths||0)+'</fifths></key>\n';
+        out+='        <time><beats>'+(p.meter||[4,4])[0]+'</beats><beat-type>'+(p.meter||[4,4])[1]+'</beat-type></time>\n';
+        out+=p.clef==='bass'?'        <clef><sign>F</sign><line>4</line></clef>\n'
+            :(p.clef==='perc'?'        <clef><sign>percussion</sign><line>2</line></clef>\n'
+                             :'        <clef><sign>G</sign><line>2</line></clef>\n');
+        if(p.ts)out+='        <transpose><chromatic>'+(-p.ts)+'</chromatic></transpose>\n';
+        out+='      </attributes>\n';
+      }
+      const bar=(p.bars&&p.bars[mi])||null;
+      if(bar&&(bar.meter||bar.fifths!==undefined)){
+        out+='      <attributes>\n';
+        if(bar.fifths!==undefined)out+='        <key><fifths>'+bar.fifths+'</fifths></key>\n';
+        if(bar.meter)out+='        <time><beats>'+bar.meter[0]+'</beats><beat-type>'+bar.meter[1]+'</beat-type></time>\n';
+        out+='      </attributes>\n';
+      }
+      if(bar&&(bar.rep==='start'||bar.rep==='both'))
+        out+='      <barline location="left"><bar-style>heavy-light</bar-style>'
+          +'<repeat direction="forward"/></barline>\n';
+      if(bar&&bar.ending&&bar.endingStop===false)
+        out+='      <barline location="left"><ending number="'+bar.ending.join(',')+'" type="start"/></barline>\n';
+      if(bar&&(bar.text||bar.dyn||bar.mark||bar.hair||bar.jump)){
+        out+='      <direction placement="above"><direction-type>';
+        if(bar.mark)out+='<rehearsal>'+xe(bar.mark)+'</rehearsal>';
+        if(bar.text)out+='<words>'+xe(bar.text)+'</words>';
+        if(bar.jump)out+='<words>'+xe(bar.jump)+'</words>';
+        if(bar.dyn)out+='<dynamics><'+bar.dyn+'/></dynamics>';
+        if(bar.hair==='start')out+='<wedge type="'+(bar.hairKind==='dim'?'diminuendo':'crescendo')+'"/>';
+        if(bar.hair==='stop')out+='<wedge type="stop"/>';
+        out+='</direction-type></direction>\n';
+      }
+      m.forEach(n=>{
+        const nd=n.tup?n.d*n.tup.n/n.tup.of:n.d;
+        const [type,dot]=typeOf(nd),dur=Math.round(n.d*DIV);
+        if(n.gr&&n.gr.length)n.gr.forEach(g=>{
+          const gp=g.p[0];
+          out+='      <note><grace slash="yes"/><pitch><step>'+IX_STEP[gp.s]+'</step>'
+            +(gp.a?'<alter>'+gp.a+'</alter>':'')+'<octave>'+gp.o+'</octave></pitch>'
+            +'<type>eighth</type></note>\n';
+        });
+        const tmod=n.tup?'<time-modification><actual-notes>'+n.tup.n
+            +'</actual-notes><normal-notes>'+n.tup.of+'</normal-notes></time-modification>':'';
+        if(!n.p.length){
+          out+='      <note><rest/><duration>'+dur+'</duration><type>'+type+'</type>'
+            +(dot?'<dot/>':'')+tmod+'</note>\n';
+        }else n.p.forEach((pt,k)=>{
+          const ties=[];
+          if(n.tie==='start'||n.tie==='both')ties.push('start');
+          if(n.tie==='stop'||n.tie==='both')ties.push('stop');
+          let nots='';
+          ties.forEach(t=>{nots+='<tied type="'+t+'"/>';});
+          if(!k){
+            if(n.slur==='start'||n.slur==='both')nots+='<slur type="start" number="1"/>';
+            if(n.slur==='stop'||n.slur==='both')nots+='<slur type="stop" number="1"/>';
+            if(n.tup&&n.tup.pos&&n.tup.pos!=='mid')nots+='<tuplet type="'+n.tup.pos+'"/>';
+            const amap={accent:'accent',staccato:'staccato',tenuto:'tenuto',marcato:'strong-accent'};
+            const arts=(n.art||[]).filter(a=>amap[a]);
+            if(arts.length)nots+='<articulations>'+arts.map(a=>'<'+amap[a]+'/>').join('')+'</articulations>';
+            if((n.art||[]).indexOf('fermata')>=0)nots+='<fermata/>';
+          }
+          out+='      <note>'+(k?'<chord/>':'')
+            +(pt.u
+              ?'<unpitched><display-step>'+IX_STEP[pt.s]+'</display-step><display-octave>'+pt.o+'</display-octave></unpitched>'
+              :'<pitch><step>'+IX_STEP[pt.s]+'</step>'+(pt.a?'<alter>'+pt.a+'</alter>':'')+'<octave>'+pt.o+'</octave></pitch>')
+            +'<duration>'+dur+'</duration>'
+            +ties.map(t=>'<tie type="'+t+'"/>').join('')
+            +'<type>'+type+'</type>'+(dot?'<dot/>':'')+tmod+'<voice>1</voice><staff>1</staff>'
+            +(nots?'<notations>'+nots+'</notations>':'')
+            +((!k&&n.lyric)?'<lyric number="1"><syllabic>single</syllabic><text>'+xe(n.lyric)+'</text></lyric>':'')
+            +'</note>\n';
+        });
+      });
+      const v2=p.v2&&p.v2[mi];
+      if(v2&&v2.length){
+        const back=m.reduce((a,n)=>a+Math.round(n.d*DIV),0);
+        out+='      <backup><duration>'+back+'</duration></backup>\n';
+        v2.forEach(n=>{
+          const [type,dot]=typeOf(n.d),dur=Math.round(n.d*DIV);
+          if(!n.p.length){
+            out+='      <note><rest/><duration>'+dur+'</duration><voice>2</voice><type>'+type+'</type></note>\n';
+          }else n.p.forEach((pt,k)=>{
+            out+='      <note>'+(k?'<chord/>':'')
+              +'<pitch><step>'+IX_STEP[pt.s]+'</step>'+(pt.a?'<alter>'+pt.a+'</alter>':'')
+              +'<octave>'+pt.o+'</octave></pitch><duration>'+dur+'</duration>'
+              +'<voice>2</voice><type>'+type+'</type>'+(dot?'<dot/>':'')+'<staff>1</staff></note>\n';
+          });
+        });
+      }
+      if(bar&&bar.ending&&bar.endingStop!==false)
+        out+='      <barline location="right"><ending number="'+bar.ending.join(',')+'" type="stop"/></barline>\n';
+      if(bar&&(bar.rep==='end'||bar.rep==='both'))
+        out+='      <barline location="right"><bar-style>light-heavy</bar-style>'
+          +'<repeat direction="backward"/></barline>\n';
+      out+='    </measure>\n';
+    });
+    out+='  </part>\n';
+  });
+  return out+'</score-partwise>\n';
+}
+/* старі дані [midi|null,d] → модель */
+const liftLegacy=(ms,flat)=>ms.map(m=>m.map(n=>({p:n[0]==null?[]:[noteFromMidi(n[0],flat)],d:n[1]})));
+
+/* ===================== ZIP: читання та запис =========================
+   MuseScore за замовчуванням зберігає стиснений MusicXML (.mxl) — це
+   звичайний zip з META-INF/container.xml і самою партитурою всередині. */
+const CRC_T=(()=>{const t=new Uint32Array(256);
+  for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);t[n]=c>>>0;}
+  return t;})();
+function crc32(u8){let c=0xFFFFFFFF;for(let i=0;i<u8.length;i++)c=CRC_T[(c^u8[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
+function zipStore(files){
+  const enc=new TextEncoder(),parts=[],central=[];let off=0,cdSize=0;
+  files.forEach(f=>{
+    const name=enc.encode(f.name),data=f.data,crc=crc32(data),sz=data.length;
+    const lh=new DataView(new ArrayBuffer(30));
+    lh.setUint32(0,0x04034b50,true);lh.setUint16(4,20,true);lh.setUint16(6,0x0800,true);
+    lh.setUint32(14,crc,true);lh.setUint32(18,sz,true);lh.setUint32(22,sz,true);
+    lh.setUint16(26,name.length,true);
+    parts.push(new Uint8Array(lh.buffer),name,data);
+    const ch=new DataView(new ArrayBuffer(46));
+    ch.setUint32(0,0x02014b50,true);ch.setUint16(4,20,true);ch.setUint16(6,20,true);
+    ch.setUint16(8,0x0800,true);ch.setUint32(16,crc,true);ch.setUint32(20,sz,true);
+    ch.setUint32(24,sz,true);ch.setUint16(28,name.length,true);ch.setUint32(42,off,true);
+    central.push(new Uint8Array(ch.buffer),name);
+    off+=30+name.length+sz;cdSize+=46+name.length;
+  });
+  const eo=new DataView(new ArrayBuffer(22));
+  eo.setUint32(0,0x06054b50,true);eo.setUint16(8,files.length,true);eo.setUint16(10,files.length,true);
+  eo.setUint32(12,cdSize,true);eo.setUint32(16,off,true);
+  const all=parts.concat(central,[new Uint8Array(eo.buffer)]);
+  const total=all.reduce((a,b)=>a+b.length,0),out=new Uint8Array(total);
+  let p=0;all.forEach(b=>{out.set(b,p);p+=b.length;});
+  return out;
+}
+async function unzip(u8){
+  const dv=new DataView(u8.buffer,u8.byteOffset,u8.byteLength);
+  let eo=-1;
+  for(let i=u8.length-22;i>=0&&i>u8.length-66000;i--)if(dv.getUint32(i,true)===0x06054b50){eo=i;break;}
+  if(eo<0)throw new Error('Архів пошкоджений: не знайдено кінець каталогу.');
+  const n=dv.getUint16(eo+10,true);let p=dv.getUint32(eo+16,true);
+  const dec=new TextDecoder(),out=[];
+  for(let i=0;i<n;i++){
+    if(dv.getUint32(p,true)!==0x02014b50)break;
+    const method=dv.getUint16(p+10,true),csize=dv.getUint32(p+20,true);
+    const nl=dv.getUint16(p+28,true),el=dv.getUint16(p+30,true),cl=dv.getUint16(p+32,true);
+    const lo=dv.getUint32(p+42,true);
+    const name=dec.decode(u8.subarray(p+46,p+46+nl));
+    const lnl=dv.getUint16(lo+26,true),lel=dv.getUint16(lo+28,true);
+    const start=lo+30+lnl+lel;
+    let data=u8.subarray(start,start+csize);
+    if(method===8){
+      if(typeof DecompressionStream!=='function')throw new Error('Браузер не вміє розпаковувати цей архів.');
+      const ds=new DecompressionStream('deflate-raw');
+      const buf=await new Response(new Blob([data]).stream().pipeThrough(ds)).arrayBuffer();
+      data=new Uint8Array(buf);
+    }else if(method!==0)throw new Error('Невідомий метод стиснення в архіві.');
+    out.push({name,data});
+    p+=46+nl+el+cl;
+  }
+  return out;
+}
+async function musicxmlFromBytes(u8){
+  const dec=new TextDecoder();
+  if(u8[0]===0x50&&u8[1]===0x4B){
+    const entries=await unzip(u8);
+    const container=entries.find(e=>/META-INF\/container\.xml$/i.test(e.name));
+    let root=null;
+    if(container){
+      const rf=kid(kid(parseXML(dec.decode(container.data)),'rootfiles'),'rootfile');
+      if(rf&&rf.attrs['full-path'])root=rf.attrs['full-path'];
+    }
+    const pick=(root&&entries.find(e=>e.name===root))
+      ||entries.find(e=>/\.(musicxml|xml)$/i.test(e.name)&&!/^META-INF\//i.test(e.name));
+    if(!pick)throw new Error('В архіві немає файлу партитури.');
+    return dec.decode(pick.data);
+  }
+  return dec.decode(u8);
+}
+function toMxl(xml,name){
+  const enc=new TextEncoder();
+  const inner=(name||'score')+'.musicxml';
+  const container='<?xml version="1.0" encoding="UTF-8"?>\n<container><rootfiles>'
+    +'<rootfile full-path="'+xe(inner)+'" media-type="application/vnd.recordare.musicxml+xml"/>'
+    +'</rootfiles></container>\n';
+  return zipStore([
+    {name:'META-INF/container.xml',data:enc.encode(container)},
+    {name:inner,data:enc.encode(xml)}
+  ]);
+}
+
+/* ======================= НОТНИЙ РУШІЙ ============================== */
+const GAP=5;
+const CLEF_TOP={treble:38,bass:26,alto:32,perc:38};
+/* Ключі малюємо вектором: музичних юнікодних гліфів немає в більшості системних шрифтів. */
+function clefPath(clef,x,top){
+  const ink='#1B1B1E';
+  if(clef==='bass'){
+    const yF=top+10;
+    return '<path d="M'+(x-4)+' '+(yF-5)+' c7 -2 14 2 14 9 c0 11 -11 18 -20 22'
+      +' c8 -2 15 -9 15 -19 c0 -6 -3 -10 -7 -10 c-3 0 -5 2 -5 5 z" fill="'+ink+'"/>'
+      +'<circle cx="'+(x+16)+'" cy="'+(yF-5)+'" r="1.9" fill="'+ink+'"/>'
+      +'<circle cx="'+(x+16)+'" cy="'+(yF+5)+'" r="1.9" fill="'+ink+'"/>';
+  }
+  if(clef==='perc'){
+    return '<rect x="'+(x+2)+'" y="'+(top+8)+'" width="4.4" height="24" fill="'+ink+'"/>'
+      +'<rect x="'+(x+10)+'" y="'+(top+8)+'" width="4.4" height="24" fill="'+ink+'"/>';
+  }
+  if(clef==='alto'){
+    return '<rect x="'+x+'" y="'+top+'" width="2.6" height="40" fill="'+ink+'"/>'
+      +'<rect x="'+(x+4)+'" y="'+top+'" width="1.4" height="40" fill="'+ink+'"/>'
+      +'<path d="M'+(x+7)+' '+top+' c8 0 6 9 2 10 c-3 1 -3 1 -3 1 c0 0 0 0 3 1 c4 1 6 8 -2 8 z" fill="'+ink+'"/>'
+      +'<path d="M'+(x+7)+' '+(top+40)+' c8 0 6 -9 2 -10 c-3 -1 -3 -1 -3 -1 c0 0 0 0 3 -1 c4 -1 6 -8 -2 -8 z" fill="'+ink+'"/>';
+  }
+  /* Скрипковий ключ: контур із змінною товщиною (перо), завиток
+     центрований на лінії соль. Шлях згенерований з кривих Безьє —
+     координати в одиницях міжлінійного проміжку, помножені на 10. */
+  return '<g transform="translate('+(x+4)+','+(top+30)+')">'
+    +'<path d="M-7.6 22.6 L-7.8 24.0 L-7.6 25.4 L-7.0 26.5 L-6.1 27.4 L-4.9 28.1 L-3.6 28.4 L-2.2 28.4 L-0.7 28.0 L0.7 27.4 L2.0 26.3 L3.2 25.0 L4.2 23.3 L4.9 21.2 L5.1 17.7 L5.2 14.1 L5.2 10.5 L5.2 6.8 L5.1 3.1 L5.0 -0.6 L4.8 -4.2 L4.6 -7.8 L4.4 -11.2 L4.2 -14.5 L3.9 -17.6 L3.6 -20.5 L3.4 -23.1 L3.1 -25.5 L3.1 -27.8 L3.3 -30.0 L3.7 -31.9 L4.3 -33.7 L5.1 -35.2 L5.9 -36.4 L6.8 -37.2 L7.6 -37.7 L8.4 -37.9 L9.2 -37.7 L10.1 -37.1 L10.9 -36.0 L11.6 -34.4 L11.8 -32.7 L11.7 -31.1 L11.3 -29.3 L10.5 -27.5 L9.5 -25.8 L8.3 -24.0 L6.8 -22.2 L5.2 -20.4 L3.5 -18.7 L1.7 -17.1 L-0.2 -15.5 L-2.1 -14.0 L-4.3 -12.4 L-6.3 -10.8 L-8.1 -9.3 L-9.7 -7.7 L-11.0 -6.1 L-12.0 -4.6 L-12.8 -3.0 L-13.3 -1.4 L-13.6 0.3 L-13.6 1.9 L-13.3 3.5 L-12.8 5.0 L-12.0 6.4 L-10.9 8.3 L-9.4 9.9 L-7.6 11.2 L-5.6 12.1 L-3.5 12.6 L-1.3 12.8 L0.9 12.7 L3.0 12.2 L5.1 11.4 L7.0 10.3 L8.6 8.8 L10.0 6.9 L10.9 4.7 L11.3 2.5 L11.4 0.5 L11.1 -1.4 L10.5 -3.1 L9.7 -4.6 L8.6 -5.8 L7.4 -6.8 L6.0 -7.5 L4.6 -7.9 L3.1 -8.1 L1.6 -7.9 L0.1 -7.5 L-1.2 -6.7 L-2.3 -5.9 L-3.3 -5.0 L-4.1 -4.0 L-4.7 -3.0 L-5.1 -1.9 L-5.4 -0.8 L-5.5 0.2 L-5.4 1.3 L-5.2 2.2 L-4.8 3.1 L-4.3 3.9 L-3.6 4.5 L-2.7 5.0 L-2.5 4.6 L-3.2 4.1 L-3.8 3.5 L-4.2 2.8 L-4.5 2.0 L-4.6 1.2 L-4.6 0.3 L-4.4 -0.6 L-4.1 -1.5 L-3.6 -2.4 L-3.0 -3.2 L-2.3 -4.0 L-1.4 -4.7 L-0.4 -5.3 L0.8 -5.8 L1.9 -6.1 L3.0 -6.1 L4.1 -5.9 L5.1 -5.5 L6.0 -4.9 L6.8 -4.1 L7.5 -3.1 L8.0 -2.1 L8.4 -0.8 L8.5 0.5 L8.3 2.1 L7.9 3.7 L7.2 5.3 L6.2 6.6 L5.0 7.6 L3.6 8.5 L2.1 9.1 L0.5 9.4 L-1.2 9.5 L-2.9 9.3 L-4.5 8.9 L-5.9 8.2 L-7.2 7.3 L-8.3 6.2 L-9.2 4.8 L-10.0 3.6 L-10.4 2.6 L-10.7 1.5 L-10.8 0.4 L-10.7 -0.8 L-10.4 -2.0 L-9.8 -3.4 L-9.0 -4.8 L-8.0 -6.3 L-6.6 -7.8 L-5.1 -9.4 L-3.2 -11.1 L-1.1 -12.8 L0.7 -14.4 L2.5 -16.1 L4.3 -17.9 L6.0 -19.7 L7.6 -21.5 L9.1 -23.4 L10.3 -25.2 L11.4 -27.1 L12.2 -29.0 L12.6 -30.9 L12.8 -32.8 L12.5 -34.6 L11.9 -36.4 L10.9 -37.9 L9.8 -38.8 L8.5 -39.2 L7.2 -39.0 L5.9 -38.4 L4.8 -37.4 L3.7 -36.0 L2.9 -34.3 L2.1 -32.4 L1.6 -30.3 L1.3 -27.9 L1.2 -25.5 L1.4 -22.9 L1.6 -20.3 L1.9 -17.4 L2.1 -14.3 L2.3 -11.0 L2.5 -7.6 L2.7 -4.1 L2.8 -0.5 L3.0 3.2 L3.0 6.8 L3.0 10.5 L3.0 14.1 L2.9 17.6 L2.7 20.8 L2.2 22.4 L1.5 23.8 L0.6 24.9 L-0.3 25.7 L-1.4 26.3 L-2.4 26.7 L-3.5 26.8 L-4.5 26.6 L-5.4 26.3 L-6.1 25.8 L-6.7 25.0 L-7.1 24.0 L-7.2 22.6 Z" fill="'+ink+'"/>'
+    +'<circle cx="-2.6" cy="4.8" r="1.3" fill="'+ink+'"/></g>';
+}
+const SHARP_DIA={perc:[38,35,39,36,33,37,34],treble:[38,35,39,36,33,37,34],bass:[24,28,25,29,26,30,27],alto:[31,28,32,29,26,30,27]};
+const FLAT_DIA ={perc:[34,37,33,36,32,35,31],treble:[34,37,33,36,32,35,31],bass:[20,23,19,22,18,21,17],alto:[27,30,26,29,25,28,24]};
+const SHARP_ORDER=[3,0,4,1,5,2,6], FLAT_ORDER=[6,2,5,1,4,0,3];
+const ACC_GLYPH={1:'♯','-1':'♭',0:'♮',2:'𝄪','-2':'𝄫'};
+function keyAlters(fifths){
+  const a={};
+  if(fifths>0)for(let i=0;i<Math.min(fifths,7);i++)a[SHARP_ORDER[i]]=1;
+  if(fifths<0)for(let i=0;i<Math.min(-fifths,7);i++)a[FLAT_ORDER[i]]=-1;
+  return a;
+}
+function yOf(d,clef){return (CLEF_TOP[clef]-d)*GAP;}
+function diaToMidi(d){const oct=Math.floor(d/7),st=((d%7)+7)%7;return (oct+1)*12+[0,2,4,5,7,9,11][st];}
+
+/* Такти для показу: суцільні паузи від двох поспіль згортаються в одну
+   багатотактову паузу. Без цього витягнута партія духовика — це сторінки
+   порожніх тактів, які треба рахувати вручну. */
+function toDisp(ms,compress,bars,v2){
+  const out=[];let i=0,ev=0;
+  const empty=m=>m.length&&m.every(n=>!n.p.length);
+  const plain=i=>{const b=bars&&bars[i];
+    return !b||(!b.rep&&!b.ending&&!b.text&&!b.dyn&&!b.mark&&!b.hair&&!b.meter&&b.fifths===undefined&&!b.jump);};
+  while(i<ms.length){
+    if(compress&&empty(ms[i])&&plain(i)){
+      let j=i,evs=0;
+      while(j<ms.length&&empty(ms[j])&&plain(j)){evs+=ms[j].length;j++;}
+      if(j-i>=2){out.push({mm:j-i,n:i,ev,evs});ev+=evs;i=j;continue;}
+    }
+    out.push({m:ms[i],n:i,ev,evs:ms[i].length,b:(bars&&bars[i])||null,
+              v2:(v2&&v2[i])||null});
+    ev+=ms[i].length;i++;
+  }
+  return out;
+}
+const dispEvents=d=>d.reduce((a,it)=>a+it.evs,0);
+
+function baseOf(d){
+  /* з допуском: тріольна вісімка це 1/3, а 1/3*3/2 у float дає 0.4999… */
+  const T=[[6,4,1],[4,4,0],[3,2,1],[2,2,0],[1.5,1,1],[1,1,0],
+           [.75,.5,1],[.5,.5,0],[.375,.25,1],[.25,.25,0],[.125,.125,0]];
+  for(const [v,b,dt] of T)if(Math.abs(d-v)<1e-6)return [b,dt];
+  let best=T[T.length-1];
+  for(const t of T)if(Math.abs(d-t[0])<Math.abs(d-best[0]))best=t;
+  return [best[1],best[2]];
+}
+const FLAGS={0.5:1,0.25:2,0.125:3};
+const notated=n=>n.tup?n.d*n.tup.n/n.tup.of:n.d;
+
+function restGlyph(base,cx,top){
+  const ink='#1B1B1E';
+  if(base>=4)return '<rect x="'+(cx-6)+'" y="'+(top+10)+'" width="12" height="5" fill="'+ink+'"/>';
+  if(base>=2)return '<rect x="'+(cx-6)+'" y="'+(top+15)+'" width="12" height="5" fill="'+ink+'"/>';
+  if(base>=1)
+    return '<path d="M'+(cx-1.5)+' '+(top+6)+' c3 3.4 4.6 5 5.4 6.6 c.8 1.6 .4 2.8 -1.4 4.6'
+      +' c-2 2 -2.6 3.4 -1.8 5.2 c.6 1.4 2 2.8 3.2 3.8 c-2.6 -1.2 -5.2 -1.6 -6.6 -.6'
+      +' c-1.6 1.2 -1.2 3.4 .6 5.4 c-3 -2 -4.8 -4.2 -4.6 -6.2 c.2 -2 2 -3 4.6 -2.6'
+      +' c-2.4 -2.6 -3.4 -4.6 -2.8 -6.4 c.4 -1.4 1.8 -2.8 3.4 -4.2 l0 0 z" fill="'+ink+'"/>';
+  const n=base<=.25?2:1;
+  let s='<path d="M'+(cx+3.5)+' '+(top+9)+' L'+(cx-3)+' '+(top+12+(n>1?8:0))
+    +'" stroke="'+ink+'" stroke-width="1.6" fill="none"/>';
+  for(let i=0;i<n;i++){
+    const y=top+11+i*8;
+    s+='<circle cx="'+(cx+3.2)+'" cy="'+y+'" r="1.9" fill="'+ink+'"/>'
+      +'<path d="M'+(cx+3.2)+' '+(y+1.4)+' c1.6 .6 3 1.4 4 2.6" stroke="'+ink
+      +'" stroke-width="1.3" fill="none"/>';
+  }
+  return s;
+}
+function artGlyph(kind,x,y,up){
+  const ink='#1B1B1E',d=up?1:-1;
+  if(kind==='staccato')return '<circle cx="'+x+'" cy="'+y+'" r="1.7" fill="'+ink+'"/>';
+  if(kind==='tenuto')return '<rect x="'+(x-4.5)+'" y="'+(y-.9)+'" width="9" height="1.8" fill="'+ink+'"/>';
+  if(kind==='accent')return '<path d="M'+(x-5)+' '+(y-3)+' L'+(x+5)+' '+y+' L'+(x-5)+' '+(y+3)
+    +'" stroke="'+ink+'" stroke-width="1.6" fill="none" stroke-linejoin="round"/>';
+  if(kind==='marcato')return '<path d="M'+(x-4)+' '+(y+3.2*d)+' L'+x+' '+(y-3.2*d)+' L'+(x+4)+' '+(y+3.2*d)
+    +'" stroke="'+ink+'" stroke-width="1.7" fill="none" stroke-linejoin="round"/>';
+  if(kind==='fermata')return '<path d="M'+(x-7)+' '+y+' a7 7 0 0 '+(up?1:0)+' 14 0" stroke="'+ink
+    +'" stroke-width="1.5" fill="none"/><circle cx="'+x+'" cy="'+(y-3.4*d)+'" r="1.6" fill="'+ink+'"/>';
+  return '';
+}
+/* ширина такту — щоб у партитурі всі стани мали спільну сітку */
+function measureWidth(it){
+  if(it.mm)return 104;
+  let w=20;
+  const scan=arr=>arr.forEach(n=>{
+    w+=26+16*Math.min(n.d,2)+(n.p.length>1?6:0)+(n.art&&n.art.length?4:0)
+      +((n.gr&&n.gr.length)?n.gr.length*13:0);
+  });
+  scan(it.m);
+  if(it.v2)w=Math.max(w,20+it.v2.reduce((a,n)=>a+26+16*Math.min(n.d,2),0));
+  if(it.b&&it.b.rep)w+=14;
+  if(it.b&&(it.b.meter||it.b.fifths!==undefined))w+=34;
+  if(it.m.some(n=>n.lyric))w=Math.max(w,20+it.m.length*30);
+  return Math.max(w,72);
+}
+
+/* ---------- один нотний стан ----------
+   Повертає готовий шматок SVG без обгортки, щоб партитура могла скласти
+   кілька станів в одну систему зі спільними тактовими рисками. */
+function renderStaff(items,opts){
+  opts=opts||{};
+  const clef=opts.clef||'treble';
+  let fifths=opts.fifths||0,meter=opts.meter||[4,4];
+  const nAcc=clef==='perc'?0:Math.min(Math.abs(fifths),7);
+  const top=opts.top||0,ink='#1B1B1E';
+  const nameW=opts.nameW||0;
+  const padL=opts.padL!==undefined?opts.padL:(52+nAcc*9+(opts.timesig?20:0));
+  const widths=opts.widths||items.map(measureWidth);
+  const total=opts.total||(padL+widths.reduce((a,b)=>a+b,0)+16);
+  const pi=opts.part||0;
+  let s='',deco='',over='',under='';
+
+  for(let i=0;i<5;i++)
+    s+='<line x1="'+(padL-8)+'" y1="'+(top+i*10)+'" x2="'+(total-6)+'" y2="'+(top+i*10)
+      +'" stroke="'+ink+'" stroke-width="1" opacity=".85"/>';
+  s+=clefPath(clef,nameW+22,top);
+  let kx=nameW+50;
+  const kt=()=>{
+    const tbl=fifths>0?SHARP_DIA[clef]:FLAT_DIA[clef],g=fifths>0?'♯':'♭';
+    let o='',n=clef==='perc'?0:Math.min(Math.abs(fifths),7);
+    for(let i=0;i<n;i++){
+      o+='<text x="'+kx+'" y="'+(top+yOf(tbl[i],clef)+5)+'" font-size="15" font-family="serif" fill="'+ink+'">'+g+'</text>';
+      kx+=9;
+    }
+    return o;
+  };
+  s+=kt();
+  if(opts.timesig){
+    s+='<text x="'+(kx+5)+'" y="'+(top+19)+'" font-family="serif" font-size="19" font-weight="700" fill="'+ink+'">'+meter[0]+'</text>';
+    s+='<text x="'+(kx+5)+'" y="'+(top+38)+'" font-family="serif" font-size="19" font-weight="700" fill="'+ink+'">'+meter[1]+'</text>';
+  }
+
+  /* ---- прохід 1: позиції ---- */
+  const laid=[];
+  let x=padL;
+  items.forEach((it,mi)=>{
+    const w=widths[mi],x0=x;
+    it['_x'+pi]=x0;
+    if(!it.mm){
+      const acc={};
+      let cx=x0+(it.b&&(it.b.rep==='start'||it.b.rep==='both')?26:16);
+      if(it.b&&(it.b.meter||it.b.fifths!==undefined))cx+=30;
+      let evi=it.ev;
+      const place=(n,voice)=>{
+        const [base,dot]=baseOf(notated(n));
+        const rec={it,n,ev:evi,x:cx,base,dot,heads:[],acc:[],rest:!n.p.length,voice};
+        if(n.p.length){
+          const heads=n.p.map(pt=>({pt,d:dia(pt),y:top+yOf(dia(pt),clef)})).sort((a,b)=>b.d-a.d);
+          const avg=heads.reduce((a,h)=>a+h.y,0)/heads.length;
+          rec.up=voice===2?false:(voice===1?true:avg>top+20);
+          rec.heads=heads;
+          rec.ymin=Math.min.apply(null,heads.map(h=>h.y));
+          rec.ymax=Math.max.apply(null,heads.map(h=>h.y));
+          let ax=cx-16;
+          heads.forEach(h=>{
+            if(h.pt.u)return;
+            const key=h.pt.s+':'+h.pt.o,cur=acc[key]!==undefined?acc[key]:(keyAlters(fifths)[h.pt.s]||0);
+            if(h.pt.a!==cur||n.forceAcc){
+              rec.acc.push({g:ACC_GLYPH[h.pt.a]||'',x:ax,y:h.y+5});
+              acc[key]=h.pt.a;ax-=10;
+            }
+          });
+        }else{rec.up=voice!==2;rec.ymin=top+14;rec.ymax=top+24;}
+        return rec;
+      };
+      it.m.forEach(n=>{
+        if(n.gr&&n.gr.length){                 /* форшлаги перед нотою */
+          n.gr.forEach(g=>{
+            const gd=dia(g.p[0]),gy=top+yOf(gd,clef);
+            const gx=cx-10-(n.gr.length-n.gr.indexOf(g)-1)*11;
+            s+='<ellipse cx="'+gx+'" cy="'+gy+'" rx="4.1" ry="3.1" transform="rotate(-20 '+gx+' '+gy+')" fill="'+ink+'"/>';
+            s+='<line x1="'+(gx+3.9)+'" y1="'+gy+'" x2="'+(gx+3.9)+'" y2="'+(gy-22)+'" stroke="'+ink+'" stroke-width="1.1"/>';
+            s+='<path d="M'+(gx+3.9)+' '+(gy-22)+' q6 3 5.5 10 q-2 -5.5 -5.5 -6" fill="'+ink+'"/>';
+            s+='<line x1="'+(gx-3)+'" y1="'+(gy-9)+'" x2="'+(gx+8)+'" y2="'+(gy-15)+'" stroke="'+ink+'" stroke-width="1.1"/>';
+          });
+        }
+        const rec=place(n,0);
+        laid.push(rec);
+        if(n.lyric)under+='<text x="'+cx+'" y="'+(top+66)+'" text-anchor="middle" font-size="11.5"'
+          +' font-family="sans-serif" fill="'+ink+'">'+esc(n.lyric)+'</text>';
+        cx+=26+16*Math.min(n.d,2)+(n.p.length>1?6:0)+(n.art&&n.art.length?4:0)
+           +((n.gr&&n.gr.length)?n.gr.length*13:0);
+        evi++;
+      });
+      if(it.v2){                                /* другий голос: штилі вниз */
+        let cx2=x0+16,ev2=0;
+        it.v2.forEach(n=>{
+          const save=cx;cx=cx2;
+          const rec=place(n,2);rec.ev=-1;rec.v2i=ev2++;
+          laid.push(rec);cx=save;
+          cx2+=26+16*Math.min(n.d,2);
+        });
+      }
+    }
+    x+=w;
+  });
+
+  /* ---- вʼязки ---- */
+  const beams=[];
+  {
+    let run=[];
+    const flush=()=>{if(run.length>1)beams.push(run.slice());run=[];};
+    laid.forEach((r,i)=>{
+      const prev=laid[i-1];
+      if(prev&&(prev.it!==r.it||prev.voice!==r.voice))flush();
+      if(r.rest||r.base>=1){flush();return;}
+      if(r.n.tup&&r.n.tup.pos==='start')flush();
+      if(prev&&!!prev.n.tup!==!!r.n.tup)flush();
+      run.push(r);
+      if(r.n.tup){if(r.n.tup.pos==='stop')flush();return;}
+      if(run.length>=4)flush();
+    });
+    flush();
+  }
+  const beamed=new Set();
+  beams.forEach(g=>{
+    const up=g[0].voice===2?false:(g[0].voice===1?true:g.filter(r=>r.up).length*2>=g.length);
+    const ends=g.map(r=>up?r.ymin:r.ymax);
+    const by=up?Math.min.apply(null,ends)-30:Math.max.apply(null,ends)+30;
+    g.forEach(r=>{r.up=up;r.beamY=by;beamed.add(r);});
+  });
+
+  /* ---- прохід 2: ноти ---- */
+  laid.forEach(r=>{
+    const n=r.n,cx=r.x;
+    if(r.rest){
+      s+=restGlyph(r.base,cx,top);
+      if(r.dot)s+='<circle cx="'+(cx+9)+'" cy="'+(top+13)+'" r="1.7" fill="'+ink+'"/>';
+    }else{
+      r.acc.forEach(a=>{s+='<text x="'+a.x+'" y="'+a.y+'" font-size="15" font-family="serif" fill="'+ink+'">'+a.g+'</text>';});
+      for(let ly=top-10;ly>=r.ymin-2;ly-=10)
+        s+='<line x1="'+(cx-10)+'" y1="'+ly+'" x2="'+(cx+10)+'" y2="'+ly+'" stroke="'+ink+'" stroke-width="1"/>';
+      for(let ly=top+50;ly<=r.ymax+2;ly+=10)
+        s+='<line x1="'+(cx-10)+'" y1="'+ly+'" x2="'+(cx+10)+'" y2="'+ly+'" stroke="'+ink+'" stroke-width="1"/>';
+      const filled=r.base<=1;let prevD=null,shifted=false;
+      const tag=r.ev>=0?' class="nh" data-p="'+pi+'" data-e="'+r.ev+'"':' class="nh2"';
+      r.heads.forEach(h=>{
+        shifted=(prevD!==null&&Math.abs(prevD-h.d)===1)?!shifted:false;
+        prevD=h.d;
+        const ox=shifted?(r.up?11.8:-11.8):0,X=cx+ox;
+        h.X=X;
+        if(h.pt.u){
+          s+='<path'+tag+' d="M'+(X-6)+' '+(h.y-4.6)+' l1.9-1.9 L'+X+' '+(h.y-1.6)
+            +' l4.1-3 l1.9 1.9 L'+(X+1.8)+' '+h.y+' l4.1 4.6 l-1.9 1.9 L'+X+' '+(h.y+1.6)
+            +' l-4.1 3 l-1.9-1.9 L'+(X-1.8)+' '+h.y+' Z" fill="'+(filled?ink:'none')
+            +'" stroke="'+ink+'" stroke-width="'+(filled?0:1.6)+'"/>';
+        }else{
+          s+='<ellipse'+tag+' cx="'+X+'" cy="'+h.y+'" rx="6.3" ry="4.7"'
+            +' transform="rotate(-20 '+X+' '+h.y+')" fill="'+(filled?ink:'none')
+            +'" stroke="'+ink+'" stroke-width="'+(filled?0:1.9)+'"/>';
+        }
+        if(r.dot)s+='<circle cx="'+(X+11)+'" cy="'+(h.y-2)+'" r="1.7" fill="'+ink+'"/>';
+      });
+      if(r.base<4){
+        const sx=r.up?cx+5.9:cx-5.9,sy=r.up?r.ymin-33:r.ymax+33;
+        r.sx=sx;r.sy=sy;
+        if(!beamed.has(r)){
+          s+='<line x1="'+sx+'" y1="'+(r.up?r.ymax:r.ymin)+'" x2="'+sx+'" y2="'+sy
+            +'" stroke="'+ink+'" stroke-width="1.5"/>';
+          const nf=FLAGS[r.base]||0;
+          for(let k=0;k<nf;k++){
+            const fy=sy+(r.up?1:-1)*k*6;
+            s+='<path d="M'+sx+' '+fy+' q9 5 8 15 q-3 -8 -8 -9" fill="'+ink+'"'
+              +(r.up?'':' transform="scale(1,-1) translate(0,'+(-2*fy)+')"')+'/>';
+          }
+        }
+      }
+      if(n.art&&n.art.length){
+        const below=r.up;
+        let ay=below?r.ymax+11:r.ymin-11;
+        n.art.forEach(k=>{
+          if(k==='fermata'){over+=artGlyph('fermata',cx,top-8,true);return;}
+          s+=artGlyph(k,cx,ay,!below);
+          ay+=below?7:-7;
+        });
+      }
+    }
+  });
+
+  /* ---- вʼязки ---- */
+  beams.forEach(g=>{
+    const up=g[0].up,by=g[0].beamY;
+    g.forEach(r=>{
+      const sx=up?r.x+5.9:r.x-5.9;
+      s+='<line x1="'+sx+'" y1="'+(up?r.ymax:r.ymin)+'" x2="'+sx+'" y2="'+by
+        +'" stroke="'+ink+'" stroke-width="1.5"/>';
+      r.sx=sx;r.sy=by;
+    });
+    const x1=(up?g[0].x+5.9:g[0].x-5.9),x2=(up?g[g.length-1].x+5.9:g[g.length-1].x-5.9);
+    const levels=Math.max.apply(null,g.map(r=>FLAGS[r.base]||1));
+    for(let L=0;L<levels;L++){
+      const y=by+(up?1:-1)*L*5.5;
+      if(L===0){
+        s+='<rect x="'+x1+'" y="'+(y-(up?0:4))+'" width="'+(x2-x1)+'" height="4" fill="'+ink+'"/>';
+      }else{
+        let seg=[];
+        g.forEach((r,i)=>{
+          const need=(FLAGS[r.base]||1)>L;
+          if(need)seg.push(r);
+          if((!need||i===g.length-1)&&seg.length){
+            const a=(up?seg[0].x+5.9:seg[0].x-5.9);
+            const b=(up?seg[seg.length-1].x+5.9:seg[seg.length-1].x-5.9);
+            s+='<rect x="'+a+'" y="'+(y-(up?0:4))+'" width="'+Math.max(b-a,7)+'" height="4" fill="'+ink+'"/>';
+            seg=[];
+          }
+        });
+      }
+    }
+  });
+
+  /* ---- ліги ---- */
+  function curve(x1,y1,x2,y2,up,w){
+    const mx=(x1+x2)/2,d=up?-1:1,h=Math.min(16,Math.max(7,(x2-x1)*.18));
+    return '<path d="M'+x1+' '+y1+' Q'+mx+' '+((y1+y2)/2+d*h)+' '+x2+' '+y2
+      +'" stroke="'+ink+'" stroke-width="'+(w||1.5)+'" fill="none" stroke-linecap="round"/>';
+  }
+  const openTie={},openSlur=[];
+  laid.forEach(r=>{
+    const n=r.n;
+    if(r.rest)return;
+    if(n.tie==='stop'||n.tie==='both'){
+      r.heads.forEach(h=>{
+        const k=h.pt.s+':'+h.pt.o,o=openTie[k];
+        if(!o){
+          const up=!r.up;
+          deco+=curve(h.X-16,h.y+(up?-6:6),h.X-7,h.y+(up?-6:6),up,1.6);
+          return;
+        }
+        if(o.r!==r){
+          const up=!o.r.up;
+          deco+=curve(o.h.X+7,o.h.y+(up?-6:6),h.X-7,h.y+(up?-6:6),up,1.6);
+          delete openTie[k];
+        }
+      });
+    }
+    if(n.tie==='start'||n.tie==='both')r.heads.forEach(h=>{openTie[h.pt.s+':'+h.pt.o]={r,h};});
+    if(n.slur==='start'||n.slur==='both')openSlur.push(r);
+    if((n.slur==='stop'||n.slur==='both')&&openSlur.length){
+      const a=openSlur.pop();
+      if(a!==r){
+        const up=!a.up;
+        deco+=curve(a.x,(up?a.ymin-9:a.ymax+9),r.x,(up?r.ymin-9:r.ymax+9),up,1.5);
+      }
+    }
+  });
+  Object.keys(openTie).forEach(k=>{
+    const o=openTie[k];if(!o)return;
+    const up=!o.r.up;
+    deco+=curve(o.h.X+7,o.h.y+(up?-6:6),o.h.X+16,o.h.y+(up?-6:6),up,1.6);
+  });
+
+  /* ---- тріолі ---- */
+  {
+    let run=[];
+    const draw=()=>{
+      if(run.length<2){run=[];return;}
+      const up=run.filter(r=>r.up).length*2>=run.length;
+      const lvl=r=>r.beamY!==undefined?r.beamY:(r.sy!==undefined?r.sy:(up?r.ymin:r.ymax));
+      const y=up?Math.min.apply(null,run.map(lvl))-11:Math.max.apply(null,run.map(lvl))+13;
+      const x1=run[0].x-6,x2=run[run.length-1].x+6,mid=(x1+x2)/2,tip=up?4:-4;
+      deco+='<path d="M'+x1+' '+(y+tip)+' L'+x1+' '+y+' L'+(mid-8)+' '+y+'" stroke="'+ink+'" stroke-width="1.2" fill="none"/>';
+      deco+='<path d="M'+(mid+8)+' '+y+' L'+x2+' '+y+' L'+x2+' '+(y+tip)+'" stroke="'+ink+'" stroke-width="1.2" fill="none"/>';
+      deco+='<text x="'+mid+'" y="'+(y+3.5)+'" text-anchor="middle" font-size="11" font-style="italic"'
+        +' font-family="serif" fill="'+ink+'">'+(run[0].n.tup.n||3)+'</text>';
+      run=[];
+    };
+    laid.forEach(r=>{
+      if(r.n.tup){
+        if(r.n.tup.pos==='start'&&run.length)draw();
+        run.push(r);
+        if(r.n.tup.pos==='stop')draw();
+      }else if(run.length)draw();
+    });
+    draw();
+  }
+
+  /* ---- такти, репізи, написи ---- */
+  x=padL;
+  let hairFrom=(opts.hairOpen?padL:null),hairKind=opts.hairOpen||'cresc';
+  items.forEach((it,mi)=>{
+    const w=widths[mi],x0=x,b=it.b;
+    if(it.mm){
+      const L=x0+16,R=x0+w-16;
+      s+='<path class="nh mmr" data-p="'+pi+'" data-e="'+it.ev+'" data-e2="'+(it.ev+it.evs-1)+'"'
+        +' d="M'+L+' '+(top+11)+' H'+R+' V'+(top+19)+' H'+L+' Z" fill="'+ink+'"/>';
+      s+='<rect x="'+(L-3)+'" y="'+(top+6)+'" width="3" height="18" fill="'+ink+'"/>';
+      s+='<rect x="'+R+'" y="'+(top+6)+'" width="3" height="18" fill="'+ink+'"/>';
+      s+='<text x="'+((L+R)/2)+'" y="'+(top-7)+'" text-anchor="middle" font-size="16" font-weight="700"'
+        +' font-family="serif" fill="'+ink+'">'+it.mm+'</text>';
+    }
+    if(b&&(b.rep==='start'||b.rep==='both')){
+      s+='<rect x="'+(x0+1)+'" y="'+top+'" width="3.4" height="40" fill="'+ink+'"/>';
+      s+='<rect x="'+(x0+6.5)+'" y="'+top+'" width="1.2" height="40" fill="'+ink+'"/>';
+      s+='<circle cx="'+(x0+12)+'" cy="'+(top+15)+'" r="1.9" fill="'+ink+'"/>';
+      s+='<circle cx="'+(x0+12)+'" cy="'+(top+25)+'" r="1.9" fill="'+ink+'"/>';
+    }
+    /* зміна розміру або тональності посеред партитури */
+    if(b&&b.fifths!==undefined&&b.fifths!==fifths){
+      fifths=b.fifths;kx=x0+4;s+=kt();
+    }
+    if(b&&b.meter){
+      meter=b.meter;
+      s+='<text x="'+(x0+4)+'" y="'+(top+19)+'" font-family="serif" font-size="17" font-weight="700" fill="'+ink+'">'+meter[0]+'</text>';
+      s+='<text x="'+(x0+4)+'" y="'+(top+37)+'" font-family="serif" font-size="17" font-weight="700" fill="'+ink+'">'+meter[1]+'</text>';
+    }
+    if(opts.chrome!==false){
+      if(b&&b.ending){
+        const ey=top-20;
+        over+='<path d="M'+(x0+2)+' '+(ey+9)+' L'+(x0+2)+' '+ey+' L'+(x0+w-4)+' '+ey
+          +(b.endingStop===false?'':' L'+(x0+w-4)+' '+(ey+9))
+          +'" stroke="'+ink+'" stroke-width="1.2" fill="none"/>';
+        over+='<text x="'+(x0+7)+'" y="'+(ey+9)+'" font-size="10.5" font-weight="600"'
+          +' font-family="sans-serif" fill="'+ink+'">'+b.ending.join(', ')+'.</text>';
+      }
+      if(b&&b.mark){
+        over+='<rect x="'+(x0-2)+'" y="'+(top-48)+'" width="20" height="16" fill="none" stroke="'+ink+'" stroke-width="1.2"/>';
+        over+='<text x="'+(x0+8)+'" y="'+(top-36)+'" text-anchor="middle" font-size="12" font-weight="700"'
+          +' font-family="sans-serif" fill="'+ink+'">'+esc(b.mark)+'</text>';
+      }
+      if(b&&b.text)
+        over+='<text x="'+(x0+(b.mark?26:2))+'" y="'+(top-30)+'" font-size="12.5" font-style="italic"'
+          +' font-family="serif" fill="'+ink+'">'+esc(b.text)+'</text>';
+      if(b&&b.jump)
+        over+='<text x="'+(x0+w-6)+'" y="'+(top-30)+'" text-anchor="end" font-size="12.5" font-style="italic"'
+          +' font-family="serif" fill="'+ink+'">'+esc(b.jump)+'</text>';
+    }
+    if(b&&b.dyn)
+      under+='<text x="'+(x0+2)+'" y="'+(top+(opts.lyrics?82:66))+'" font-size="14" font-style="italic"'
+        +' font-weight="700" font-family="serif" fill="'+ink+'">'+esc(b.dyn)+'</text>';
+    /* вилки cresc / dim */
+    if(b&&b.hair==='start'){hairFrom=x0+4;hairKind=b.hairKind||'cresc';}
+    const hairEnd=(b&&b.hair==='stop')||(hairFrom!==null&&mi===items.length-1);
+    if(hairEnd&&hairFrom!==null){
+      const hy=top+(opts.lyrics?78:58),x2=x0+w-8,gr=hairKind==='dim';
+      under+='<path d="M'+hairFrom+' '+(hy+(gr?0:4))+' L'+x2+' '+(hy+(gr?4:0))
+        +' M'+hairFrom+' '+(hy+(gr?8:4))+' L'+x2+' '+(hy+(gr?4:8))
+        +'" stroke="'+ink+'" stroke-width="1.1" fill="none"/>';
+      hairFrom=null;
+    }
+    x+=w;
+    const last=mi===items.length-1;
+    if(b&&(b.rep==='end'||b.rep==='both')){
+      s+='<circle cx="'+(x-12)+'" cy="'+(top+15)+'" r="1.9" fill="'+ink+'"/>';
+      s+='<circle cx="'+(x-12)+'" cy="'+(top+25)+'" r="1.9" fill="'+ink+'"/>';
+      s+='<rect x="'+(x-7.5)+'" y="'+top+'" width="1.2" height="40" fill="'+ink+'"/>';
+      s+='<rect x="'+(x-4.4)+'" y="'+top+'" width="3.4" height="40" fill="'+ink+'"/>';
+    }else{
+      s+='<line x1="'+x+'" y1="'+top+'" x2="'+x+'" y2="'+(top+40)+'" stroke="'+ink
+        +'" stroke-width="'+(last&&opts.end?3:1.1)+'"/>';
+      if(last&&opts.end)
+        s+='<line x1="'+(x-5)+'" y1="'+top+'" x2="'+(x-5)+'" y2="'+(top+40)+'" stroke="'+ink+'" stroke-width="1.1"/>';
+    }
+    if(opts.barNums!==false&&opts.chrome!==false&&!(b&&b.ending)
+       &&!(it.m&&it.m.some(n=>(n.art||[]).indexOf('fermata')>=0)))
+      s+='<text x="'+(x0+2)+'" y="'+(top-8)+'" font-size="9.5" fill="#8A8A92" font-family="sans-serif">'+(it.n+1)+'</text>';
+  });
+  return {body:s+deco,over,under,padL,widths,total};
+}
+
+/* обгортка для одного стану */
+function renderSystem(items,startEvent,opts){
+  opts=opts||{};
+  const hasTop=items.some(it=>it.b&&(it.b.text||it.b.ending||it.b.mark||it.b.jump));
+  const hasDyn=items.some(it=>it.b&&(it.b.dyn||it.b.hair));
+  const lyrics=items.some(it=>it.m&&it.m.some(n=>n.lyric));
+  const top=(items.some(it=>it.b&&it.b.mark)?88:(hasTop?72:46));
+  const r=renderStaff(items,Object.assign({},opts,{top,lyrics}));
+  const height=top+40+(lyrics?36:0)+(hasDyn?52:40);
+  return {svg:'<svg viewBox="0 0 '+r.total+' '+height+'" preserveAspectRatio="xMidYMid meet" style="max-width:'
+      +r.total+'px;margin:0 auto">'+r.body+r.over+r.under+'</svg>',width:r.total};
+}
+
+/* ---------- партитура: кілька станів в одній системі ----------
+   Ширина кожного такту — спільна для всіх партій, інакше тактові риски
+   не збігатимуться по вертикалі. */
+function renderScore(partItems,parts,opts){
+  opts=opts||{};
+  const n=parts.length;
+  const cols=partItems[0].length;
+  const widths=[];
+  for(let i=0;i<cols;i++){
+    let w=0;
+    partItems.forEach(items=>{w=Math.max(w,measureWidth(items[i]));});
+    widths.push(w);
+  }
+  /* зліва — колонка під назви інструментів, щоб вони не лізли на ключі */
+  const nameW=64;
+  let padL=0;
+  parts.forEach(p=>{
+    const nAcc=p.clef==='perc'?0:Math.min(Math.abs(p.fifths||0),7);
+    padL=Math.max(padL,nameW+52+nAcc*9+(opts.timesig?20:0));
+  });
+  const total=padL+widths.reduce((a,b)=>a+b,0)+16;
+  const hasTop=partItems[0].some(it=>it.b&&(it.b.text||it.b.ending||it.b.mark||it.b.jump));
+  const top0=(partItems[0].some(it=>it.b&&it.b.mark)?88:(hasTop?72:46));
+  const GAPY=86;
+  let body='',over='',under='';
+  parts.forEach((p,i)=>{
+    const top=top0+i*GAPY;
+    const lyrics=partItems[i].some(it=>it.m&&it.m.some(nn=>nn.lyric));
+    const r=renderStaff(partItems[i],{
+      clef:p.clef,fifths:p.fifths,meter:p.meter,timesig:opts.timesig,
+      end:opts.end,barNums:opts.barNums,widths,padL,total,top,part:i,
+      chrome:i===0,lyrics,nameW});
+    body+=r.body;over+=r.over;under+=r.under;
+    /* назва партії у лівій колонці, по центру стану */
+    over+='<text x="'+(nameW-8)+'" y="'+(top+24)+'" text-anchor="end" font-size="9.5"'
+      +' font-family="sans-serif" fill="#8A8A92">'+esc(shortName(p.name))+'</text>';
+  });
+  /* дужка і спільна ліва риска */
+  const yTop=top0,yBot=top0+(n-1)*GAPY+40;
+  body='<path d="M'+(padL-14)+' '+yTop+' q-7 '+((yBot-yTop)/2)+' 0 '+(yBot-yTop)
+    +'" stroke="#1B1B1E" stroke-width="2.2" fill="none"/>'
+    +'<line x1="'+(padL-8)+'" y1="'+yTop+'" x2="'+(padL-8)+'" y2="'+yBot
+    +'" stroke="#1B1B1E" stroke-width="1.4"/>'+body;
+  const height=yBot+56;
+  return {svg:'<svg viewBox="0 0 '+total+' '+height+'" preserveAspectRatio="xMidYMid meet" style="max-width:'
+      +total+'px;margin:0 auto">'+body+over+under+'</svg>',width:total};
+}
+function shortName(nm){
+  const t=String(nm).replace(/\s*\((ліва|права) рука\)/,'')
+    .replace(/\s*in\s*[A-H][b♭#♯]?$/,'');
+  return t.length>11?t.slice(0,10)+'.':t;
+}
+function layout(items){
+  const dense=items.some(it=>it.m&&it.m.length>5);
+  const per=dense?2:(typeof window!=='undefined'&&window.innerWidth<380?2:3);
+  const out=[];
+  for(let i=0;i<items.length;i+=per)out.push(items.slice(i,i+per));
+  return out;
+}
+/* у партитурі на систему вміщається менше тактів */
+function layoutScore(cols,parts){
+  const per=parts.length>=6?2:3;
+  const out=[];
+  for(let i=0;i<cols;i+=per)out.push([i,Math.min(i+per,cols)]);
+  return out;
+}
+
+/* ============================ ПЛЕЄР =================================
+   Модель «джерело × резонатор», підігнана до реальних записів (FluidR3 GM):
+       амплітуда гармоніки k = k^(-a) · F(k·f0)
+   Перший множник — спад джерела (щипок, удар, губи), однаковий на всі
+   висоти. Другий — резонатор корпусу чи труби, прив'язаний до ЧАСТОТИ,
+   тому форманта не їде вгору разом з нотою.
+
+   До цього була тільки друга частина — одна усереднена крива по частоті.
+   Вона тримала форманту, але давала високим гармонікам забагато на кожній
+   окремій ноті: фортепіано звучало як труба з клавесином, гітара як
+   клавесин, бас як тихий тромбон. Спад по номеру гармоніки це виправляє;
+   у баса й гітари він крутий (a≈2.2–2.7), у міді плаский (a≈0.5–0.9).
+
+   У застосунку лежать тільки числа підгонки, самих семплів немає. */
+/* Вузли резонатора, Гц. */
+const SPEC_F=[90,104,120,138,159,184,212,244,282,325,375,433,499,576,664,766,883,1019,1175,1356,1563,1803,2080,2399,2767,3192,3682,4247,4898,5650,6517,7516,8670,10000];
+const VOICES={
+  piano:{a:1.097,b:0.165,F:[0.6109,0.6614,0.7161,0.7752,0.8381,0.9017,0.9619,1.0,0.9845,0.9185,0.8344,0.7582,0.6723,0.5539,0.463,0.4033,0.4117,0.4551,0.5216,0.6408,0.6989,0.7249,0.6973,0.6727,0.5649,0.3968,0.2739,0.1875,0.111,0.0755,0.0644,0.0595,0.0501,0.0368],kind:'decay',atk:0.003,dec:1.7,hr:3.6,vib:0,nz:0,g:1.0,th:0.45},
+  guitar:{a:1.095,b:-0.432,F:[0.1115,0.1601,0.23,0.3303,0.4695,0.6434,0.8273,0.9689,1.0,0.9171,0.7819,0.6486,0.5379,0.4553,0.4435,0.5097,0.6766,0.8054,0.6976,0.4714,0.314,0.2366,0.1847,0.1594,0.1367,0.1035,0.0944,0.094,0.0734,0.0512,0.0304,0.011,0.003,0.0008],kind:'decay',atk:0.004,dec:1.1,hr:1.5,vib:0,nz:0,g:1.05,th:0.3},
+  bandura:{a:1.095,b:-0.432,F:[0.1115,0.1601,0.23,0.3303,0.4695,0.6434,0.8273,0.9689,1.0,0.9171,0.7819,0.6486,0.5379,0.4553,0.4435,0.5097,0.6766,0.8054,0.6976,0.4714,0.314,0.2366,0.1847,0.1594,0.1367,0.1035,0.0944,0.094,0.0734,0.0512,0.0304,0.011,0.003,0.0008],kind:'decay',atk:0.003,dec:0.75,hr:2.2,vib:0,nz:0,g:1.0,th:0.26},
+  bass:{a:1.123,b:-0.6,F:[0.3047,0.348,0.3975,0.454,0.5199,0.6008,0.7052,0.8275,0.938,1.0,0.9835,0.8751,0.7324,0.6159,0.5245,0.4925,0.4262,0.3465,0.3224,0.2889,0.2158,0.1525,0.1072,0.0713,0.0456,0.03,0.022,0.0169,0.0111,0.0068,0.0037,0.002,0.0011,0.0006],kind:'decay',atk:0.005,dec:1.4,hr:2.1,vib:0,nz:0,g:1.3,th:0.34},
+  violin:{a:1.045,b:-0.235,F:[0.0249,0.0342,0.047,0.0644,0.0897,0.1319,0.2127,0.359,0.563,0.7755,0.9391,1.0,0.9662,0.8858,0.7741,0.6432,0.5778,0.556,0.5533,0.521,0.4859,0.4872,0.4774,0.4586,0.4637,0.4213,0.3286,0.23,0.1678,0.1245,0.0836,0.0498,0.0254,0.0105],kind:'sustain',atk:0.07,dec:0.2,hr:1,vib:5.4,nz:0.006,g:1.0,th:0},
+  trumpet:{a:0.601,b:-0.124,F:[0.3615,0.3515,0.3418,0.3324,0.3245,0.3217,0.3274,0.3432,0.3695,0.4042,0.4409,0.471,0.5064,0.576,0.6807,0.8242,0.9511,1.0,0.9954,0.9313,0.8314,0.674,0.5322,0.4348,0.3663,0.2948,0.2142,0.145,0.0888,0.0519,0.0279,0.0117,0.0037,0.001],kind:'sustain',atk:0.028,dec:0.12,hr:1,vib:4.6,nz:0,g:0.92,th:0},
+  trombone:{a:0.88,b:-0.032,F:[0.0539,0.0654,0.0795,0.0965,0.1183,0.1506,0.2041,0.2872,0.3917,0.5058,0.6293,0.7673,0.9002,0.9821,1.0,0.9504,0.7951,0.6697,0.6103,0.6408,0.5983,0.4913,0.3664,0.2098,0.1001,0.0586,0.0382,0.025,0.0144,0.0076,0.0041,0.0023,0.0013,0.0008],kind:'sustain',atk:0.045,dec:0.16,hr:1,vib:4.0,nz:0,g:1.4,th:0},
+  sax:{a:0.91,b:0.166,F:[0.0355,0.0482,0.0654,0.0888,0.1209,0.1669,0.2357,0.3266,0.4083,0.461,0.5088,0.5939,0.7272,0.8911,1.0,0.9995,0.8744,0.6746,0.5209,0.3941,0.3192,0.3553,0.449,0.4279,0.2769,0.1306,0.0638,0.0455,0.0373,0.0235,0.0125,0.006,0.0029,0.0014],kind:'sustain',atk:0.03,dec:0.14,hr:1,vib:4.9,nz:0.01,g:1.0,th:0},
+  flute:{a:0.921,b:-0.311,F:[0.8761,0.9031,0.931,0.9597,0.9859,1.0,0.9925,0.9449,0.8388,0.7198,0.6568,0.7006,0.8005,0.8239,0.825,0.8084,0.7645,0.6592,0.5462,0.4547,0.3284,0.2008,0.1316,0.0943,0.0677,0.0477,0.0325,0.022,0.0148,0.0088,0.0049,0.003,0.0021,0.0017],kind:'sustain',atk:0.055,dec:0.14,hr:1,vib:5.0,nz:0.055,g:1.1,th:0},
+  voice:{a:1.017,b:0.099,F:[0.0165,0.0218,0.0288,0.038,0.0504,0.0679,0.0942,0.1361,0.2073,0.3258,0.5013,0.7175,0.9151,1.0,0.978,0.9219,0.7888,0.5718,0.308,0.1566,0.0947,0.0925,0.1524,0.3125,0.4278,0.331,0.1623,0.0721,0.0398,0.0286,0.0226,0.0153,0.0098,0.0058],kind:'sustain',atk:0.085,dec:0.22,hr:1,vib:5.2,nz:0.008,g:1.05,th:0}
+};
+const INST_VOICE={
+  'Фортепіано':'piano','Гітара':'guitar','Бандура':'bandura','Бас-гітара':'bass',
+  'Скрипка':'violin','Труба in B♭':'trumpet','Тромбон':'trombone',
+  'Саксофон in E♭':'sax','Флейта':'flute','Вокал':'voice'
+};
+const voiceName=inst=>INST_VOICE[inst]||'piano';
+
+let AC=null,nodes=[],raf=null,playing=false,tracks=[],totalDur=0,master=null;
+const waveCache={};
+function ac(){
+  if(!AC){
+    AC=new (window.AudioContext||window.webkitAudioContext)();
+    master=AC.createGain();master.gain.value=.8;master.connect(AC.destination);
+  }
+  return AC;
+}
+/* резонатор: значення кривої на заданій частоті */
+function specAt(F,f){
+  if(f<=SPEC_F[0])return F[0];
+  const n=SPEC_F.length;
+  if(f>=SPEC_F[n-1])return F[n-1]*Math.pow(SPEC_F[n-1]/f,3);
+  let i=1;while(i<n&&SPEC_F[i]<f)i++;
+  const f0=SPEC_F[i-1],f1=SPEC_F[i];
+  const t=(Math.log(f)-Math.log(f0))/(Math.log(f1)-Math.log(f0));
+  return F[i-1]+(F[i]-F[i-1])*t;
+}
+/* Амплітуда гармоніки k для основного тону f0.
+   Показник спаду трохи залежить від регістру: жива мідь на низьких нотах
+   темніша зверху, ніж на високих. Затиск — щоб на краях діапазону,
+   яких не було в замірах, нічого не вибухнуло. */
+function harmAmp(v,k,f0){
+  const L=Math.log(f0/261.626)/Math.LN2;
+  const a=Math.min(3.2,Math.max(.25,v.a+v.b*L));
+  return Math.pow(k,-a)*Math.max(0,specAt(v.F,f0*k));
+}
+function waveFor(name,midi,band){
+  const key=name+'|'+midi+'|'+band;
+  if(waveCache[key])return waveCache[key];
+  const c=ac(),v=VOICES[name]||VOICES.piano;
+  const f0=440*Math.pow(2,(midi-69)/12);
+  const nH=Math.min(48,Math.max(6,Math.floor(10000/f0)));
+  const re=new Float32Array(nH+1),im=new Float32Array(nH+1);
+  let any=0;
+  for(let k=1;k<=nH;k++){
+    if(band==='lo'&&k>4)break;
+    if(band==='hi'&&k<=4)continue;
+    const a=harmAmp(v,k,f0);
+    if(a>0.0012){im[k]=a;any+=a;}
+  }
+  if(!any)im[1]=1;
+  const w=c.createPeriodicWave(re,im,{disableNormalization:false});
+  waveCache[key]=w;return w;
+}
+function track(n){nodes.push(n);}
+let noiseBuf=null;
+function noiseSrc(){
+  const c=ac();
+  if(!noiseBuf){
+    noiseBuf=c.createBuffer(1,c.sampleRate,c.sampleRate);
+    const d=noiseBuf.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+  }
+  const s=c.createBufferSource();s.buffer=noiseBuf;s.loop=true;return s;
+}
+function pluckBand(name,midi,at,dur,peak,band,tau){
+  const c=ac(),o=c.createOscillator(),g=c.createGain();
+  o.setPeriodicWave(waveFor(name,midi,band));
+  o.frequency.value=440*Math.pow(2,(midi-69)/12);
+  g.gain.setValueAtTime(.0001,at);
+  g.gain.exponentialRampToValueAtTime(peak,at+(VOICES[name]||VOICES.piano).atk);
+  const tail=Math.max(dur,.18)+tau;
+  g.gain.exponentialRampToValueAtTime(.0001,at+tail);
+  o.connect(g);g.connect(master);
+  o.start(at);o.stop(at+tail+.03);track(o);
+}
+function playNote(midi,at,dur,gain,inst){
+  const c=ac(),name=voiceName(inst),v=VOICES[name]||VOICES.piano;
+  const f=440*Math.pow(2,(midi-69)/12),peak=Math.max(.001,gain*v.g);
+  if(v.kind==='decay'){
+    pluckBand(name,midi,at,dur,peak*.88,'lo',v.dec);
+    pluckBand(name,midi,at,dur,peak*.42,'hi',v.dec/v.hr);
+    if(v.th){                                   /* стук молоточка / нігтя */
+      const n=noiseSrc(),bp=c.createBiquadFilter(),g=c.createGain();
+      bp.type='bandpass';bp.frequency.value=Math.min(5000,f*5);bp.Q.value=1.1;
+      g.gain.setValueAtTime(peak*v.th*.3,at);
+      g.gain.exponentialRampToValueAtTime(.0001,at+.03);
+      n.connect(bp);bp.connect(g);g.connect(master);
+      n.start(at);n.stop(at+.05);track(n);
+    }
+    return;
+  }
+  const o=c.createOscillator();
+  o.setPeriodicWave(waveFor(name,midi,'all'));
+  o.frequency.value=f;
+  const g=c.createGain();
+  g.gain.setValueAtTime(.0001,at);
+  g.gain.exponentialRampToValueAtTime(peak,at+v.atk);
+  const hold=Math.max(dur-v.dec*.5,v.atk+.02);
+  g.gain.setValueAtTime(peak,at+hold);
+  g.gain.exponentialRampToValueAtTime(.0001,at+hold+v.dec);
+  const stop=at+hold+v.dec+.03;
+  o.connect(g);g.connect(master);
+  o.start(at);o.stop(stop);track(o);
+  if(v.vib&&dur>.3){
+    const lfo=c.createOscillator(),amt=c.createGain();
+    lfo.frequency.value=v.vib;
+    amt.gain.setValueAtTime(0,at);
+    amt.gain.linearRampToValueAtTime(f*.0042,at+Math.min(.4,dur*.65));
+    lfo.connect(amt);amt.connect(o.frequency);
+    lfo.start(at);lfo.stop(stop);track(lfo);
+  }
+  /* Дихання — лише коротким призвуком на атаці й лише там, де воно чутне
+     в житті (флейта, саксофон). У міді його нема: постійний шум під нотою
+     читається як перешкоди, а не як інструмент. */
+  if(v.nz){
+    const n=noiseSrc(),bp=c.createBiquadFilter(),ng=c.createGain();
+    bp.type='bandpass';bp.frequency.value=Math.min(6000,f*2.4);bp.Q.value=1.4;
+    ng.gain.setValueAtTime(.0001,at);
+    ng.gain.exponentialRampToValueAtTime(peak*v.nz*7,at+v.atk*.7);
+    ng.gain.exponentialRampToValueAtTime(peak*v.nz*1.2,at+v.atk*2.5);
+    ng.gain.setValueAtTime(peak*v.nz*1.2,at+hold);
+    ng.gain.exponentialRampToValueAtTime(.0001,at+hold+v.dec*.6);
+    n.connect(bp);bp.connect(ng);ng.connect(master);
+    n.start(at);n.stop(stop);track(n);
+  }
+}
+function blip(midi,at,dur,gv){playNote(midi,at,dur,gv||.15,'Фортепіано');}
+
+function drumHit(pt,at){
+  const c=ac(),d=dia(pt),hi=d>=38,mid=!hi&&d>=35;
+  if(hi){
+    const n=noiseSrc(),hp=c.createBiquadFilter(),g=c.createGain();
+    hp.type='highpass';hp.frequency.value=7000;
+    g.gain.setValueAtTime(.16,at);
+    g.gain.exponentialRampToValueAtTime(.0005,at+.055);
+    n.connect(hp);hp.connect(g);g.connect(master);
+    n.start(at);n.stop(at+.1);track(n);
+    return;
+  }
+  if(mid){
+    const n=noiseSrc(),bp=c.createBiquadFilter(),g=c.createGain();
+    bp.type='bandpass';bp.frequency.value=1900;bp.Q.value=.8;
+    g.gain.setValueAtTime(.22,at);
+    g.gain.exponentialRampToValueAtTime(.0005,at+.16);
+    n.connect(bp);bp.connect(g);g.connect(master);
+    n.start(at);n.stop(at+.25);track(n);
+    const o=c.createOscillator(),og=c.createGain();
+    o.type='triangle';o.frequency.setValueAtTime(230,at);
+    o.frequency.exponentialRampToValueAtTime(170,at+.09);
+    og.gain.setValueAtTime(.14,at);og.gain.exponentialRampToValueAtTime(.0005,at+.12);
+    o.connect(og);og.connect(master);o.start(at);o.stop(at+.2);track(o);
+    return;
+  }
+  const o=c.createOscillator(),g=c.createGain();
+  o.type='sine';o.frequency.setValueAtTime(115,at);
+  o.frequency.exponentialRampToValueAtTime(42,at+.11);
+  g.gain.setValueAtTime(.34,at);g.gain.exponentialRampToValueAtTime(.0005,at+.2);
+  o.connect(g);g.connect(master);o.start(at);o.stop(at+.3);track(o);
+}
+function metroTick(at,strong){
+  const c=ac(),n=noiseSrc(),bp=c.createBiquadFilter(),g=c.createGain();
+  bp.type='bandpass';bp.frequency.value=strong?2600:1700;bp.Q.value=2.2;
+  g.gain.setValueAtTime(strong?.13:.07,at);
+  g.gain.exponentialRampToValueAtTime(.0004,at+.035);
+  n.connect(bp);bp.connect(g);g.connect(master);
+  n.start(at);n.stop(at+.06);track(n);
+}
+/* Порядок тактів з урахуванням репризи й вольт.
+   Перший прохід бере вольту 1, другий — вольту 2. */
+function barOrder(n,bars,doRep){
+  const out=[];
+  if(!doRep){for(let i=0;i<n;i++)out.push(i);return out;}
+  let i=0,start=0,pass=1,guard=0;
+  const used={};
+  while(i<n&&guard++<n*4+16){
+    const b=bars&&bars[i];
+    if(b&&(b.rep==='start'||b.rep==='both'))start=i;
+    if(b&&b.ending&&b.ending.indexOf(pass)<0){i++;continue;}
+    out.push(i);
+    if(b&&(b.rep==='end'||b.rep==='both')&&!used[i]){
+      used[i]=true;pass++;i=start;continue;
+    }
+    i++;
+  }
+  return out;
+}
+/* Темпові написи міняють темп, якщо це увімкнено. rit. гальмує всередині
+   свого такту, «a tempo» повертає початковий. */
+function tempoFor(text,cur,base){
+  if(!text)return {end:cur,glide:false};
+  const t=String(text).toLowerCase();
+  if(/a tempo|tempo\s*(i|primo)/.test(t))return {end:base,glide:false};
+  if(/rit|rall|allarg/.test(t))return {end:cur*(/poco/.test(t)?.9:.78),glide:true};
+  if(/accel|string/.test(t))return {end:cur*1.22,glide:true};
+  return {end:cur,glide:false};
+}
+function buildSeq(ms,tempo,order,bars,doTempo){
+  order=order||ms.map((_,i)=>i);
+  let t=0,i=0,cur=tempo;
+  const out=[];
+  order.forEach(mi=>{
+    const m=ms[mi];if(!m)return;
+    const b=bars&&bars[mi];
+    let from=cur,to=cur;
+    if(doTempo&&b&&b.text){const r=tempoFor(b.text,cur,tempo);to=r.end;if(!r.glide)from=r.end;}
+    const total=m.reduce((a,n)=>a+n.d,0)||1;
+    let done=0;
+    m.forEach(n=>{
+      const k=total?done/total:0;
+      const bpm=from+(to-from)*k;
+      const dur=n.d*60/Math.max(20,bpm);
+      const prev=out.length?out[out.length-1]:null;
+      const tied=(n.tie==='stop'||n.tie==='both')&&prev&&prev.p.length&&n.p.length;
+      out.push({p:n.p,t,d:dur,idx:i,art:n.art||null,silent:!!tied,gr:n.gr||null});
+      if(tied)prev.sound=(prev.sound||prev.d)+dur;
+      t+=dur;done+=n.d;i++;
+    });
+    cur=to;
+  });
+  return {seq:out,total:t};
+}
+/* артикуляція міняє довжину й гучність, а не тільки вигляд */
+function artShape(art,dur,gain){
+  let d=dur,g=gain;
+  if(!art)return [d,g];
+  if(art.indexOf('staccato')>=0)d=Math.min(d,Math.max(.07,d*.42));
+  if(art.indexOf('accent')>=0)g*=1.55;
+  if(art.indexOf('marcato')>=0){g*=1.8;d=Math.min(d,d*.75);}
+  if(art.indexOf('fermata')>=0)d=d*1.7;
+  return [d,g];
+}
+/* індекс ноти всередині партії, з урахуванням повторів */
+function eventIndexMap(ms,order){
+  const base=[];let acc=0;
+  ms.forEach(m=>{base.push(acc);acc+=m.length;});
+  const map=[];
+  (order||ms.map((_,i)=>i)).forEach(mi=>{
+    const m=ms[mi];if(!m)return;
+    for(let k=0;k<m.length;k++)map.push(base[mi]+k);
+  });
+  return map;
+}
+function clearHeads(){
+  document.querySelectorAll('.nh').forEach(n=>{
+    if(n.dataset.f!==undefined){n.setAttribute('fill',n.dataset.f);n.setAttribute('stroke','#1B1B1E');}
+  });
+}
+function stopPlay(){
+  playing=false;
+  if(AC&&master){
+    /* коротке згасання: різкий обрив дає клац */
+    try{
+      const t=AC.currentTime;
+      master.gain.cancelScheduledValues(t);
+      master.gain.setValueAtTime(master.gain.value,t);
+      master.gain.linearRampToValueAtTime(.0001,t+.03);
+      const old=nodes.slice();nodes=[];
+      setTimeout(()=>{old.forEach(o=>{try{o.stop()}catch(e){}});
+        try{master.gain.setValueAtTime(.9,AC.currentTime);}catch(e){}},60);
+    }catch(e){nodes.forEach(o=>{try{o.stop()}catch(e){}});nodes=[];}
+  }else{nodes.forEach(o=>{try{o.stop()}catch(e){}});nodes=[];}
+  if(raf)cancelAnimationFrame(raf);raf=null;
+  clearHeads();
+  const b=document.getElementById('playbtn');if(b)b.textContent='▶';
+}
+function startPlay(){
+  const sc=curScore();if(!sc)return;
+  const play=playableParts(sc);
+  const scoreMode=state.mode==='score'&&play.length>1;
+  const list=scoreMode?play:[curPart()];
+  if(!list[0]||!list[0].ms)return;
+  const c=ac();if(c.state==='suspended')c.resume();
+  const start=c.currentTime+.14;
+  playing=true;
+
+  tracks=list.map((p,i)=>{
+    const order=barOrder(p.ms.length,p.bars,state.doRep);
+    const built=buildSeq(p.ms,state.tempo,order,p.bars,state.doTempo);
+    const map=eventIndexMap(p.ms,order);
+    const shift=state.toSounding?(p.ts||0):0;
+    built.seq.forEach((n,k)=>{
+      if(n.silent)return;
+      const base=.19/Math.sqrt(Math.max(1,n.p.length))/(scoreMode?Math.sqrt(list.length)*.8:1);
+      const [dur,g]=artShape(n.art,(n.sound||n.d)*.92,base);
+      /* форшлаг — коротко перед основною нотою */
+      if(n.gr&&n.gr.length){
+        const gd=Math.min(.07,n.d*.4);
+        n.gr.forEach((gn,gi)=>{
+          gn.p.forEach(pt=>playNote(pt.m-shift,start+n.t-gd*(n.gr.length-gi),gd*.9,g*.7,p.inst));
+        });
+      }
+      n.p.forEach(pt=>{
+        if(pt.u)drumHit(pt,start+n.t);
+        else playNote(pt.m-shift,start+n.t,dur,g,p.inst);
+      });
+    });
+    return {p,seq:built.seq,total:built.total,map,part:scoreMode?i:0};
+  });
+  totalDur=Math.max.apply(null,tracks.map(t=>t.total));
+
+  const spb=60/state.tempo,beats=(list[0].meter&&list[0].meter[0])||4;
+  if(state.metro)for(let b=0;b*spb<totalDur+spb;b++)metroTick(start+b*spb,b%beats===0);
+  const pb=document.getElementById('playbtn');if(pb)pb.textContent='❚❚';
+  document.querySelectorAll('.nh').forEach(h=>{if(h.dataset.f===undefined)h.dataset.f=h.getAttribute('fill');});
+
+  const last=tracks.map(()=>-1);
+  const tick=()=>{
+    if(!playing)return;
+    const el=c.currentTime-start;
+    if(el>totalDur+.35){stopPlay();return;}
+    let moved=false;
+    tracks.forEach((tr,ti)=>{
+      let i=-1;
+      for(let k=0;k<tr.seq.length;k++){if(tr.seq[k].t<=el)i=k;else break;}
+      if(i!==last[ti]){last[ti]=i;moved=true;}
+    });
+    if(moved){
+      clearHeads();
+      let anchor=null;
+      tracks.forEach((tr,ti)=>{
+        const i=last[ti];if(i<0)return;
+        const ev=tr.map[i];if(ev===undefined)return;
+        const sel='.nh[data-p="'+tr.part+'"][data-e="'+ev+'"]';
+        const hs=[...document.querySelectorAll(sel)]
+          .concat([...document.querySelectorAll('.mmr[data-p="'+tr.part+'"]')].filter(
+            d=>+d.dataset.e<=ev&&ev<=+(d.dataset.e2||d.dataset.e)));
+        hs.forEach(h=>{
+          if(h.dataset.f!=='none')h.setAttribute('fill','#F0B429');
+          h.setAttribute('stroke','#F0B429');
+        });
+        if(!anchor&&hs[0])anchor=hs[0];
+      });
+      const sysEl=anchor&&anchor.closest('.system'),box=document.getElementById('sheet');
+      if(sysEl&&box){
+        const rel=sysEl.offsetTop-box.scrollTop;
+        if(rel<0||rel+sysEl.offsetHeight>box.clientHeight)
+          box.scrollTo({top:sysEl.offsetTop-14,behavior:'smooth'});
+      }
+    }
+    raf=requestAnimationFrame(tick);
+  };
+  raf=requestAnimationFrame(tick);
+}
+
+/* ============================= ДАНІ ================================= */
+const INSTRUMENTS=['Фортепіано','Гітара','Вокал','Скрипка','Труба in B♭','Флейта','Бас-гітара','Ударні','Саксофон in E♭','Тромбон','Бандура'];
+const L={
+  oda:[[[64,1],[64,1],[65,1],[67,1]],[[67,1],[65,1],[64,1],[62,1]],[[60,1],[60,1],[62,1],[64,1]],[[64,1.5],[62,.5],[62,2]],
+       [[64,1],[64,1],[65,1],[67,1]],[[67,1],[65,1],[64,1],[62,1]],[[60,1],[60,1],[62,1],[64,1]],[[62,1.5],[60,.5],[60,2]]],
+  shch:[[[71,1],[69,1],[71,1],[67,1]],[[71,1],[69,1],[71,1],[67,1]],[[71,1],[69,1],[71,1],[67,1]],[[72,2],[71,2]],
+        [[71,1],[69,1],[71,1],[67,1]],[[71,1],[69,1],[71,1],[67,1]],[[74,1],[72,1],[71,1],[69,1]],[[67,4]]],
+  gama:[[[60,.5],[62,.5],[64,.5],[65,.5],[67,.5],[69,.5],[71,.5],[72,.5]],
+        [[74,.5],[76,.5],[77,.5],[79,.5],[81,.5],[83,.5],[84,1]],
+        [[83,.5],[81,.5],[79,.5],[77,.5],[76,.5],[74,.5],[72,.5],[71,.5]],
+        [[69,.5],[67,.5],[65,.5],[64,.5],[62,.5],[60,1.5]]],
+  nich:[[[67,1],[72,1],[72,.5],[71,.5],[72,1]],[[74,2],[72,1],[69,1]],[[67,1],[69,1],[71,1],[72,1]],[[71,3],[null,1]],
+        [[67,1],[72,1],[74,1],[76,1]],[[77,2],[76,1],[74,1]],[[72,1],[71,1],[69,1],[67,1]],[[72,4]]],
+  vals:[[[69,1],[72,1],[76,1]],[[74,2],[72,1]],[[71,1],[69,1],[67,1]],[[69,3]]],
+  rozsp:[[[60,1],[62,1],[64,1],[62,1]],[[60,4]]]
+};
+const tr=(ms,s)=>ms.map(m=>m.map(n=>[n[0]==null?null:n[0]+s,n[1]]));
+const N=(s,a,o,d)=>({p:[{m:(o+1)*12+[0,2,4,5,7,9,11][s]+a,s,a,o}],d});
+const CH=(list,d)=>({p:list.map(([s,a,o])=>({m:(o+1)*12+[0,2,4,5,7,9,11][s]+a,s,a,o})),d});
+const R=d=>({p:[],d});
+/* n(ступінь, альтерація, октава, тривалість, {ліга, артикуляція, тріоль}) */
+const NX=(st,a,o,d,x)=>Object.assign({p:[{m:(o+1)*12+[0,2,4,5,7,9,11][st]+a,s:st,a,o}],d},x||{});
+const RX=(d,x)=>Object.assign({p:[],d},x||{});
+const T3=(st,a,o,d,pos,x)=>NX(st,a,o,d,Object.assign({tup:{n:3,of:2,pos}},x||{}));
+
+/* демо з акордами та бемолями (B♭ мажор, fifths=-2) */
+const coverRH=[
+  [CH([[6,-1,4],[1,0,5],[3,0,5]],1),R(1),N(2,-1,5,1.5),N(1,0,5,.5)],
+  [CH([[5,0,4],[2,0,5],[4,0,5]],2),N(3,0,5,1),N(2,-1,5,1)],
+  [CH([[6,-1,4],[2,0,5],[3,0,5]],1),N(1,0,5,1),CH([[4,0,4],[6,-1,4]],2)],
+  [CH([[6,-1,4],[1,0,5],[3,0,5]],4)]
+];
+const coverLH=[
+  [N(6,-1,2,2),N(3,0,3,2)],[N(5,0,2,2),N(2,0,3,2)],
+  [N(4,0,2,2),N(1,0,3,2)],[N(6,-1,2,4)]
+];
+
+/* Демо-бенд: 6 інструментів + ударка, з тацетами, щоб було видно
+   і витягання партій, і стиснені паузи. */
+const U=(st,o,d)=>({p:[{m:null,u:1,s:st,a:0,o}],d});
+const K=d=>U(3,4,d), SN=d=>U(0,5,d);
+const bandMel=[[[74,2],[75,2]],[[77,4]],[[79,2],[77,2]],[[75,4]],
+               [[74,2],[72,2]],[[70,4]],[[72,2],[74,2]],[[70,4]]];
+const shiftMs=(ms,n)=>ms.map(m=>m.map(x=>[x[0]==null?null:x[0]+n,x[1]]));
+const tacet=(ms,bars)=>ms.map((m,i)=>bars.indexOf(i)>=0?[[null,4]]:m);
+const bandTr1=liftLegacy(shiftMs(bandMel,2),false);
+/* друга труба — діатонічна терція нижче, а не хроматичний зсув:
+   інакше в до мажорі вилазять дієзи, яких у цій тональності бути не має */
+const bandMel2=[[[70,2],[72,2]],[[74,4]],[[75,2],[74,2]],[[72,4]],
+                [[70,2],[69,2]],[[67,4]],[[69,2],[70,2]],[[67,4]]];
+const bandTr2=liftLegacy(tacet(shiftMs(bandMel2,2),[0,1,2,3]),false);
+const bandSax=liftLegacy(tacet(shiftMs(bandMel,-3),[0,1,6,7]),false);
+const bandTbn=liftLegacy([[[46,4]],[[43,4]],[[39,4]],[[41,4]],[[46,4]],[[43,4]],[[39,2],[41,2]],[[46,4]]],true);
+const bandBas=liftLegacy([[[46,1],[46,1],[46,1],[46,1]],[[43,1],[43,1],[43,1],[43,1]],
+                          [[39,1],[39,1],[39,1],[39,1]],[[41,1],[41,1],[41,1],[41,1]],
+                          [[46,1],[46,1],[46,1],[46,1]],[[43,1],[43,1],[43,1],[43,1]],
+                          [[39,1],[39,1],[41,1],[41,1]],[[46,4]]],true);
+const CH_BB=[[6,-1,4],[1,0,5],[3,0,5]],CH_GM=[[4,0,4],[6,-1,4],[1,0,5]],
+      CH_EB=[[2,-1,4],[4,0,4],[6,-1,4]],CH_F=[[3,0,4],[5,0,4],[0,0,5]];
+const bandGtr=[[CH(CH_BB,2),CH(CH_BB,2)],[CH(CH_GM,2),CH(CH_GM,2)],
+               [CH(CH_EB,2),CH(CH_EB,2)],[CH(CH_F,2),CH(CH_F,2)],
+               [CH(CH_BB,2),CH(CH_BB,2)],[CH(CH_GM,2),CH(CH_GM,2)],
+               [CH(CH_EB,2),CH(CH_F,2)],[CH(CH_BB,4)]];
+const drumBar=()=>[K(1),SN(1),K(.5),K(.5),SN(1)];
+const bandDrm=[[R(4)],[R(4)],drumBar(),drumBar(),drumBar(),drumBar(),drumBar(),[K(2),SN(2)]];
+
+/* Демо, де є все, про що питають: паузи всіх тривалостей і паузи
+   всередині такту, випадкові знаки з бекарами, ліги тривалості й
+   фразування, тріолі, акценти, стакато, тенуто, маркато, фермата,
+   реприза з вольтами, темпові й динамічні позначки. */
+const etudeMs=[
+  /* 1: чвертки з артикуляцією і четвертними паузами між нотами */
+  [NX(0,0,4,1,{art:['accent']}),RX(1),NX(2,0,4,1,{art:['staccato']}),RX(1)],
+  /* 2: вісімки з вʼязками, восьма пауза всередині такту */
+  [NX(4,0,4,.5,{art:['staccato']}),RX(.5),NX(6,0,4,.5,{art:['tenuto']}),NX(0,0,5,.5),
+   NX(6,0,4,.5),NX(5,0,4,.5),NX(4,0,4,.5),NX(3,0,4,.5)],
+  /* 3: випадкові знаки — дієз, бемоль, бекар */
+  [NX(3,1,4,1),NX(4,0,4,1),NX(6,-1,4,1),NX(6,0,4,1,{forceAcc:1})],
+  /* 4: ліга тривалості через тактову риску */
+  [NX(2,0,4,2,{art:['marcato']}),NX(4,0,4,2,{tie:'start'})],
+  /* 5: продовження ліги + половинна пауза */
+  [NX(4,0,4,2,{tie:'stop'}),RX(2)],
+  /* 6: тріолі вісімками під лігою фразування */
+  [T3(0,0,5,1/3,'start',{slur:'start'}),T3(6,0,4,1/3,'mid'),T3(5,0,4,1/3,'stop'),
+   T3(4,0,4,1/3,'start'),T3(3,0,4,1/3,'mid'),T3(2,0,4,1/3,'stop',{slur:'stop'}),
+   NX(4,0,4,1),RX(1)],
+  /* 7: ціла пауза — увесь такт мовчить */
+  [RX(4)],
+  /* 8: шістнадцяті, далі четвертна й дві восьмі паузи */
+  [NX(0,0,4,.25),NX(1,0,4,.25),NX(2,0,4,.25),NX(3,0,4,.25),
+   NX(4,0,4,.25),NX(5,0,4,.25),NX(6,0,4,.25),NX(0,0,5,.25),
+   RX(1),RX(.5),RX(.5)],
+  /* 9: форшлаг, склади під нотами, другий голос */
+  [NX(0,0,5,1,{gr:[{p:[{m:71,s:6,a:0,o:4}],d:.25}],lyric:'ой'}),
+   NX(6,0,4,1,{lyric:'у'}),NX(4,0,4,1,{lyric:'лу'}),NX(2,0,4,1,{lyric:'зі'})],
+  /* 10: зміна розміру на 3/4 і тональності на один дієз */
+  [NX(4,0,4,1),NX(5,0,4,1),NX(6,0,4,1)],
+  /* 11: ціла нота з ферматою */
+  [NX(0,0,4,3,{art:['fermata']})]
+];
+/* другий голос у дев'ятому такті: штилі вниз */
+const etudeV2={8:[N(2,0,4,1),N(0,0,4,1),N(4,0,3,1),N(6,0,3,1)]};
+const etudeBars={
+  0:{text:'Andante',dyn:'mf',rep:'start',mark:'A'},
+  3:{text:'poco rit.'},
+  4:{ending:[1],endingStop:true,rep:'end'},
+  5:{ending:[2],endingStop:false,text:'a tempo',dyn:'f',mark:'B'},
+  6:{text:'G.P.'},
+  7:{dyn:'p',hair:'start',hairKind:'cresc'},
+  8:{mark:'C',hair:'stop',dyn:'f'},
+  9:{meter:[3,4],fifths:1,text:'Meno mosso'},
+  10:{text:'rit.',jump:'Fine'}
+};
+
+let SCORES=[
+ {id:'s13',title:'Етюд: усе одразу',author:'В. Сорока',kind:'Техніка',
+  arr:'усе, що вміє рушій',vis:'public',
+  formats:['interactive','midi','xml'],plays:760,
+  parts:[{name:'Фортепіано',inst:'Фортепіано',clef:'treble',meter:[4,4],fifths:0,ts:0,
+          bars:etudeBars,v2:etudeV2,ms:etudeMs}]},
+ {id:'s12',title:'Маленький марш для бенду',author:'В. Сорока',kind:'Ансамбль',arr:'сім партій',vis:'public',
+  formats:['interactive','midi','xml'],plays:1180,
+  parts:[
+   {name:'Труба 1 in B♭',inst:'Труба in B♭',clef:'treble',meter:[4,4],fifths:0,ts:2,ms:bandTr1},
+   {name:'Труба 2 in B♭',inst:'Труба in B♭',clef:'treble',meter:[4,4],fifths:0,ts:2,ms:bandTr2},
+   {name:'Альт-саксофон in E♭',inst:'Саксофон in E♭',clef:'treble',meter:[4,4],fifths:1,ts:9,ms:bandSax},
+   {name:'Тромбон',inst:'Тромбон',clef:'bass',meter:[4,4],fifths:-2,ts:0,ms:bandTbn},
+   {name:'Гітара',inst:'Гітара',clef:'treble',meter:[4,4],fifths:-2,ts:0,ms:bandGtr},
+   {name:'Бас-гітара',inst:'Бас-гітара',clef:'bass',meter:[4,4],fifths:-2,ts:0,ms:bandBas},
+   {name:'Ударні',inst:'Ударні',clef:'perc',meter:[4,4],fifths:0,ts:0,ms:bandDrm}]},
+ {id:'s1',title:'Ода до радості',author:'Л. ван Бетховен',kind:'Класика',arr:'MuseClass',vis:'public',
+  formats:['interactive','midi','xml'],plays:18420,
+  parts:[{name:'Фортепіано',inst:'Фортепіано',clef:'treble',meter:[4,4],fifths:0,ts:0,ms:liftLegacy(L.oda)},
+         {name:'Труба in B♭',inst:'Труба in B♭',clef:'treble',meter:[4,4],fifths:2,ts:2,ms:liftLegacy(tr(L.oda,2))}]},
+ {id:'s2',title:'Щедрик',author:'М. Леонтович',kind:'Народна',arr:'О. Кравець',vis:'public',
+  formats:['interactive','midi','pdf','xml'],plays:31005,
+  parts:[{name:'Фортепіано',inst:'Фортепіано',clef:'treble',meter:[4,4],fifths:0,ts:0,ms:liftLegacy(L.shch)},
+         {name:'Труба in B♭',inst:'Труба in B♭',clef:'treble',meter:[4,4],fifths:2,ts:2,ms:liftLegacy(tr(L.shch,2))},
+         {name:'Вокал',inst:'Вокал',clef:'treble',meter:[4,4],fifths:0,ts:0,ms:liftLegacy(L.shch)}]},
+ {id:'s3',title:'Ніч яка місячна',author:'народна',kind:'Народна',arr:'спрощено для гітари',vis:'public',
+  formats:['interactive','midi','xml'],plays:9880,
+  parts:[{name:'Гітара',inst:'Гітара',clef:'treble',meter:[4,4],fifths:0,ts:0,ms:liftLegacy(L.nich)},
+         {name:'Вокал',inst:'Вокал',clef:'treble',meter:[4,4],fifths:0,ts:0,ms:liftLegacy(L.nich)}]},
+ {id:'s11',title:'Кавер на тему в B♭',author:'аранжування: О. Кравець',kind:'Кавер',arr:'дві руки',vis:'public',
+  formats:['interactive','midi','xml'],plays:2140,
+  parts:[{name:'Фортепіано (права рука)',inst:'Фортепіано',clef:'treble',meter:[4,4],fifths:-2,ts:0,ms:coverRH},
+         {name:'Фортепіано (ліва рука)',inst:'Фортепіано',clef:'bass',meter:[4,4],fifths:-2,ts:0,ms:coverLH}]},
+ {id:'s4',title:'Місячна соната, I ч.',author:'Л. ван Бетховен',kind:'Класика',arr:'уртекст',vis:'public',
+  formats:['pdf'],plays:24110,parts:[{name:'Фортепіано',inst:'Фортепіано',clef:'treble',meter:[4,4],fifths:4,ts:0,ms:null}]},
+ {id:'s5',title:'Ave Maria',author:'Ф. Шуберт',kind:'Класика',arr:'для голосу і фортепіано',vis:'public',
+  formats:['pdf','midi'],plays:15760,
+  parts:[{name:'Вокал',inst:'Вокал',clef:'treble',meter:[4,4],fifths:-2,ts:0,ms:null},
+         {name:'Фортепіано',inst:'Фортепіано',clef:'treble',meter:[4,4],fifths:-2,ts:0,ms:null}]},
+ {id:'s6',title:'Гама до мажор, 2 октави',author:'вправа',kind:'Техніка',arr:'для уроку',vis:'class',classId:'c1',
+  formats:['interactive','midi','xml'],plays:340,
+  parts:[{name:'Фортепіано',inst:'Фортепіано',clef:'treble',meter:[4,4],fifths:0,ts:0,ms:liftLegacy(L.gama)},
+         {name:'Скрипка',inst:'Скрипка',clef:'treble',meter:[4,4],fifths:0,ts:0,ms:liftLegacy(L.gama)}]},
+ {id:'s7',title:'Етюд № 1',author:'К. Черні, op. 599',kind:'Техніка',arr:'',vis:'class',classId:'c1',
+  formats:['pdf'],plays:120,parts:[{name:'Фортепіано',inst:'Фортепіано',clef:'treble',meter:[4,4],fifths:0,ts:0,ms:null}]},
+ {id:'s8',title:'Розспівка на три звуки',author:'В. Сорока',kind:'Техніка',arr:'',vis:'class',classId:'c2',
+  formats:['interactive','xml'],plays:56,
+  parts:[{name:'Вокал',inst:'Вокал',clef:'treble',meter:[4,4],fifths:0,ts:0,ms:liftLegacy(L.rozsp)}]},
+ {id:'s9',title:'Осінній вальс (кавер)',author:'аранжування: ти',kind:'Кавер',arr:'чернетка',vis:'private',
+  formats:['interactive','xml'],plays:0,
+  parts:[{name:'Фортепіано',inst:'Фортепіано',clef:'treble',meter:[3,4],fifths:0,ts:0,ms:liftLegacy(L.vals)}]},
+ {id:'s10',title:'Ой у лузі червона калина',author:'народна',kind:'Народна',arr:'для дуету',vis:'public',
+  formats:['pdf','midi'],plays:41200,
+  parts:[{name:'Гітара',inst:'Гітара',clef:'treble',meter:[4,4],fifths:1,ts:0,ms:null},
+         {name:'Вокал',inst:'Вокал',clef:'treble',meter:[4,4],fifths:1,ts:0,ms:null}]}
+];
+const CLASSES=[
+  {id:'c1',name:'Фортепіано, 3 клас',teacher:'Оксана Кравець',code:'PNO-3A',students:14},
+  {id:'c2',name:'Сольфеджіо, група Б',teacher:'Ігор Панчишин',code:'SOL-2B',students:21}
+];
+const FRESH_USER=()=>({name:'',photo:null,role:'student',instruments:[],classes:[],saved:['s2'],teaching:[]});
+const state={
+  user:FRESH_USER(),
+  tab:'home',query:'',filter:'Усі',
+  view:null,part:0,tempo:96,metro:false,pencil:false,
+  vset:false,parts:false,mode:'score',toSounding:true,keepAwake:true,barNums:true,compress:true,doRep:true,doTempo:true,
+  theme:'system',
+  onb:'auth',onbRole:null,onbInst:[],onbName:'',onbPhoto:null,onbCode:null,onbEmail:''
+};
+
+/* ============================== ТЕМА ================================
+   Три стани: як у системі, світла, темна. Системна слухає matchMedia,
+   тож перемикання теми на телефоні підхоплюється без перезапуску. */
+const MQ=(typeof window!=='undefined'&&window.matchMedia)?window.matchMedia('(prefers-color-scheme: dark)'):null;
+const resolvedTheme=()=>state.theme==='system'?((MQ&&MQ.matches)?'dark':'light'):state.theme;
+function applyTheme(){
+  try{document.documentElement.setAttribute('data-theme',resolvedTheme());}catch(e){}
+}
+if(MQ){
+  const onSys=()=>{if(state.theme==='system')applyTheme();};
+  if(MQ.addEventListener)MQ.addEventListener('change',onSys);
+  else if(MQ.addListener)MQ.addListener(onSys);
+}
+
+/* ============================ ДІАЛОГИ ===============================
+   Власні, а не window.prompt: у вбудованій сторінці (iframe артефакту,
+   WebView) браузерний prompt заблокований і мовчки повертає null —
+   саме через це кнопка «Створити клас» у профілі нічого не робила. */
+let dlg=null;
+function openDialog(cfg){
+  dlg=Object.assign({err:'',vals:{}},cfg);
+  (cfg.fields||[]).forEach(f=>{dlg.vals[f.id]=f.value||'';});
+  renderDialog();
+}
+function closeDialog(){dlg=null;renderDialog();}
+function renderDialog(){
+  const host=document.getElementById('modal');
+  if(!host)return;
+  if(!dlg){host.innerHTML='';return;}
+  host.innerHTML='<div class="modal" data-mclose="1"><div class="mbox">'
+    +'<h3>'+esc(dlg.title)+'</h3>'
+    +(dlg.note?'<p class="sub">'+esc(dlg.note)+'</p>':'')
+    +(dlg.fields||[]).map(f=>'<input class="fld" data-fld="'+f.id+'" type="'+(f.type||'text')+'"'
+      +' placeholder="'+esc(f.ph||'')+'" value="'+esc(dlg.vals[f.id]||'')+'"'
+      +(f.maxlength?' maxlength="'+f.maxlength+'"':'')
+      +(f.up?' style="text-transform:uppercase"':'')+'>').join('')
+    +'<p class="ferr">'+esc(dlg.err||'')+'</p>'
+    +'<div class="row" style="margin-top:4px">'
+    +'<button class="btn ghost" data-act="dlgcancel">Скасувати</button>'
+    +'<button class="btn" data-act="dlgok">'+esc(dlg.ok||'Готово')+'</button>'
+    +'</div></div></div>';
+  const first=host.querySelector('.fld');
+  if(first&&first.focus)try{first.focus();}catch(e){}
+}
+function submitDialog(){
+  if(!dlg)return;
+  const host=document.getElementById('modal');
+  (dlg.fields||[]).forEach(f=>{
+    const el=host.querySelector('[data-fld="'+f.id+'"]');
+    if(el)dlg.vals[f.id]=el.value;
+  });
+  const res=dlg.onOk(dlg.vals);
+  if(typeof res==='string'){dlg.err=res;renderDialog();return;}
+  closeDialog();
+}
+
+/* =========================== ДОПОМІЖНЕ ============================== */
+const $=s=>document.querySelector(s);
+const scr=$('#scr'),tabsEl=$('#tabs'),viewerEl=$('#viewer');
+function toast(m){const t=$('#toast');if(!t)return;t.textContent=m;t.classList.add('show');
+  clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2200);}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function fmtBadges(f){
+  const map={interactive:['b-int','Інтерактив'],midi:['b-midi','MIDI'],pdf:['b-pdf','PDF'],xml:['b-xml','MusicXML']};
+  return f.map(k=>map[k]?'<span class="badge '+map[k][0]+'">'+map[k][1]+'</span>':'').join('');
+}
+function miniSheet(seed){
+  let s='';
+  for(let i=0;i<5;i++)s+='<line x1="6" y1="'+(14+i*7)+'" x2="94%" y2="'+(14+i*7)+'" stroke="#1B1B1E" stroke-width=".8" opacity=".8"/>';
+  let x=16;const r=n=>((seed*9301+n*49297)%233280)/233280;
+  for(let i=0;i<9;i++){const y=14+Math.floor(r(i)*5)*3.5+3.5;
+    s+='<ellipse cx="'+x+'" cy="'+y+'" rx="3" ry="2.3" fill="#1B1B1E" transform="rotate(-20 '+x+' '+y+')"/>'
+      +'<line x1="'+(x+2.8)+'" y1="'+y+'" x2="'+(x+2.8)+'" y2="'+(y-13)+'" stroke="#1B1B1E" stroke-width=".9"/>';
+    x+=13;}
+  return '<svg viewBox="0 0 150 60" preserveAspectRatio="none">'+s+'</svg>';
+}
+function avatarHTML(size,photo,name,id){
+  const box='width:'+size+'px;height:'+size+'px;';
+  if(photo)return '<img class="avatar"'+(id?' id="'+id+'"':'')+' src="'+photo+'" alt="" style="'+box+'">';
+  return '<div class="avatar"'+(id?' id="'+id+'"':'')+' style="'+box
+    +'background:var(--amber);color:var(--on-accent);display:grid;place-items:center;'
+    +'font-family:var(--serif);font-size:'+Math.round(size*0.46)+'px">'
+    +esc(((name||'').trim()[0]||'?').toUpperCase())+'</div>';
+}
+/* Зменшуємо фото до 256 px, щоб не тягати мегабайти. Якщо canvas недоступний —
+   беремо як є, фото важливіше за економію. */
+function shrinkPhoto(dataUrl,max,cb){
+  let done=false;const fin=u=>{if(!done){done=true;cb(u);}};
+  setTimeout(()=>fin(dataUrl),1500);
+  try{
+    const img=new Image();
+    img.onload=()=>{
+      try{
+        const k=Math.min(1,max/Math.max(img.width||max,img.height||max));
+        const w=Math.max(1,Math.round((img.width||max)*k)),h=Math.max(1,Math.round((img.height||max)*k));
+        const cv=document.createElement('canvas');cv.width=w;cv.height=h;
+        cv.getContext('2d').drawImage(img,0,0,w,h);
+        fin(cv.toDataURL('image/jpeg',0.85));
+      }catch(e){fin(dataUrl);}
+    };
+    img.onerror=()=>fin(dataUrl);
+    img.src=dataUrl;
+  }catch(e){fin(dataUrl);}
+}
+let photoTarget=null;
+function pickPhoto(target){photoTarget=target;const f=$('#photofile');if(f)f.click();}
+
+/* Коди класів у форматі XXX-0X, як на сервері: без I, O, 0 і 1,
+   щоб не плутались при диктуванні. */
+const CODE_L='ABCDEFGHJKLMNPQRSTUVWXYZ';
+const randL=()=>CODE_L[Math.floor(Math.random()*CODE_L.length)];
+function makeCode(name){
+  const lat=String(name||'').toUpperCase().replace(/[^A-Z]/g,'');
+  const pre=lat.length>=3?lat.slice(0,3):(randL()+randL()+randL());
+  return pre+'-'+(2+Math.floor(Math.random()*8))+randL();
+}
+
+const partsFor=sc=>sc.parts.map(p=>p.inst);
+const fits=sc=>state.user.instruments.some(i=>partsFor(sc).includes(i));
+const curScore=()=>SCORES.find(s=>s.id===state.view);
+const curPart=()=>{const s=curScore();return s?s.parts[state.part]:null;};
+function visibleToMe(sc){
+  if(sc.vis==='public'||sc.vis==='private')return true;
+  return state.user.classes.includes(sc.classId)||state.user.teaching.includes(sc.classId);
+}
+
+/* =========================== ОНБОРДИНГ ==============================
+   Кроки залежать від сценарію: «для себе» коду класу не питає взагалі —
+   приєднатись можна пізніше з профілю. */
+function onbSteps(){
+  const st=['name','role'];
+  if(state.onbRole==='student')st.push('code');
+  else if(state.onbRole==='teacher')st.push('class');
+  st.push('inst');
+  return st;
+}
+function onbNext(){
+  const st=onbSteps(),i=st.indexOf(state.onb);
+  state.onb=st[Math.min(i+1,st.length-1)];
+  renderOnb();
+}
+function renderOnb(){
+  tabsEl.classList.add('hide');
+  const st=state.onb,steps=onbSteps(),ix=steps.indexOf(st);
+  const dots='<div class="steps">'+steps.map((_,i)=>'<i class="'+(i<=ix?'on':'')+'"></i>').join('')+'</div>';
+  let body='';
+  if(st==='auth'){
+    body='<div class="onb"><div class="grow" style="display:flex;flex-direction:column;justify-content:center;gap:16px">'
+      +'<div class="mark">&#119070;</div><div><h1 class="h-title">MuseClass</h1>'
+      +'<p class="sub" style="margin-top:6px;max-width:31ch">Ноти, які викладач роздає класу, і кавери, які ти пишеш сам.</p></div></div>'
+      +'<button class="btn" data-act="google">Продовжити з Google</button>'
+      +'<button class="btn ghost" style="margin-top:9px" data-act="email">Створити акаунт з поштою</button>'
+      +'<p class="sub" style="text-align:center;margin-top:14px;font-size:11.5px">Прототип. Реєстрація не справжня.</p></div>';
+  }else if(st==='name'){
+    body='<div class="onb">'+dots+'<h1 class="h-title">Як до тебе звертатись?</h1>'
+      +'<p class="sub" style="margin:8px 0 18px">Це імʼя бачитимуть викладач і однокласники. Змінити можна будь-коли в профілі.</p>'
+      +'<div style="display:flex;gap:14px;align-items:center;margin-bottom:16px">'
+      +'<button data-act="photo" style="flex:none">'+avatarHTML(64,state.onbPhoto,state.onbName)+'</button>'
+      +'<div style="flex:1;min-width:0">'
+      +'<div class="row"><button class="btn ghost" data-act="photo" style="width:auto;padding:8px 13px">'
+      +(state.onbPhoto?'Змінити фото':'Додати фото')+'</button>'
+      +(state.onbPhoto?'<button class="btn ghost" data-act="photodel" style="width:auto;padding:8px 13px">Прибрати</button>':'')
+      +'</div><p class="sub" style="margin:6px 0 0;font-size:12px">Не обовʼязково</p></div></div>'
+      +'<input class="code" id="uname" maxlength="40" placeholder="Імʼя"'
+      +' style="letter-spacing:0;text-transform:none;text-align:left" value="'+esc(state.onbName)+'">'
+      +'<div class="grow"></div><button class="btn" data-act="namenext">Далі</button></div>';
+  }else if(st==='role'){
+    const r=state.onbRole;
+    body='<div class="onb">'+dots+'<h1 class="h-title">Як плануєш користуватись?</h1>'
+      +'<p class="sub" style="margin:8px 0 18px">Це стартовий сценарій, а не тип акаунту — клас можна створити чи приєднатись пізніше з профілю.</p>'
+      +'<button class="opt" data-role="student" aria-pressed="'+(r==='student')+'"><strong>Я вчусь у викладача</strong><span>Введу код класу і побачу ноти, які він роздає</span></button>'
+      +'<button class="opt" data-role="teacher" aria-pressed="'+(r==='teacher')+'"><strong>Я викладаю</strong><span>Створю клас, заллю ноти й роздам їх учням</span></button>'
+      +'<button class="opt" data-role="solo" aria-pressed="'+(r==='solo')+'"><strong>Для себе</strong><span>Шукаю кавери й пишу власні партитури</span></button>'
+      +'<div class="grow"></div><button class="btn" data-act="next1" '+(r?'':'disabled')+'>Далі</button></div>';
+  }else if(st==='class'){
+    if(!state.onbCode)state.onbCode=makeCode('');
+    body='<div class="onb">'+dots+'<h1 class="h-title">Твій перший клас</h1>'
+      +'<p class="sub" style="margin:8px 0 16px">Учні приєднаються за кодом або посиланням. Код можна перевипустити будь-коли.</p>'
+      +'<input class="code" id="cname" placeholder="НАЗВА" style="letter-spacing:1px;text-transform:none;text-align:left" value="Фортепіано, 1 курс">'
+      +'<div class="codebox">'+state.onbCode+'</div>'
+      +'<div class="grow"></div><button class="btn" data-act="next2">Створити клас</button>'
+      +'<button class="btn ghost" style="margin-top:9px" data-act="next2skip">Поки без класу</button></div>';
+  }else if(st==='code'){
+    body='<div class="onb">'+dots+'<h1 class="h-title">Код класу</h1>'
+      +'<p class="sub" style="margin:8px 0 16px">Питай у викладача. Спробуй PNO-3A або SOL-2B.</p>'
+      +'<input class="code" id="ccode" placeholder="XXX-0X" maxlength="7">'
+      +'<p class="sub" id="cerr" style="margin-top:9px;color:var(--red);min-height:18px"></p>'
+      +'<div class="grow"></div><button class="btn" data-act="join">Приєднатися</button>'
+      +'<button class="btn ghost" style="margin-top:9px" data-act="next2skip">Пропустити</button></div>';
+  }else{
+    body='<div class="onb">'+dots+'<h1 class="h-title">На чому граєш?</h1>'
+      +'<p class="sub" style="margin:8px 0 16px">Ноти з твоєю партією підніматимуться вище в пошуку. Решту каталогу це не ховає.</p>'
+      +'<div class="pick">'+INSTRUMENTS.map(i=>'<button data-inst="'+i+'" aria-pressed="'+state.onbInst.includes(i)+'">'+i+'</button>').join('')+'</div>'
+      +'<div class="grow"></div><button class="btn" data-act="done" '+(state.onbInst.length?'':'disabled')+'>Готово</button></div>';
+  }
+  scr.innerHTML=body;
+}
+
+/* ============================ ГОЛОВНА =============================== */
+function scoreRank(sc){
+  let r=Math.log10(sc.plays+10);
+  if(fits(sc))r+=3;
+  if(sc.formats.includes('interactive'))r+=.4;
+  return r;
+}
+function searchList(){
+  const q=state.query.trim().toLowerCase();
+  let list=SCORES.filter(visibleToMe);
+  if(q)list=list.filter(s=>(s.title+' '+s.author+' '+s.kind+' '+partsFor(s).join(' ')).toLowerCase().includes(q));
+  if(state.filter!=='Усі')list=list.filter(s=>s.kind===state.filter);
+  return list.sort((a,b)=>scoreRank(b)-scoreRank(a));
+}
+function cardHTML(sc,i){
+  return '<button class="card" data-open="'+sc.id+'"><div class="cover">'+miniSheet(i+2)
+    +(sc.vis==='class'?'<span class="vis badge b-class">Клас</span>':'')
+    +(sc.vis==='private'?'<span class="vis badge b-me">Тільки я</span>':'')
+    +'<span class="fmt">'+fmtBadges(sc.formats)+'</span></div>'
+    +'<h4>'+esc(sc.title)+'</h4><p>'+esc(sc.author)+'</p>'
+    +(fits(sc)?'<p class="fit">є партія: '+esc(partsFor(sc).filter(p=>state.user.instruments.includes(p))[0])+'</p>':'')
+    +'</button>';
+}
+function itemHTML(sc,i){
+  return '<button class="item" data-open="'+sc.id+'"><div class="mini">'+miniSheet(i+5)+'</div>'
+    +'<div class="t"><h4>'+esc(sc.title)+'</h4><p>'+esc(sc.author)+(sc.arr?' · '+esc(sc.arr):'')+'</p>'
+    +'<div class="fmts">'+fmtBadges(sc.formats)+'</div></div><span style="color:var(--muted)">›</span></button>';
+}
+function renderHome(){
+  const q=state.query.trim(),kinds=['Усі','Кавер','Ансамбль','Народна','Класика','Техніка'];
+  let body='<div class="pad"><h1 class="h-title">Головна</h1>'
+    +'<div class="search"><span style="color:var(--muted)">⌕</span>'
+    +'<input id="q" placeholder="Назва, автор, інструмент" value="'+esc(state.query)+'">'
+    +'<button id="qclear" style="color:var(--muted);'+(q?'':'display:none')+'" data-act="qclear">✕</button></div>'
+    +'<div class="chips">'+kinds.map(k=>'<button class="chip" data-filter="'+k+'" aria-pressed="'+(state.filter===k)+'">'+k+'</button>').join('')+'</div>';
+  if(q||state.filter!=='Усі'){
+    const list=searchList();
+    body+=list.length?'<h2 class="h-sec">Знайдено '+list.length+'</h2><div class="list">'+list.map(itemHTML).join('')+'</div>'
+      :'<p class="empty">Нічого не знайшли. Спробуй іншу назву або зніми фільтр — а якщо цих нот немає ніде, їх можна набрати або імпортувати.</p>'
+       +'<button class="btn ghost" data-act="editor">Написати ноти</button>';
+  }else{
+    const mine=SCORES.filter(s=>s.vis==='public'&&fits(s)).sort((a,b)=>b.plays-a.plays);
+    const pop=SCORES.filter(s=>s.vis==='public').sort((a,b)=>b.plays-a.plays);
+    if(mine.length){
+      body+='<h2 class="h-sec">Під твій інструмент</h2><p class="sub" style="margin:-6px 0 10px">'
+        +esc(state.user.instruments.join(', '))+'</p><div class="rail">'+mine.map(cardHTML).join('')+'</div>';
+    }
+    body+='<div class="staffrule"></div><h2 class="h-sec" style="margin-top:0">Популярне зараз</h2>'
+      +'<div class="rail">'+pop.map(cardHTML).join('')+'</div>'
+      +'<div class="staffrule"></div><h2 class="h-sec" style="margin-top:0">Свої ноти</h2>'
+      +'<p class="sub" style="margin:-4px 0 12px">Набери кавер сам або підтягни готовий файл з MuseScore, Sibelius чи Finale — .musicxml і стиснений .mxl.</p>'
+      +'<button class="btn ghost" data-act="editor">Відкрити редактор</button>'
+      +'<button class="btn ghost" style="margin-top:9px" data-act="import">Імпортувати MusicXML</button>';
+  }
+  scr.innerHTML=body+'</div>';
+}
+
+/* =========================== БІБЛІОТЕКА ============================= */
+function renderLib(){
+  let body='<div class="pad"><h1 class="h-title">Бібліотека</h1>';
+  const myClasses=CLASSES.filter(c=>state.user.classes.includes(c.id));
+  const teaching=CLASSES.filter(c=>state.user.teaching.includes(c.id));
+  if(teaching.length){
+    body+='<div class="staffrule"></div><div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">'
+      +'<h2 class="h-sec" style="margin:0">Мої класи · '+teaching.length+'</h2>'
+      +'<button class="badge b-class" data-act="mkclass" style="border:0">+ ще один</button></div>';
+  }
+  teaching.forEach(c=>{
+    const list=SCORES.filter(s=>s.classId===c.id);
+    body+='<div class="card2"><div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">'
+      +'<strong style="font-size:15px">'+esc(c.name)+'</strong><span class="badge b-class">ти ведеш</span></div>'
+      +'<p class="sub" style="margin:2px 0 8px">'+c.students+' учнів · код '+c.code+'</p><div class="list">'
+      +(list.map(itemHTML).join('')||'<p class="empty" style="padding:16px 8px">У класі ще немає нот. Залий партитуру — вона зʼявиться в усіх одразу.</p>')
+      +'</div><div class="row" style="margin-top:10px"><button class="btn peri" data-act="assign">Видати ноти класу</button></div></div>';
+  });
+  myClasses.forEach(c=>{
+    const list=SCORES.filter(s=>s.classId===c.id);
+    body+='<div class="staffrule"></div><h2 class="h-sec" style="margin:0">'+esc(c.name)+'</h2>'
+      +'<p class="sub">'+esc(c.teacher)+' · видав '+list.length+(list.length===1?' ноту':' нот')+'</p>'
+      +'<div class="list">'+list.map(itemHTML).join('')+'</div>';
+  });
+  const saved=SCORES.filter(s=>state.user.saved.includes(s.id));
+  body+='<div class="staffrule"></div><h2 class="h-sec" style="margin:0">Збережене</h2><div class="list">'
+    +(saved.map(itemHTML).join('')||'<p class="empty">Порожньо. Відкрий будь-які ноти й натисни зірку — вони будуть тут навіть офлайн.</p>')+'</div>';
+  const mine=SCORES.filter(s=>s.vis==='private');
+  body+='<div class="staffrule"></div><h2 class="h-sec" style="margin:0">Мої ноти</h2>'
+    +'<div class="list">'+mine.map(itemHTML).join('')+'</div>'
+    +'<div class="row" style="margin-top:12px"><button class="btn ghost" data-act="editor">Написати</button>'
+    +'<button class="btn ghost" data-act="import">Імпорт</button></div>';
+  if(!myClasses.length&&!teaching.length){
+    body+='<div class="staffrule"></div><div class="card2"><strong style="font-size:14.5px">Приєднатись до класу</strong>'
+      +'<p class="sub" style="margin:4px 0 10px">Введи код від викладача — PNO-3A або SOL-2B.</p>'
+      +'<input class="code" id="joincode" placeholder="XXX-0X" maxlength="7">'
+      +'<button class="btn peri" style="margin-top:10px" data-act="joinlib">Приєднатися</button></div>';
+  }
+  scr.innerHTML=body+'</div>';
+}
+
+/* ============================= ПРОФІЛЬ ==============================
+   Налаштування відтворення переїхали в плеєр — тут лишається те, що
+   стосується акаунта і вигляду. */
+const THEMES=[['system','Як у системі'],['light','Світла'],['dark','Темна']];
+function renderMe(){
+  const u=state.user,teaching=CLASSES.filter(c=>u.teaching.includes(c.id));
+  scr.innerHTML='<div class="pad"><h1 class="h-title">Профіль</h1>'
+   +'<div class="card2" style="display:flex;gap:13px;align-items:center">'
+   +'<button data-act="photome" title="Змінити фото" style="flex:none">'+avatarHTML(56,u.photo,u.name,'meav')+'</button>'
+   +'<div style="flex:1;min-width:0">'
+   +'<input id="pname" maxlength="40" value="'+esc(u.name)+'" placeholder="Імʼя"'
+   +' style="width:100%;background:none;border:0;border-bottom:1px solid var(--line);color:var(--text);'
+   +'font:inherit;font-size:16px;font-weight:600;padding:3px 0;outline:none">'
+   +'<p class="sub" style="margin:5px 0 0">'+(u.teaching.length?'Викладач':'Учень')+' · '
+   +esc(u.instruments.join(', ')||'інструмент не вибрано')+'</p></div></div>'
+   +'<div class="row" style="margin-top:8px">'
+   +'<button class="btn ghost" data-act="photome">'+(u.photo?'Змінити фото':'Додати фото')+'</button>'
+   +(u.photo?'<button class="btn ghost" data-act="photomedel">Прибрати фото</button>':'')+'</div>'
+
+   +'<h2 class="h-sec">Вигляд</h2>'
+   +'<p class="sub" style="margin:-6px 0 10px">«Як у системі» стежить за налаштуванням телефона й перемикається разом з ним.</p>'
+   +'<div class="pick">'+THEMES.map(t=>'<button data-settheme="'+t[0]+'" aria-pressed="'+(state.theme===t[0])+'">'+t[1]+'</button>').join('')+'</div>'
+
+   +'<h2 class="h-sec">Інструменти</h2><p class="sub" style="margin:-6px 0 10px">Впливає на порядок видачі, не на доступ.</p>'
+   +'<div class="pick">'+INSTRUMENTS.map(i=>'<button data-toginst="'+i+'" aria-pressed="'+u.instruments.includes(i)+'">'+i+'</button>').join('')+'</div>'
+
+   +'<h2 class="h-sec">Класи</h2><div class="card2" style="margin-top:0">'
+   +CLASSES.filter(c=>u.classes.includes(c.id)).map(c=>'<div class="kv">'+esc(c.name)+'<span>'+esc(c.teacher)+'</span></div>').join('')
+   +teaching.map(c=>'<div class="kv">'+esc(c.name)+'<span>код '+c.code+'</span></div>').join('')
+   +((!u.classes.length&&!teaching.length)?'<div class="kv" style="color:var(--muted)">Ще ніде не числишся</div>':'')
+   +'</div><div class="row" style="margin-top:10px"><button class="btn ghost" data-act="joinprompt">Ввести код</button>'
+   +'<button class="btn peri" data-act="mkclass">Створити клас</button></div>'
+
+   +'<h2 class="h-sec">Акаунт</h2><div class="card2" style="margin-top:0">'
+   +'<div class="kv">Офлайн-копії<span>3 партитури</span></div>'
+   +'<div class="kv">Формат обміну<span>MusicXML 4.0</span></div>'
+   +'<div class="kv">Мова<span>Українська</span></div></div>'
+   +'<button class="btn ghost" style="margin-top:18px" data-act="reset">Пройти онбординг заново</button></div>';
+}
+
+/* ============================= РЕДАКТОР ============================= */
+const ed={ms:[[]],dur:1,alter:0,tie:false,trip:false};
+function renderEditor(){
+  tabsEl.classList.add('hide');
+  const {svg}=renderSystem(toDisp(ed.ms.length?ed.ms:[[]],false,null,null),0,{clef:'treble',fifths:0,meter:[4,4],timesig:true});
+  scr.innerHTML='<div class="pad"><div style="display:flex;align-items:center;gap:10px">'
+    +'<button class="icbtn" data-act="back">‹</button><h1 class="h-title" style="font-size:24px;flex:1">Редактор</h1>'
+    +'<button class="btn" style="width:auto;padding:9px 14px" data-act="savescore">Зберегти</button></div>'
+    +'<p class="sub" style="margin-top:8px">Тицяй по нотному стану — нота стане туди, куди вказав. Розмір 4/4, такт закривається сам.</p>'
+    +'<div class="edstaff" id="edstaff">'+svg+'</div>'
+    +'<div class="durpick">'+[[4,'𝅝'],[2,'𝅗𝅥'],[1,'𝅘𝅥'],[.5,'𝅘𝅥𝅮']].map(d=>'<button data-dur="'+d[0]+'" aria-pressed="'+(ed.dur===d[0])+'">'+d[1]+'</button>').join('')+'</div>'
+    +'<div class="row" style="margin-top:9px">'
+    +'<button class="btn ghost" data-act="alter" data-v="1" style="'+(ed.alter===1?'border-color:var(--amber);color:var(--amber)':'')+'">♯</button>'
+    +'<button class="btn ghost" data-act="alter" data-v="-1" style="'+(ed.alter===-1?'border-color:var(--amber);color:var(--amber)':'')+'">♭</button>'
+    +'<button class="btn ghost" data-act="alter" data-v="0" style="'+(ed.alter===0&&ed.nat?'border-color:var(--amber);color:var(--amber)':'')+'">♮</button>'
+    +'<button class="btn ghost" data-act="rest">Пауза</button></div>'
+    +'<div class="row" style="margin-top:9px">'
+    +'<button class="btn ghost" data-act="tie" style="'+(ed.tie?'border-color:var(--amber);color:var(--amber)':'')+'">Ліга</button>'
+    +'<button class="btn ghost" data-act="trip" style="'+(ed.trip?'border-color:var(--amber);color:var(--amber)':'')+'">Тріоль</button>'
+    +'<button class="btn ghost" data-act="undo">Стерти</button></div>'
+    +'<p class="sub" style="margin-top:9px;font-size:12px">Пауза ставиться тією ж тривалістю, що й нота. '
+    +'Ліга в\'яже наступну ноту з попередньою тієї ж висоти; тріоль ставить три ноти на місце двох.</p>'
+    +'<div class="staffrule"></div>'
+    +'<p class="sub">Набране одразу читається плеєром і вивантажується як MusicXML — його відкриє MuseScore, Sibelius чи Finale.</p>'
+    +'<div class="row" style="margin-top:12px"><button class="btn ghost" data-act="preview">Прослухати</button>'
+    +'<button class="btn ghost" data-act="edexport">Експорт</button></div></div>';
+  const box=$('#edstaff svg');
+  if(box&&box.addEventListener)box.addEventListener('click',e=>{
+    const r=box.getBoundingClientRect();if(!r.height)return;
+    const vb=box.viewBox.baseVal;
+    const sy=(e.clientY-r.top)/r.height*vb.height;
+    const d=Math.max(20,Math.min(48,Math.round(CLEF_TOP.treble-(sy-46)/GAP)));
+    pushNote(d);
+  });
+}
+function pushNote(d){
+  let m=ed.ms[ed.ms.length-1];
+  const step=ed.trip?ed.dur*2/3:ed.dur;
+  const filled=m.reduce((a,n)=>a+n.d,0);
+  if(filled+step>4.0001){
+    if(ed.ms.length>=6){toast('У прототипі — до 6 тактів');return;}
+    ed.ms.push([]);m=ed.ms[ed.ms.length-1];
+  }
+  let note;
+  if(d===null)note={p:[],d:step};
+  else{
+    const st=((d%7)+7)%7,oct=Math.floor(d/7);
+    note={p:[{m:diaToMidi(d)+ed.alter,s:st,a:ed.alter,o:oct}],d:step};
+  }
+  if(d!==null&&ed.nat)note.forceAcc=1;
+  if(ed.trip){
+    /* рахуємо, котра це нота в тріолі */
+    const prev=m.length?m[m.length-1]:null;
+    const open=prev&&prev.tup&&prev.tup.pos!=='stop';
+    const idx=open?(prev.tup._i||0)+1:0;
+    note.tup={n:3,of:2,pos:idx===0?'start':(idx===2?'stop':'mid'),_i:idx};
+  }
+  if(d!==null&&ed.tie){
+    const prev=m.length?m[m.length-1]:(ed.ms.length>1?ed.ms[ed.ms.length-2].slice(-1)[0]:null);
+    if(prev&&prev.p.length&&prev.p[0].m===note.p[0].m){
+      prev.tie=prev.tie==='stop'?'both':'start';
+      note.tie='stop';
+    }else toast('Ліга вʼяже однакові висоти — попередня нота інша');
+  }
+  m.push(note);
+  renderEditor();
+}
+/* Вивантаження. У прев'ю артефакту файли віддає сам застосунок claude.ai,
+   і там дозволені лише окремі розширення — тому віддаємо архівний MusicXML
+   під .zip. Коли сторінка відкрита напряму, віддаємо звичайний .musicxml. */
+async function saveXML(baseName,xml){
+  try{
+    if(typeof window!=='undefined'&&window.claude&&window.claude.use){
+      const d=await window.claude.use('downloads');
+      if(d){
+        await d.save({filename:baseName+'.zip',
+          data:new Blob([toMxl(xml,baseName)],{type:'application/zip'})});
+        return 'zip';
+      }
+    }
+  }catch(e){return e&&e.code==='declined'?'declined':'fail';}
+  try{
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([xml],{type:'application/vnd.recordare.musicxml+xml'}));
+    a.download=baseName+'.musicxml';
+    document.body.appendChild(a);a.click();
+    setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},400);
+    return 'xml';
+  }catch(e){return 'fail';}
+}
+async function saveBlob(name,blob){
+  try{
+    if(typeof window!=='undefined'&&window.claude&&window.claude.use){
+      const d=await window.claude.use('downloads');
+      if(d){await d.save({filename:name,data:blob});return 'saved';}
+    }
+  }catch(e){return e&&e.code==='declined'?'declined':'fail';}
+  try{
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);a.download=name;
+    document.body.appendChild(a);a.click();
+    setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},400);
+    return 'saved';
+  }catch(e){return 'fail';}
+}
+function reportSave(r){
+  if(r==='zip')toast('Вивантажено .zip — усередині .musicxml. Перейменуй на .mxl і MuseScore відкриє напряму.');
+  else if(r==='xml')toast('Вивантажено .musicxml');
+  else if(r==='declined')toast('Збереження скасовано');
+  else toast('Не вдалося зберегти файл');
+}
+const slug=s=>String(s).trim().replace(/[^\wА-Яа-яЇїІіЄєҐґ -]/g,'').replace(/\s+/g,'-').slice(0,48)||'score';
+
+/* ====================== ВИТЯГАННЯ ПАРТІЙ ============================
+   Головне, чого бракує в редакторах: партія має виходити готовою до
+   пюпітра — свій ключ, своя тональність, свій стрій і стиснені паузи,
+   а не копія партитури з вимкненими рядками. */
+const tacetBars=p=>p.ms?p.ms.filter(m=>m.length&&m.every(n=>!n.p.length)).length:0;
+function partSummary(p){
+  const bits=[];
+  if(p.clef==='bass')bits.push('басовий ключ');
+  else if(p.clef==='perc')bits.push('ударний стан');
+  if(p.ts)bits.push('стрій: звучить на '+p.ts+' півтони нижче');
+  if(p.ms){
+    bits.push(p.ms.length+' т.');
+    const t=tacetBars(p);
+    if(t)bits.push('тацет '+t);
+  }else bits.push('без нотних даних');
+  return bits.join(' · ');
+}
+function partXML(sc,i){
+  const p=sc.parts[i];
+  return toMusicXML({title:sc.title+' — '+p.name,composer:sc.author,arranger:sc.arr,parts:[p]});
+}
+async function extractOne(sc,i){
+  const p=sc.parts[i];
+  if(!p.ms){toast('У цій партії немає нотних даних');return;}
+  reportSave(await saveXML(slug(sc.title)+' - '+slug(p.name),partXML(sc,i)));
+}
+async function extractAll(sc){
+  const list=sc.parts.map((p,i)=>({p,i})).filter(x=>x.p.ms);
+  if(!list.length){toast('Немає нотних даних для витягання');return;}
+  const enc=new TextEncoder();
+  const files=list.map((x,k)=>({
+    name:('0'+(k+1)).slice(-2)+' '+slug(x.p.name)+'.musicxml',
+    data:enc.encode(partXML(sc,x.i))
+  }));
+  const r=await saveBlob(slug(sc.title)+' - партії.zip',
+    new Blob([zipStore(files)],{type:'application/zip'}));
+  if(r==='saved')toast('Вивантажено '+list.length+' партій окремими файлами в архіві');
+  else if(r==='declined')toast('Збереження скасовано');
+  else toast('Не вдалося зберегти архів');
+}
+
+/* ============================ ПЕРЕГЛЯД ============================== */
+function openScore(id){
+  state.view=id;state.pencil=false;
+  const sc=curScore();if(!sc)return;
+  const pi=sc.parts.findIndex(p=>state.user.instruments.includes(p.inst));
+  state.part=pi>=0?pi:0;
+  /* Партитура на кілька інструментів відкривається партитурою, а не
+     розібраною на партії: спершу бачиш ціле, партію береш свідомо. */
+  state.mode=playableParts(sc).length>1?'score':'part';
+  renderViewer();viewerEl.classList.add('open');
+}
+const playableParts=sc=>sc.parts.filter(p=>p.ms&&p.ms.length);
+function closeScore(){stopPlay();viewerEl.classList.remove('open');state.view=null;state.vset=false;state.parts=false;}
+function renderViewer(){
+  const sc=curScore(),p=curPart();
+  if(!sc||!p)return;
+  const saved=state.user.saved.includes(sc.id);
+  const play=playableParts(sc);
+  const scoreMode=state.mode==='score'&&play.length>1;
+  let sheet='',hint='';
+
+  if(scoreMode){
+    /* спільна кількість тактів і спільна сітка ширин */
+    const cols=Math.max.apply(null,play.map(pp=>pp.ms.length));
+    const items=play.map(pp=>{
+      const ms=pp.ms.slice();
+      while(ms.length<cols)ms.push([{p:[],d:(pp.meter[0]*4/pp.meter[1])}]);
+      return toDisp(ms,false,pp.bars,pp.v2);
+    });
+    const rows=layoutScore(cols,play);
+    sheet=rows.map((rg,i)=>{
+      const slice=items.map(it=>it.slice(rg[0],rg[1]));
+      const r=renderScore(slice,play,{timesig:i===0,end:i===rows.length-1,barNums:state.barNums});
+      return '<div class="system" data-from="'+rg[0]+'">'+r.svg+'</div>';
+    }).join('');
+  }else if(p.ms){
+    const sys=layout(toDisp(p.ms,state.compress,p.bars,p.v2));
+    sheet=sys.map((it,i)=>{
+      const r=renderSystem(it,0,{clef:p.clef,fifths:p.fifths,meter:p.meter,
+        timesig:i===0,end:i===sys.length-1,barNums:state.barNums});
+      return '<div class="system" data-from="'+it[0].n+'">'+r.svg+'</div>';
+    }).join('');
+  }else{
+    sheet='<div class="pdfpage"><h5>'+esc(sc.title)+'</h5>'
+      +'<p style="margin:0;font-size:12px;color:#5A5A64">'+esc(sc.author)+(sc.arr?' · '+esc(sc.arr):'')+'</p>'
+      +'<div class="pl"></div>'.repeat(9)
+      +'<p style="font-size:11px;color:#8A8A92;text-align:center;margin:18px 0 0">1 / 4</p></div>';
+  }
+
+  const sub=scoreMode
+    ? esc(sc.author)+' · партитура, '+play.length+(play.length<5?' партії':' партій')
+    : esc(sc.author)+' · '+esc(p.name)+(p.ts?' · звучить на '+p.ts+' півтони нижче':'');
+
+  viewerEl.innerHTML='<div class="vtop"><button class="icbtn" data-act="close">‹</button>'
+    +'<div class="t"><h3>'+esc(sc.title)+'</h3><p>'+sub+'</p></div>'
+    +'<button class="icbtn" data-act="export" title="Експорт MusicXML">⤓</button>'
+    +'<button class="icbtn" data-act="pencil" aria-pressed="'+state.pencil+'" title="Олівець">✎</button>'
+    +'<button class="icbtn" data-act="save" title="Зберегти">'+(saved?'★':'☆')+'</button>'
+    +'<button class="icbtn" data-act="parts" aria-pressed="'+state.parts+'" title="Партії">≡</button>'
+    +'<button class="icbtn" data-act="vset" aria-pressed="'+state.vset+'" title="Налаштування відтворення">⚙</button></div>'
+    +(play.length>1?'<div class="modebar">'
+      +'<button data-act="mode" data-v="score" aria-pressed="'+scoreMode+'">Партитура</button>'
+      +'<button data-act="mode" data-v="part" aria-pressed="'+(!scoreMode)+'">Партія</button>'
+      +(scoreMode?'<span class="mhint">усі інструменти разом</span>'
+                 :'<span class="mhint">'+esc(p.name)+'</span>')
+      +'</div>':'')
+    +(scoreMode?'':'<div class="partbar">'
+      +sc.parts.map((pt,i)=>'<button data-part="'+i+'" aria-pressed="'+(i===state.part)+'">'+esc(pt.name)
+        +(state.user.instruments.includes(pt.inst)?' ·':'')+'</button>').join('')
+      +'<button data-act="addpart" style="color:var(--peri);border-color:var(--peri)">+ партія</button></div>')
+    +'<div id="sheet">'+sheet+'</div>'
+    +((scoreMode||p.ms)?'<div class="dock"><div class="r1"><button class="play" id="playbtn" data-act="play">▶</button>'
+      +'<div class="tempo"><label><span>Темп</span><span id="bpm">'+state.tempo+' уд/хв</span></label>'
+      +'<input type="range" id="tempo" min="40" max="180" value="'+state.tempo+'"></div>'
+      +'<button class="icbtn" data-act="metro" aria-pressed="'+state.metro+'" title="Метроном">◷</button></div></div>'
+     :'<div class="note-hint">Ця партитура — тільки PDF. Відтворення й підсвітка такту недоступні: для них потрібні нотні дані. '
+      +(sc.formats.includes('midi')?'MIDI тут є — можна слухати, але сторінка не підсвічується.':'')+'</div>')
+    +(state.vset?playerSettingsHTML(p):'')
+    +(state.parts?partsPanelHTML(sc):'');
+}
+/* Налаштування відтворення живуть тут, у плеєрі, а не в профілі:
+   їх крутять з нотами перед очима. */
+function playerSettingsHTML(p){
+  const sw=(act,on)=>'<button class="sw" data-act="'+act+'" aria-pressed="'+on+'"></button>';
+  const sc=curScore(),scoreMode=state.mode==='score'&&playableParts(sc).length>1;
+  return '<div class="sheetpanel" data-act="vsetclose"><div class="sp-in">'
+    +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">'
+    +'<strong style="flex:1;font-size:15px">Відтворення</strong>'
+    +'<button class="icbtn" data-act="vset">✕</button></div>'
+    +'<div class="kv">Метроном'+sw('metro',state.metro)+'</div>'
+    +'<div class="kv">Враховувати стрій інструмента'+sw('tosound',state.toSounding)+'</div>'
+    +'<p class="sub" style="margin:-4px 0 0;font-size:11.5px">'
+    +(scoreMode?'У партитурі кожен інструмент звучить своїм строєм.'
+      :(p.ts?esc(p.name)+' звучить на '+p.ts+' півтони нижче за написане.'
+           :'Ця партія в реальній тональності — на неї не впливає.'))+'</p>'
+    +'<div class="kv">Повторювати репризи'+sw('dorep',state.doRep)+'</div>'
+    +'<div class="kv">Слухатись rit. і accel.'+sw('dotempo',state.doTempo)+'</div>'
+    +'<div class="kv">Номери тактів'+sw('barnum',state.barNums)+'</div>'
+    +(scoreMode?'':'<div class="kv">Стискати довгі паузи'+sw('compress',state.compress)+'</div>')
+    +'<div class="kv">Тримати екран увімкненим'+sw('awake',state.keepAwake)+'</div>'
+    +'<p class="sub" style="margin:8px 0 0;font-size:11.5px">Темп — повзунком унизу, він змінюється на ходу.</p>'
+    +'</div></div>';
+}
+function partsPanelHTML(sc){
+  const withNotes=sc.parts.filter(p=>p.ms).length;
+  return '<div class="sheetpanel" data-act="partsclose"><div class="sp-in">'
+    +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">'
+    +'<strong style="flex:1;font-size:15px">Партії · '+sc.parts.length+'</strong>'
+    +'<button class="icbtn" data-act="parts">✕</button></div>'
+    +'<div class="plist">'+sc.parts.map((p,i)=>
+      '<div class="prow'+(i===state.part?' on':'')+'">'
+      +'<button class="pmain" data-part="'+i+'">'
+      +'<span class="pn">'+esc(p.name)+(state.user.instruments.includes(p.inst)?' <i class="mine">твій</i>':'')+'</span>'
+      +'<span class="ps">'+esc(partSummary(p))+'</span></button>'
+      +'<button class="icbtn" data-pull="'+i+'" title="Витягти цю партію">⤓</button></div>').join('')
+    +'</div>'
+    +(playableParts(sc).length>1
+      ?'<button class="btn ghost" style="margin-top:12px" data-act="mode" data-v="score">Показати партитуру цілком</button>':'')
+    +'<button class="btn" style="margin-top:8px" data-act="pullall">Витягти всі партії окремими файлами</button>'
+    +'<button class="btn ghost" style="margin-top:8px" data-act="export">Уся партитура одним файлом</button>'
+    +'<p class="sub" style="margin:8px 0 0;font-size:11.5px">'
+    +(withNotes<sc.parts.length?'Партії без нотних даних не витягуються. ':'')
+    +'У витягнутій партії лишаються її ключ, тональність і стрій.</p>'
+    +'</div></div>';
+}
+/* Налаштування відтворення живуть тут, у плеєрі, а не в профілі:
+   їх крутять з нотами перед очима. */
+function playerSettingsHTML(p){
+  const sw=(act,on)=>'<button class="sw" data-act="'+act+'" aria-pressed="'+on+'"></button>';
+  return '<div class="sheetpanel" data-act="vsetclose"><div class="sp-in">'
+    +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">'
+    +'<strong style="flex:1;font-size:15px">Відтворення</strong>'
+    +'<button class="icbtn" data-act="vset">✕</button></div>'
+    +'<div class="kv">Метроном'+sw('metro',state.metro)+'</div>'
+    +'<div class="kv">Враховувати стрій інструмента'+sw('tosound',state.toSounding)+'</div>'
+    +'<p class="sub" style="margin:-4px 0 0;font-size:11.5px">'
+    +(p.ts?esc(p.name)+' звучить на '+p.ts+' півтони нижче за написане.'
+         :'Ця партія в реальній тональності — на неї не впливає.')+'</p>'
+    +'<div class="kv">Номери тактів'+sw('barnum',state.barNums)+'</div>'
+    +'<div class="kv">Стискати довгі паузи'+sw('compress',state.compress)+'</div>'
+    +'<div class="kv">Тримати екран увімкненим'+sw('awake',state.keepAwake)+'</div>'
+    +'<p class="sub" style="margin:8px 0 0;font-size:11.5px">Темп — повзунком унизу, він змінюється на ходу.</p>'
+    +'</div></div>';
+}
+
+/* ============================== ПОДІЇ =============================== */
+function render(){
+  tabsEl.classList.remove('hide');
+  [...tabsEl.children].forEach(b=>b.setAttribute('aria-current',String(b.dataset.tab===state.tab)));
+  if(state.tab==='home')renderHome();
+  else if(state.tab==='lib')renderLib();
+  else renderMe();
+}
+tabsEl.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b||!b.dataset.tab)return;
+  state.tab=b.dataset.tab;state.query='';render();scr.scrollTop=0;
+});
+/* Вступ за кодом прощає регістр, зайві пробіли і забутий дефіс —
+   так само, як домовлено на сервері. */
+function normCode(v){
+  const t=String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+  return t.length===5?t.slice(0,3)+'-'+t.slice(3):t;
+}
+function joinByCode(raw){
+  const v=normCode(raw);
+  if(!v)return 'Введи код';
+  const c=CLASSES.find(x=>x.code===v);
+  if(!c)return 'Такого коду немає. Перевір розкладку й дефіс.';
+  if(state.user.teaching.includes(c.id))return 'Це твій власний клас';
+  if(state.user.classes.includes(c.id))return 'Ти вже в цьому класі';
+  state.user.classes.push(c.id);
+  state.tab='lib';render();toast('Ти в класі «'+c.name+'»');
+  return null;
+}
+function importScore(parsed,fileName){
+  const id='u'+Date.now()+Math.floor(Math.random()*99);
+  const hasNotes=parsed.parts.some(p=>p.ms&&p.ms.length);
+  SCORES.push({id,title:parsed.title,author:parsed.composer,kind:'Кавер',
+    arr:parsed.arranger||('імпорт · '+(fileName||'MusicXML')),vis:'private',
+    formats:hasNotes?['interactive','midi','xml']:['xml'],plays:0,parts:parsed.parts});
+  return id;
+}
+document.addEventListener('click',e=>{
+  if(e.target.dataset&&e.target.dataset.mclose){closeDialog();return;}
+  if(e.target.classList&&e.target.classList.contains('sheetpanel')){
+    state.vset=false;state.parts=false;renderViewer();return;}
+  const b=e.target.closest&&e.target.closest('button');if(!b)return;
+  const a=b.dataset.act;
+  if(b.dataset.open){openScore(b.dataset.open);return;}
+  if(b.dataset.filter){state.filter=b.dataset.filter;render();return;}
+  if(b.dataset.role){state.onbRole=b.dataset.role;renderOnb();return;}
+  if(b.dataset.inst){const i=b.dataset.inst;
+    state.onbInst=state.onbInst.includes(i)?state.onbInst.filter(x=>x!==i):state.onbInst.concat([i]);renderOnb();return;}
+  if(b.dataset.settheme){state.theme=b.dataset.settheme;applyTheme();render();
+    toast(state.theme==='system'?'Тема — як у системі':'Тема зафіксована');return;}
+  if(b.dataset.toginst){const i=b.dataset.toginst,u=state.user;
+    u.instruments=u.instruments.includes(i)?u.instruments.filter(x=>x!==i):u.instruments.concat([i]);render();return;}
+  if(b.dataset.part!==undefined&&b.dataset.part!==''){
+    stopPlay();state.part=+b.dataset.part;state.parts=false;state.mode='part';renderViewer();return;}
+  if(b.dataset.pull!==undefined&&b.dataset.pull!==''){extractOne(curScore(),+b.dataset.pull);return;}
+  if(b.dataset.dur){ed.dur=+b.dataset.dur;renderEditor();return;}
+  switch(a){
+    case 'google':
+      state.onbEmail='';state.onb='name';renderOnb();break;
+    case 'email':
+      openDialog({title:'Створити акаунт',note:'Прототип: пошта нікуди не йде, пароль не зберігається.',
+        ok:'Створити',
+        fields:[{id:'mail',ph:'пошта',type:'email',value:state.onbEmail},
+                {id:'pass',ph:'пароль',type:'password'}],
+        onOk(v){
+          const m=(v.mail||'').trim();
+          if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(m))return 'Перевір адресу — треба щось на кшталт ім\'я@пошта.com';
+          if((v.pass||'').length<6)return 'Пароль закороткий: хоча б 6 символів';
+          state.onbEmail=m;
+          if(!state.onbName){
+            const guess=m.split('@')[0].replace(/[._-]+/g,' ').trim();
+            state.onbName=guess?guess[0].toUpperCase()+guess.slice(1):'';
+          }
+          state.onb='name';renderOnb();
+        }});
+      break;
+    case 'namenext':{
+      const v=(($('#uname')||{}).value||'').trim();
+      if(!v){toast('Введи імʼя — далі його можна змінити');break;}
+      state.onbName=v;onbNext();break;
+    }
+    case 'photo':state.onbName=(($('#uname')||{}).value)||state.onbName;pickPhoto('onb');break;
+    case 'photodel':state.onbName=(($('#uname')||{}).value)||state.onbName;state.onbPhoto=null;renderOnb();break;
+    case 'photome':pickPhoto('me');break;
+    case 'photomedel':state.user.photo=null;render();toast('Фото прибрано');break;
+    case 'next1':onbNext();break;
+    case 'join':{
+      const v=normCode(($('#ccode')||{}).value);
+      const c=CLASSES.find(x=>x.code===v);
+      if(!c){const er=$('#cerr');if(er)er.textContent='Такого коду немає. Перевір розкладку й дефіс.';return;}
+      state.user.classes.push(c.id);onbNext();break;
+    }
+    case 'next2':{
+      const nm=(($('#cname')||{}).value)||'Мій клас';
+      const c={id:'c'+Date.now(),name:nm,teacher:'ти',code:state.onbCode||makeCode(nm),students:0};
+      CLASSES.push(c);state.user.teaching.push(c.id);onbNext();break;
+    }
+    case 'next2skip':onbNext();break;
+    case 'done':
+      state.user.instruments=state.onbInst.slice();
+      state.user.name=state.onbName||'Без імені';
+      state.user.photo=state.onbPhoto;
+      state.user.role=state.onbRole;state.tab='home';render();break;
+    case 'qclear':state.query='';render();break;
+    case 'close':closeScore();break;
+    case 'play':playing?stopPlay():startPlay();break;
+    case 'metro':
+      state.metro=!state.metro;
+      if(state.view){if(playing){stopPlay();startPlay();}renderViewer();}else render();
+      break;
+    case 'dlgok':submitDialog();break;
+    case 'dlgcancel':closeDialog();break;
+    case 'vset':state.vset=!state.vset;state.parts=false;renderViewer();break;
+    case 'parts':state.parts=!state.parts;state.vset=false;renderViewer();break;
+    case 'mode':stopPlay();state.mode=b.dataset.v;state.parts=false;renderViewer();break;
+    case 'dorep':state.doRep=!state.doRep;if(playing){stopPlay();startPlay();}renderViewer();break;
+    case 'dotempo':state.doTempo=!state.doTempo;if(playing){stopPlay();startPlay();}renderViewer();break;
+    case 'pullall':extractAll(curScore());break;
+    case 'compress':state.compress=!state.compress;renderViewer();break;
+    case 'tosound':
+      state.toSounding=!state.toSounding;
+      if(playing){stopPlay();startPlay();}
+      renderViewer();break;
+    case 'barnum':state.barNums=!state.barNums;renderViewer();break;
+    case 'awake':state.keepAwake=!state.keepAwake;renderViewer();
+      toast(state.keepAwake?'Екран не гаситиметься під час гри':'Екран гаситиметься як завжди');break;
+    case 'save':{
+      const s=state.user.saved,id=state.view;
+      if(s.includes(id)){state.user.saved=s.filter(x=>x!==id);toast('Прибрано зі збереженого');}
+      else{s.push(id);toast('Збережено — буде доступне офлайн');}
+      renderViewer();break;
+    }
+    case 'pencil':state.pencil=!state.pencil;renderViewer();
+      toast(state.pencil?'Олівець: тицяй по такту, щоб помітити':'Олівець вимкнено');break;
+    case 'export':{
+      const sc=curScore();
+      if(!sc.parts.some(p=>p.ms)){toast('Тут немає нотних даних — експортувати нічого');break;}
+      const xml=toMusicXML({title:sc.title,composer:sc.author,arranger:sc.arr,
+        parts:sc.parts.filter(p=>p.ms)});
+      saveXML(slug(sc.title),xml).then(reportSave);
+      break;
+    }
+    case 'addpart':toast('Додавання партії — наступний крок роботи');break;
+    case 'assign':toast('Вибір нот для класу — наступний крок роботи');break;
+    case 'editor':renderEditor();break;
+    case 'import':{const f=$('#mxfile');if(f)f.click();break;}
+    case 'back':ed.ms=[[]];render();break;
+    case 'alter':{
+      const v=+b.dataset.v;
+      if(v===0){ed.nat=!ed.nat;ed.alter=0;}
+      else{ed.alter=ed.alter===v?0:v;ed.nat=false;}
+      renderEditor();break;
+    }
+    case 'tie':ed.tie=!ed.tie;renderEditor();break;
+    case 'trip':ed.trip=!ed.trip;renderEditor();break;
+    case 'rest':pushNote(null);break;
+    case 'undo':{
+      const m=ed.ms[ed.ms.length-1];
+      if(m.length)m.pop();else if(ed.ms.length>1){ed.ms.pop();ed.ms[ed.ms.length-1].pop();}
+      renderEditor();break;
+    }
+    case 'preview':{
+      const flat=ed.ms.reduce((a,m)=>a.concat(m),[]);
+      if(!flat.some(n=>n.p.length)){toast('Спершу набери хоч ноту');break;}
+      const c=ac();if(c.state==='suspended')c.resume();
+      let t=c.currentTime+.1;const spb=60/state.tempo;
+      const inst=state.user.instruments[0]||'Фортепіано';
+      flat.forEach(n=>{
+        const g=.19/Math.sqrt(Math.max(1,n.p.length));
+        n.p.forEach(pt=>playNote(pt.m,t,n.d*spb*.92,g,inst));
+        t+=n.d*spb;
+      });
+      break;
+    }
+    case 'edexport':{
+      const ms=ed.ms.filter(m=>m.length);
+      if(!ms.length){toast('Порожню партитуру не експортуємо');break;}
+      const xml=toMusicXML({title:'Чернетка MuseClass',composer:'ти',arranger:'',
+        parts:[{name:'Партія',inst:state.user.instruments[0]||'Фортепіано',clef:'treble',meter:[4,4],fifths:0,ts:0,ms}]});
+      saveXML('chernetka',xml).then(reportSave);
+      break;
+    }
+    case 'savescore':{
+      const ms=ed.ms.filter(m=>m.length);
+      if(!ms.some(m=>m.some(n=>n.p.length))){toast('Порожню партитуру не збережемо');break;}
+      const inst=state.user.instruments[0]||'Фортепіано';
+      SCORES.push({id:'u'+Date.now(),title:'Без назви — '+new Date().toLocaleDateString('uk-UA'),
+        author:'аранжування: ти',kind:'Кавер',arr:'чернетка',vis:'private',
+        formats:['interactive','midi','xml'],plays:0,
+        parts:[{name:inst,inst,clef:'treble',meter:[4,4],fifths:0,ts:0,ms}]});
+      ed.ms=[[]];state.tab='lib';render();toast('Збережено в «Мої ноти»');break;
+    }
+    case 'joinlib':{
+      const inp=$('#joincode');
+      const r=joinByCode(inp?inp.value:'');
+      if(r)toast(r);
+      break;
+    }
+    case 'joinprompt':
+      openDialog({title:'Приєднатися до класу',note:'Код дає викладач. У прототипі є PNO-3A і SOL-2B.',
+        ok:'Приєднатися',fields:[{id:'code',ph:'XXX-0X',maxlength:7,up:true}],
+        onOk(v){const r=joinByCode(v.code);if(r)return r;}});
+      break;
+    case 'mkclass':
+      openDialog({title:'Новий клас',
+        note:'Класів може бути скільки завгодно — окремий на кожну групу чи вік.',
+        ok:'Створити',fields:[{id:'nm',ph:'Наприклад: Гітара, 2 клас',maxlength:40}],
+        onOk(v){
+          const nm=(v.nm||'').trim();
+          if(!nm)return 'Введи назву — за нею ти відрізнятимеш групи';
+          if(CLASSES.some(c=>state.user.teaching.includes(c.id)&&c.name.toLowerCase()===nm.toLowerCase()))
+            return 'Клас з такою назвою в тебе вже є';
+          const c={id:'c'+Date.now()+Math.floor(Math.random()*99),name:nm,teacher:'ти',code:makeCode(nm),students:0};
+          CLASSES.push(c);state.user.teaching.push(c.id);
+          state.tab='lib';render();toast('Клас «'+nm+'» створено, код '+c.code);
+        }});
+      break;
+    case 'reset':
+      state.onb='auth';state.onbRole=null;state.onbInst=[];
+      state.onbName='';state.onbPhoto=null;state.onbCode=null;state.onbEmail='';
+      closeDialog();
+      state.user=FRESH_USER();state.vset=false;
+      renderOnb();break;
+  }
+});
+document.addEventListener('input',e=>{
+  if(e.target.id==='q'){
+    state.query=e.target.value;
+    const pos=e.target.selectionStart;renderHome();
+    const n=$('#q');if(n){n.focus();if(n.setSelectionRange)n.setSelectionRange(pos,pos);}
+  }
+  if(e.target.id==='pname'||e.target.id==='uname'){
+    const v=e.target.value;
+    if(e.target.id==='pname')state.user.name=v;else state.onbName=v;
+    const av=$('.avatar');
+    if(av&&av.tagName==='DIV')av.textContent=((v||'').trim()[0]||'?').toUpperCase();
+  }
+  if(e.target.id==='tempo'){
+    state.tempo=+e.target.value;
+    const l=$('#bpm');if(l)l.textContent=state.tempo+' уд/хв';
+  }
+});
+document.addEventListener('keydown',e=>{
+  if(!dlg)return;
+  if(e.key==='Enter'){e.preventDefault();submitDialog();}
+  else if(e.key==='Escape')closeDialog();
+});
+document.addEventListener('change',e=>{
+  if(e.target.id==='tempo'&&playing){stopPlay();startPlay();}
+});
+const fileInput=$('#mxfile');
+if(fileInput)fileInput.addEventListener('change',e=>{
+  const f=e.target.files&&e.target.files[0];if(!f)return;
+  const rd=new FileReader();
+  rd.onload=async()=>{
+    try{
+      const text=await musicxmlFromBytes(new Uint8Array(rd.result));
+      const parsed=fromMusicXML(text);
+      const id=importScore(parsed,f.name);
+      state.tab='lib';render();openScore(id);
+      toast('Імпортовано: '+parsed.parts.length+(parsed.parts.length===1?' партія':' партій'));
+    }catch(err){toast('Не вдалося прочитати: '+err.message);}
+    e.target.value='';
+  };
+  rd.onerror=()=>{toast('Файл не читається');e.target.value='';};
+  rd.readAsArrayBuffer(f);
+});
+const photoInput=$('#photofile');
+if(photoInput)photoInput.addEventListener('change',e=>{
+  const f=e.target.files&&e.target.files[0];if(!f)return;
+  if(f.type&&!/^image\//.test(f.type)){toast('Потрібне зображення');e.target.value='';return;}
+  const rd=new FileReader();
+  rd.onload=()=>{
+    shrinkPhoto(String(rd.result),256,url=>{
+      if(photoTarget==='onb'){state.onbPhoto=url;renderOnb();}
+      else{state.user.photo=url;render();toast('Фото оновлено');}
+    });
+    e.target.value='';
+  };
+  rd.onerror=()=>{toast('Файл не читається');e.target.value='';};
+  rd.readAsDataURL(f);
+});
+
+/* олівець: помітити такт */
+document.addEventListener('click',e=>{
+  if(!state.pencil||!e.target.closest)return;
+  const sys=e.target.closest('#sheet .system');if(!sys)return;
+  const ov=sys.querySelector('.mk');
+  if(ov){ov.remove();return;}
+  const r=sys.getBoundingClientRect(),x=e.clientX-r.left;
+  const d=document.createElement('div');d.className='mk';
+  d.style.cssText='left:'+Math.max(0,x-34)+'px;width:68px;background:rgba(210,72,58,.16);border:1px solid rgba(210,72,58,.5);top:8px;bottom:8px';
+  sys.appendChild(d);
+});
+
+applyTheme();
+renderOnb();
+if(typeof module!=='undefined')module.exports={fromMusicXML,toMusicXML,parseXML,renderSystem,buildSeq,SCORES,state,liftLegacy,makeCode};
+</script>
+</body>
+</html>

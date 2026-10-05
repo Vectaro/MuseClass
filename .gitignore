@@ -1,0 +1,32 @@
+# секрети й дані — ніколи в репо
+.env
+*.env
+!.env.example
+*.dump
+*.sql.gz
+backups/
+
+# збірка
+target/
+build/
+out/
+.gradle/
+*.class
+*.jar
+!**/gradle/wrapper/gradle-wrapper.jar
+!**/.mvn/wrapper/maven-wrapper.jar
+*.apk
+*.aab
+local.properties
+
+# Node / Python для тестів прототипу
+node_modules/
+__pycache__/
+*.pyc
+
+# IDE й ОС
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
