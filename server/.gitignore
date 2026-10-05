@@ -1,0 +1,7 @@
+target/
+.env
+backups/
+*.iml
+.idea/
+.vscode/
+backup.log

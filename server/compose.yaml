@@ -1,0 +1,63 @@
+# MuseClass: API + Postgres. Секрети — у файлі .env поруч (див. .env.example).
+# Назовні API виходить тільки через Tailscale Funnel: порт прив'язаний до
+# 127.0.0.1, тож з локальної мережі напряму до нього не достукатись.
+#
+# Значення за замовчуванням розраховані на найслабше залізо (Pi 4, 2 ГБ, SD-карта).
+# На сильнішій машині їх підіймають у .env (API_HEAP, PG_SHARED_BUFFERS),
+# сам цей файл однаковий усюди.
+
+x-logging: &logging
+  # Без ліміту логи Docker ростуть вічно — на SD-карті це і місце, і знос
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    logging: *logging
+    command:
+      - postgres
+      - -c
+      - shared_buffers=${PG_SHARED_BUFFERS:-128MB}
+      # Рідші чекпоінти й стиснений WAL — менше записів на диск.
+      # Надійність не страждає: кожен commit так само fsync'иться.
+      - -c
+      - checkpoint_timeout=15min
+      - -c
+      - wal_compression=on
+    environment:
+      POSTGRES_DB: museclass
+      POSTGRES_USER: museclass
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?задай DB_PASSWORD у .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    stop_grace_period: 30s
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U museclass -d museclass"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: .
+    restart: unless-stopped
+    logging: *logging
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/museclass
+      DB_USER: museclass
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?задай JWT_SECRET у .env}
+      # Явний розмір heap, а не відсоток: на Raspberry Pi OS ліміти пам'яті
+      # контейнера можуть не працювати, і тоді JVM рахувала б відсоток від усієї RAM.
+      JAVA_TOOL_OPTIONS: "-Xmx${API_HEAP:-384m} -XX:+ExitOnOutOfMemoryError"
+    ports:
+      - "127.0.0.1:8080:8080"
+
+volumes:
+  pgdata:
