@@ -17,8 +17,8 @@
    | Ділянка  | Код           | Файл стану                |
    |----------|---------------|---------------------------|
    | прототип | `prototype/`  | `docs/stan/prototype.md`  |
-   | сервер   | `server/`     | `docs/stan/server.md`     |
-   | залізо   | `server/` (деплой-файли) | `docs/stan/hardware.md` |
+   | сервер (ПК) | `server/pc/` — повна копія сервера | `docs/stan/server.md` |
+   | залізо (малина) | `server/pi/` | `docs/stan/hardware.md` |
    | Android  | `android/`    | `docs/stan/android.md`    |
    | загальний| —             | `README.md` стану, `decisions.md` |
 
