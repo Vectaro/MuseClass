@@ -19,8 +19,8 @@ Spring Boot 4.1 · Java 21 · PostgreSQL 16 · Flyway · JWT (HS256) · Docker C
 Усі команди нижче — у PowerShell.
 
 ```powershell
-git clone <репозиторій> C:\museclass-server
-cd C:\museclass-server
+git clone https://github.com/Vectaro/MuseClass C:\MuseClass
+cd C:\MuseClass\server
 Copy-Item .env.example .env
 notepad .env    # DB_PASSWORD і JWT_SECRET — довгі випадкові рядки, 32+ символи
 docker compose up -d --build
@@ -76,7 +76,7 @@ tailscale funnel status    # публічна адреса https://<машина
 
 ```powershell
 $a = New-ScheduledTaskAction -Execute powershell.exe `
-  -Argument '-NoProfile -ExecutionPolicy Bypass -File "C:\museclass-server\backup.ps1"'
+  -Argument '-NoProfile -ExecutionPolicy Bypass -File "C:\MuseClass\server\backup.ps1"'
 Register-ScheduledTask -TaskName MuseClassBackup -Action $a -Trigger (New-ScheduledTaskTrigger -Daily -At 3:30)
 ```
 
@@ -119,7 +119,7 @@ sudo tailscale up
 ### Запуск
 
 ```sh
-git clone <репозиторій> ~/museclass-server && cd ~/museclass-server
+git clone https://github.com/Vectaro/MuseClass ~/MuseClass && cd ~/MuseClass/server
 cp .env.example .env && nano .env    # DB_PASSWORD, JWT_SECRET: openssl rand -base64 48
 docker compose up -d --build         # перша збірка на Pi 4 — хвилин 10–15
 docker compose ps                    # api має стати healthy (дай йому до 3 хв)
@@ -169,9 +169,9 @@ Heap задається явним `-Xmx`, а не відсотком від п�
 Якщо збірка на малині надто повільна, образ можна зібрати на ПК під arm64:
 
 ```sh
-docker buildx build --platform linux/arm64 -t museclass-server-api:latest --load .
-docker save museclass-server-api:latest | gzip > api-arm64.tar.gz
-# скопіювати на малину, там (тека має зватись museclass-server, інакше ім'я образу інше):
+docker buildx build --platform linux/arm64 -t museclass-api:latest --load .
+docker save museclass-api:latest | gzip > api-arm64.tar.gz
+# скопіювати на малину, там (ім'я образу museclass-api задає `name:` у compose.yaml):
 gunzip -c api-arm64.tar.gz | docker load && docker compose up -d --no-build
 ```
 
