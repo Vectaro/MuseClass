@@ -8,83 +8,9 @@ Spring Boot 4.1 · Java 21 · PostgreSQL 16 · Flyway · JWT (HS256) · Docker C
 
 ## Запуск на Windows 10/11 (робочий ПК)
 
-Потрібно:
-
-- Windows 10 22H2+ або Windows 11 23H2+, 64-біт; Home теж підходить.
-- Ввімкнена віртуалізація в BIOS/UEFI.
-- Docker Desktop з бекендом WSL 2.
-- Tailscale для Windows.
-- Git.
-
-Усі команди нижче — у PowerShell.
-
-```powershell
-git clone https://github.com/Vectaro/MuseClass C:\MuseClass
-cd C:\MuseClass\server
-Copy-Item .env.example .env
-notepad .env    # DB_PASSWORD і JWT_SECRET — довгі випадкові рядки, 32+ символи
-docker compose up -d --build
-curl.exe -s http://localhost:8080/actuator/health    # {"status":"UP",...}
-```
-
-Криптостійкий випадковий рядок без openssl (працює і в Windows PowerShell 5.1):
-
-```powershell
-$b = New-Object byte[] 48; [Security.Cryptography.RNGCryptoServiceProvider]::new().GetBytes($b); [Convert]::ToBase64String($b)
-```
-
-Назовні (PowerShell від адміністратора):
-
-```powershell
-tailscale funnel --bg 8080
-tailscale funnel status    # публічна адреса https://<машина>.<tailnet>.ts.net
-```
-
-Якщо Funnel ще не дозволений, команда дасть посилання на адмінку. Там же
-вмикаються MagicDNS і HTTPS-сертифікати. Сертифікат справжній, тож Android
-прийме його без винятків у `network_security_config`.
-
-Порт 8080 прив'язаний до `127.0.0.1`: з локальної мережі до API напряму не
-достукатись, тільки через Funnel. Postgres назовні не відкритий взагалі.
-
-### Щоб сервер не падав
-
-- **Автостарт Docker.** У налаштуваннях Docker Desktop (General) увімкни старт
-  при вході в систему. Контейнери з `restart: unless-stopped` піднімуться самі.
-  Docker Desktop живе в сесії користувача, тож сервер працює, поки ти
-  залогінений. Після перезавантаження, зокрема через оновлення Windows, треба
-  увійти в систему.
-- **Сон.** Сплячий ПК — мертвий сервер. Вимкни сон від мережі:
-  `powercfg /change standby-timeout-ac 0` і `powercfg /change hibernate-timeout-ac 0`.
-- **Tailscale** працює як служба Windows і стартує з системою сам;
-  `--bg` зберігає Funnel між перезапусками.
-- **Пам'ять.** WSL 2 може з'їсти багато RAM. Якщо ПК важко, обмеж її у
-  `%UserProfile%\.wslconfig`:
-  ```
-  [wsl2]
-  memory=4GB
-  ```
-  Потім виконай `wsl --shutdown` і перезапусти Docker Desktop.
-
-### Оновлення і бекап
-
-Оновлення: `git pull; docker compose up -d --build`. Міграції бази Flyway
-накочує сам при старті.
-
-Бекап: `.\backup.ps1` кладе дамп у `backups\` і тримає останні 14. Щоденний
-запуск через Планувальник завдань:
-
-```powershell
-$a = New-ScheduledTaskAction -Execute powershell.exe `
-  -Argument '-NoProfile -ExecutionPolicy Bypass -File "C:\MuseClass\server\backup.ps1"'
-Register-ScheduledTask -TaskName MuseClassBackup -Action $a -Trigger (New-ScheduledTaskTrigger -Daily -At 3:30)
-```
-
-Відновлення — у коментарі в самому `backup.ps1`. Дампи бажано час від часу
-копіювати кудись, крім цього ж диска.
-
-`.gitattributes` тримає `Dockerfile`, `.sh` і YAML з LF-кінцями рядків навіть
-на Windows. Інакше git з `autocrlf` зламав би їх для Linux-контейнерів.
+Повна окрема копія сервера під ПК — у [`pc/`](pc/README.md), з власним
+`compose.yaml`, `.env.example`, `backup.ps1` і інструкцією. Веде її чат про
+сервер.
 
 ## Запуск на Linux (малина)
 
