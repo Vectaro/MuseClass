@@ -46,8 +46,12 @@ Tailscale так, щоб нова отримала те саме ім'я, а с�
 Java 21 їх офіційно не підтримує, а нижче Java 17 Spring Boot 4 не йде.
 
 ## Малина
-Код той самий, змінюється лише деплой; покроково — `server/README.md`, розділ
-«Запуск на Linux (малина)». Ще не куплена.
+Ще не куплена. Деплой-файли — у [`server/pi/`](../../server/pi/README.md)
+(2026-10-05 Влад розділив деплої за машинами): свій `compose.yaml` з
+`build: ..`, `.env.example`, `backup.sh`, README з покроковою інструкцією.
+Спільний код (`src`, `pom.xml`, `Dockerfile`, `dev/`) лишається в `server/`,
+деплой ПК — справа чату про ПК. Команди `docker compose` — з `server/pi/`.
+Годиться і для будь-якого Linux-сервера (NUC).
 
 - мінімум — Pi 4 на 2 ГБ, microSD A2 від 32 ГБ, swap від 1 ГБ;
 - оптимально — Pi 5 на 4 ГБ, SSD (USB 3 або NVMe HAT), офіційний блок живлення
@@ -68,12 +72,11 @@ Postgres `checkpoint_timeout=15min`, `wal_compression=on` (`synchronous_commit`
 **Під монорепо (2026-10-05):** у `compose.yaml` зафіксовано `name: museclass`,
 бо інакше compose бере ім'я проєкту з теки (`server/`). Том бази —
 `museclass_pgdata`, образ — `museclass-api`, незалежно від того, куди клоновано
-репо. Клонувати весь репо і працювати з `server/`: `~/MuseClass/server` на
-Linux, `C:\MuseClass\server` на Windows (так і в README, і в cron-рядку
-`backup.sh`). Якщо колись буде машина, де сервер уже крутився під старим ім'ям
+репо. На малині клонувати весь репо і працювати з `~/MuseClass/server/pi`
+(так і в README, і в cron-рядку `backup.sh`). Якщо колись буде машина, де сервер уже крутився під старим ім'ям
 теки, дані лежать у старому томі — переносити дампом, а не перейменуванням.
 
-Тести на малині без JDK на хості:
+Тести на малині без JDK на хості (з `server/`, не з `server/pi/`):
 `docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD":/src -w /src maven:3.9-eclipse-temurin-21 mvn -B verify`
 
 ## NUC на J3455
