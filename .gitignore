@@ -30,3 +30,10 @@ __pycache__/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# прототип: згенероване під час перевірок
+prototype/audio/samples/
+prototype/**/*.svg
+prototype/**/*.png
+prototype/package-lock.json
+prototype/node_modules

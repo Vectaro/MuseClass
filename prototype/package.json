@@ -1,0 +1,12 @@
+{
+  "name": "museclass-prototype",
+  "private": true,
+  "description": "Перевірки веб-прототипу MuseClass",
+  "scripts": {
+    "test": "sh tests/run-all.sh",
+    "build": "python3 tools/build.py"
+  },
+  "devDependencies": {
+    "jsdom": "^26.0.0"
+  }
+}
