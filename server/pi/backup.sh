@@ -1,9 +1,9 @@
 #!/usr/bin/env sh
 # Дамп бази в backups/ (або в BACKUP_DIR). Для cron (crontab -e, щодня о 03:30;
 # шлях підстав свій — у свіжій Raspberry Pi OS юзера pi за замовчуванням немає):
-#   30 3 * * * cd $HOME/MuseClass/server && ./backup.sh >> backup.log 2>&1
+#   30 3 * * * cd $HOME/MuseClass/server/pi && ./backup.sh >> backup.log 2>&1
 # На малині з SD-картою дампи краще класти на інший носій, напр. флешку:
-#   30 3 * * * cd $HOME/MuseClass/server && BACKUP_DIR=/mnt/usb/museclass ./backup.sh >> backup.log 2>&1
+#   30 3 * * * cd $HOME/MuseClass/server/pi && BACKUP_DIR=/mnt/usb/museclass ./backup.sh >> backup.log 2>&1
 # Відновлення:
 #   docker compose exec -T db pg_restore -U museclass -d museclass --clean --if-exists < backups/<файл>.dump
 set -eu
