@@ -89,6 +89,28 @@ MusicXML — 25 модульних тестів плюс прогін по 377 �
 файлах, логіка HTTP — `ApiFlowTest` (потрібен Docker; піднімає свій Postgres
 через Testcontainers, бойову базу не чіпає).
 
+## Робочий ПК (2026-10-06)
+**Бойовий** `museclass-pc` піднятий через `docker compose` з `server/pc/`:
+API на `127.0.0.1:8080`, обидва контейнери healthy, `/actuator/health` — `UP`.
+База створена 2026-10-06 о 20:02 з порожньої схеми (Flyway v1), тож даних у
+ній немає, хіба що хтось зареєструвався через Funnel. Порт бази на хост не
+виставлений, дивитися — `docker exec -it museclass-pc-db-1 psql -U museclass
+-d museclass` (тільки читати).
+
+О 20:10:01 бойовий зупинився штатно: спершу API, потім база (SIGTERM, код
+143/0) — так робить `docker compose stop`. Хто зупинив — не з'ясовано;
+Claude-сесія в той момент перезапускала лише dev і compose-проєкт не чіпала,
+Docker Desktop не перезапускався (dev-база подій не мала). Політика
+`unless-stopped` після такого сама не піднімає. Влад підняв вручну, після
+цього знову healthy.
+
+**Dev** за розділом «Розробка» з `server/pc/README.md` працює як написано:
+`museclass-dev-db` (`postgres:16-alpine`) на 5433, `.\mvnw.cmd spring-boot:run`
+з `DB_URL`/`JWT_SECRET`/`SERVER_PORT=8081`, старт ~5 с, health `UP`, бойовий
+не зачіпає. Dev-база порожня. Дивитися — будь-яким GUI на `localhost:5433`,
+`museclass`/`museclass`. Другий `spring-boot:run`, поки 8081 зайнятий, падає
+з `BUILD FAILURE` після ~8 с — це не поломка, а зайнятий порт.
+
 ## Не перевірено
-Бойовий запуск через `docker compose` з `pc/` і реальний клієнт проти нього.
-`backup.ps1` і PowerShell-команди з `pc/README.md` не запускались.
+Реальний клієнт проти бойового. `backup.ps1` і решта PowerShell-команд з
+`pc/README.md`, крім розділу «Розробка», не запускались.
