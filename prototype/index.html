@@ -316,6 +316,7 @@ function fromMusicXML(src){
   kidz(root,'part').forEach(partEl=>{
     const info=meta[partEl.attrs.id]||{name:partEl.attrs.id||'Партія'};
     let divisions=1,meter=[4,4],fifths=0,transpose=0;
+    let meter0=null,fifths0=null;   /* стан на першому такті — це і є розмір/тональність партії */
     const clefs={},staffMeasures={},barAttrs={},staffV2={};
     kidz(partEl,'measure').forEach((mEl,mi)=>{
       kidz(mEl,'attributes').forEach(at=>{
@@ -341,6 +342,7 @@ function fromMusicXML(src){
         const tr=kid(at,'transpose');
         if(tr)transpose=-(num(tr,'chromatic',0)+12*num(tr,'octave-change',0));
       });
+      if(mi===0){meter0=meter;fifths0=fifths;}
       /* тактові атрибути: реприза, вольта, текст, динаміка */
       const bar={};
       kidz(mEl,'barline').forEach(bl=>{
@@ -464,7 +466,7 @@ function fromMusicXML(src){
       parts.push({
         name:info.name+(multi?(clefs[sv]==='bass'?' (ліва рука)':' (права рука)'):''),
         inst:info.instrument||info.name,
-        clef:clefs[sv]||'treble',meter,fifths,ts:transpose,
+        clef:clefs[sv]||'treble',meter:meter0||meter,fifths:fifths0!==null?fifths0:fifths,ts:transpose,
         bars:Object.keys(barAttrs).length?barAttrs:null,
         v2:(staffV2[sv]&&Object.keys(staffV2[sv]).length)?staffV2[sv]:null,
         ms:staffMeasures[sv].filter(m=>m.length)

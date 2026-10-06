@@ -13,15 +13,15 @@ for(const sc of all){
     p.ms.forEach(m=>m.forEach(n=>n.p.forEach(x=>{if(x.a)acc.add(x.a);})));
     /* розмір може мінятись посеред партії — рахуємо такт за тактом */
     let cur=p.meter;
-    const bad=[];
+    const wrong=[];
     p.ms.forEach((m,i)=>{
       if(p.bars&&p.bars[i]&&p.bars[i].meter)cur=p.bars[i].meter;
       const want=cur[0]*4/cur[1];
       const t=m.reduce((a,n)=>a+n.d,0);
-      if(Math.abs(t-want)>1e-6)bad.push((i+1)+': '+t.toFixed(2)+' замість '+want);
+      if(Math.abs(t-want)>1e-6)wrong.push((i+1)+': '+t.toFixed(2)+' замість '+want);
     });
     const beats=[...new Set(p.ms.map(m=>m.reduce((a,n)=>a+n.d,0)))];
-    const okBeats=bad.length===0;
+    const okBeats=wrong.length===0;
     if(!okBeats)bad++;
     if(sc.id==='s12')
       console.log((okBeats?'  ok  ':'  FAIL')+'  '+p.name.padEnd(22)+
@@ -29,3 +29,23 @@ for(const sc of all){
   }
 }
 console.log('\nтактів неправильної довжини у всьому каталозі:',bad);
+
+/* Імпорт: партія має отримати ПОЧАТКОВІ розмір і тональність, а зміни
+   посеред — лежати в bars. Раніше бралися останні з файлу. */
+let impBad=0;
+for(const sc of all){
+  if(sc.parts.some(p=>!p.ms))continue;          /* PDF-демо без нот */
+  const back=d.window.fromMusicXML(d.window.toMusicXML(sc));
+  back.parts.forEach((bp,i)=>{
+    const p=sc.parts.filter(x=>x.ms)[i];
+    if(!p)return;
+    const m0=p.meter||[4,4],f0=p.fifths||0;
+    if(bp.meter[0]!==m0[0]||bp.meter[1]!==m0[1]||bp.fifths!==f0){
+      impBad++;
+      console.log('  FAIL  імпорт '+sc.title+' / '+p.name+': '+bp.meter.join('/')+' '+bp.fifths
+        +' замість '+m0.join('/')+' '+f0);
+    }
+  });
+}
+console.log('партій з неправильним початковим розміром/тональністю після імпорту:',impBad);
+if(bad||impBad)process.exitCode=1;
