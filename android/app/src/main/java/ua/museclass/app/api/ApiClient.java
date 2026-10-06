@@ -73,6 +73,15 @@ public final class ApiClient {
         return call(get("/me"), Dto.Profile.class, true);
     }
 
+    // ---- класи ----
+
+    /** Вступ за кодом. Сервер прощає регістр, пробіли й кириличні двійники. */
+    public Dto.ClassInfo joinClass(String code) throws ApiException {
+        JsonObject b = new JsonObject();
+        b.addProperty("code", code);
+        return call(post("/classes/join", b, true), Dto.ClassInfo.class, true);
+    }
+
     // ---- бібліотека і партитури ----
 
     public List<Dto.LibraryEntry> library() throws ApiException {

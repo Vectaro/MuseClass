@@ -25,6 +25,19 @@ public final class Dto {
         public String createdAt;
     }
 
+    public static final class ClassInfo {
+        public String id;
+        /** тільки викладачу; учню null */
+        public String code;
+        public String name;
+        public String teacherId;
+        public String teacherName;
+        /** teacher або student */
+        public String role;
+        public int students;
+        public String createdAt;
+    }
+
     /** Картка партитури в усіх списках. */
     public static final class Summary {
         public String id;

@@ -28,6 +28,9 @@
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".LibraryActivity" />
         <activity
+            android:name=".JoinClassActivity"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
             android:name=".ScoreActivity"
             android:parentActivityName=".LibraryActivity" />
     </application>

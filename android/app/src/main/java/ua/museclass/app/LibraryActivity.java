@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,6 +30,16 @@ public class LibraryActivity extends BaseActivity {
     private SwipeRefreshLayout refresh;
     private TextView empty;
 
+    private final ActivityResultLauncher<Intent> join = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), r -> {
+                if (r.getResultCode() != RESULT_OK || r.getData() == null) return;
+                String name = r.getData().getStringExtra(JoinClassActivity.RESULT_CLASS_NAME);
+                Snackbar.make(refresh, getString(R.string.library_joined, name), Snackbar.LENGTH_LONG)
+                        .setAnchorView(R.id.join).show();
+                refresh.setRefreshing(true);
+                load();
+            });
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +56,7 @@ public class LibraryActivity extends BaseActivity {
         empty = findViewById(R.id.empty);
         refresh = findViewById(R.id.refresh);
         refresh.setOnRefreshListener(this::load);
+        findViewById(R.id.join).setOnClickListener(v -> join.launch(new Intent(this, JoinClassActivity.class)));
         refresh.setRefreshing(true);
         load();
     }
@@ -59,7 +72,7 @@ public class LibraryActivity extends BaseActivity {
             empty.setText(messageOf(e));
             empty.setVisibility(adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
             if (adapter.getItemCount() > 0) {
-                Snackbar.make(refresh, messageOf(e), Snackbar.LENGTH_LONG).show();
+                Snackbar.make(refresh, messageOf(e), Snackbar.LENGTH_LONG).setAnchorView(R.id.join).show();
             }
         });
     }

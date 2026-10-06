@@ -16,6 +16,13 @@
     <string name="library_title">Моя бібліотека</string>
     <string name="library_empty">Тут з\'являться ноти, які тобі видадуть у класі.</string>
     <string name="logout">Вийти</string>
+    <string name="library_joined">Ти в класі «%1$s».</string>
+
+    <string name="join_title">Вступити в клас</string>
+    <string name="join_hint">Код класу від викладача у вигляді PNO-3A. Регістр і дефіс — як завгодно.</string>
+    <string name="join_code">Код класу</string>
+    <string name="join_submit">Вступити</string>
+    <string name="join_empty">Впиши код.</string>
 
     <string name="dot_join">%1$s · %2$s</string>
 

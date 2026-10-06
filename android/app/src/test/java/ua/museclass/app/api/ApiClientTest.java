@@ -212,6 +212,32 @@ public class ApiClientTest {
     }
 
     @Test
+    public void joinClass() throws Exception {
+        tokens.token = "jwt";
+        server.enqueue(json(200, "{\"id\":\"c1\",\"code\":null,\"name\":\"Dev: оркестр\","
+                + "\"teacherName\":\"Оксана Кравець\",\"role\":\"student\",\"students\":1}"));
+        server.enqueue(new MockResponse().setResponseCode(404).setHeader("Content-Type", "application/problem+json")
+                .setBody("{\"status\":404,\"detail\":\"Клас не знайдено.\"}"));
+        Dto.ClassInfo c = api.joinClass("dev 6k");
+        assertEquals("Dev: оркестр", c.name);
+        assertEquals("student", c.role);
+        assertNull(c.code);
+        RecordedRequest req = server.takeRequest();
+        assertEquals("POST", req.getMethod());
+        assertEquals("/api/classes/join", req.getPath());
+        assertEquals("Bearer jwt", req.getHeader("Authorization"));
+        assertEquals("{\"code\":\"dev 6k\"}", req.getBody().readUtf8());
+        try {
+            api.joinClass("XXX-99");
+            fail();
+        } catch (ApiException e) {
+            assertEquals(404, e.status);
+            assertEquals("Клас не знайдено.", e.getMessage());
+            assertFalse(e.unauthorized);
+        }
+    }
+
+    @Test
     public void detailOfIgnoresJunk() {
         assertNull(ApiClient.detailOf("не json"));
         assertNull(ApiClient.detailOf("[1,2]"));
