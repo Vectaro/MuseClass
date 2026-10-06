@@ -17,5 +17,11 @@ Android Studio). Екранів ще немає — одна порожня `Mai
 - «Тримати екран» — `FLAG_KEEP_SCREEN_ON` на вікні плеєра.
 - Витягнуті партії — через `FileProvider` + `ACTION_SEND`, архів збирати
   `java.util.zip`.
-- Мережа: базова адреса в `BuildConfig`; емулятор бачить комп на `10.0.2.2`
-  (dev-сервер на тому ж ПК — порт 8081, бойовий — адреса Funnel).
+- Мережа: базова адреса — `BuildConfig.API_BASE` (зроблено 2026-10-06).
+  - debug: `http://10.0.2.2:8081/api` — dev-сервер на тому ж ПК, емулятор
+    бачить комп на `10.0.2.2`. Http дозволено тільки в debug і тільки для
+    `10.0.2.2` (`app/src/debug/res/xml/network_security_config.xml`).
+  - release: адреса в репо **не вшита**. Її вписують у `android/local.properties`
+    рядком `museclass.releaseApiUrl=https://.../api` (адреса Funnel, пізніше
+    білий IP). Без неї або без `https://` release не збирається — падає задача
+    `checkReleaseApiUrl`. Перевірено обидва випадки.
