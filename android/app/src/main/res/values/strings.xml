@@ -1,3 +1,39 @@
 <resources>
     <string name="app_name">MuseClass</string>
+    <string name="back">Назад</string>
+
+    <string name="login_tagline">Ноти класу — у кишені</string>
+    <string name="login_tab_login">Вхід</string>
+    <string name="login_tab_register">Реєстрація</string>
+    <string name="login_email">Пошта</string>
+    <string name="login_name">Ім\'я (його бачать у класі)</string>
+    <string name="login_password">Пароль</string>
+    <string name="login_enter">Увійти</string>
+    <string name="login_register">Зареєструватися</string>
+    <string name="login_fill_all">Заповни всі поля.</string>
+    <string name="login_short_password">Пароль — щонайменше 8 символів.</string>
+
+    <string name="library_title">Моя бібліотека</string>
+    <string name="library_empty">Тут з\'являться ноти, які тобі видадуть у класі.</string>
+    <string name="logout">Вийти</string>
+
+    <string name="dot_join">%1$s · %2$s</string>
+
+    <string name="clef_treble">скрипковий ключ</string>
+    <string name="clef_bass">басовий ключ</string>
+    <string name="clef_alto">альтовий ключ</string>
+    <string name="clef_perc">ударні</string>
+
+    <plurals name="measures">
+        <item quantity="one">%d такт</item>
+        <item quantity="few">%d такти</item>
+        <item quantity="many">%d тактів</item>
+        <item quantity="other">%d тактів</item>
+    </plurals>
+    <plurals name="parts">
+        <item quantity="one">%d партія</item>
+        <item quantity="few">%d партії</item>
+        <item quantity="many">%d партій</item>
+        <item quantity="other">%d партій</item>
+    </plurals>
 </resources>
