@@ -1,6 +1,9 @@
 # Перенесення на Android
 
-Клієнт ще не почато; код піде в `android/`.
+Код — в `android/`. 2026-10-06 закомічено каркас з Android Studio: Java,
+`ua.museclass.app`, minSdk 24, target/compile 37, AGP 9.4.1, Gradle 9.6,
+Material3 DayNight. `gradlew assembleDebug` на робочому ПК проходить (JDK з
+Android Studio). Екранів ще немає — одна порожня `MainActivity`.
 
 - Парсер MusicXML — чиста логіка, лягає на `XmlPullParser` майже один в один.
 - `.mxl` розпаковується через `java.util.zip` з коробки.
