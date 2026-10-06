@@ -112,7 +112,7 @@ $env:DB_URL = "jdbc:postgresql://localhost:5433/museclass"
 $env:JWT_SECRET = "dev-secret-dev-secret-dev-secret-123"
 $env:SERVER_PORT = "8081"
 cd C:\MuseClass\server
-mvn spring-boot:run       # або Run у IntelliJ з тими ж змінними
+.\mvnw.cmd spring-boot:run   # або Run у IntelliJ з тими ж змінними
 ```
 
 Емулятор Android бачить комп'ютер за адресою `10.0.2.2` (dev — `:8081`), телефон
@@ -120,7 +120,7 @@ mvn spring-boot:run       # або Run у IntelliJ з тими ж змінним
 Funnel. Базову адресу API в застосунку тримай у `BuildConfig` (через
 `buildConfigField` у Gradle), щоб перемикання було одним рядком.
 
-Тести: `mvn verify` з `C:\MuseClass\server` (код спільний, у корені `server/`).
+Тести: `.\mvnw.cmd verify` з `C:\MuseClass\server` (код спільний, у корені `server/`).
 Наскрізний `ApiFlowTest` піднімає свій Postgres через
 Testcontainers, тому Docker Desktop має бути запущений. Бойову базу тест не
 чіпає.

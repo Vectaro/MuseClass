@@ -18,13 +18,14 @@ Spring Boot 4.1 · Java 21 · PostgreSQL 16 · Flyway · JWT (HS256) · Docker C
 | [`pc/`](pc/README.md) | робочий ПК, Windows 10/11 | чат про сервер |
 | [`pi/`](pi/README.md) | малина і будь-який Linux (NUC) | чат про малину |
 
-`docker compose` запускається з `pc/` або `pi/`, `mvn` — звідси, з `server/`.
+`docker compose` запускається з `pc/` або `pi/`, Maven — звідси, з `server/`.
 Правка спільних файлів зачіпає обидві машини — окремим комітом з позначкою
 «спільне».
 
 ## Розробка і тести
 
-З цієї теки: `mvn verify`. Наскрізний `ApiFlowTest` піднімає свій Postgres через
+З цієї теки: `./mvnw verify` (Windows: `.\mvnw.cmd verify`). Maven ставити не
+треба — wrapper сам завантажить Maven 3.9.16. Наскрізний `ApiFlowTest` піднімає свій Postgres через
 Testcontainers, тому Docker має бути запущений. Бойову базу тест не чіпає.
 Запуск dev-версії поруч із бойовою на тому ж ПК — у [`pc/`](pc/README.md),
 на Linux — у [`pi/`](pi/README.md).
@@ -160,13 +161,13 @@ updatedAt, ownerId, ownerName, instruments[], fits}`.
   них мав `encoding='UTF-16'` у заголовку при UTF-8 вмісті — це тепер
   обробляється. Ще перевірено захист від XXE і zip-бомби.
 - **Типи.** Код компілюється з заглушками API Spring.
+- **Збірка.** 2026-10-06 `mvnw verify` на робочому ПК (Windows, JDK 21,
+  Docker Desktop) пройшов з першого разу: 26 тестів, зокрема `ApiFlowTest` на
+  Testcontainers 2.0.5 з `postgres:16-alpine`.
 
 Інструменти цих перевірок — у [`dev/`](dev/README.md).
 
-Не перевірено: справжня збірка Maven і запуск Spring. Maven Central був
-недоступний там, де це писалося, тому перший `mvn verify` буде на твоїй
-машині. Скрипти бекапу перевіряються в README своєї машини. Якщо щось не збереться, найімовірніше це назви стартерів Spring Boot 4
-або модулів Testcontainers 2 у `pom.xml`.
+Скрипти бекапу перевіряються в README своєї машини.
 
 ## Чого поки немає
 
