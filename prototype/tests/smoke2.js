@@ -12,6 +12,8 @@ function boot(systemDark){
     if(!/navigation to another Document/.test(m))errs.push(m);});
   const dom=new JSDOM(HTML,{runScripts:'dangerously',virtualConsole:vc,url:'https://example.test/',
     beforeParse(w){
+      /* jsdom не дає TextEncoder/TextDecoder у вікні — у браузері вони є */
+      w.TextEncoder=TextEncoder;w.TextDecoder=TextDecoder;
       const listeners=[];
       w.matchMedia=q=>({media:q,
         get matches(){return /dark/.test(q)?!!systemDark:!systemDark;},

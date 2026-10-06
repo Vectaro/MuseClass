@@ -18,6 +18,8 @@ function boot(){
   const sched=[];
   const dom=new JSDOM(HTML,{runScripts:'dangerously',virtualConsole:vc,url:'https://example.test/',
     beforeParse(w){
+      /* jsdom не дає TextEncoder/TextDecoder у вікні — у браузері вони є */
+      w.TextEncoder=TextEncoder;w.TextDecoder=TextDecoder;
       w.matchMedia=q=>({media:q,matches:false,addEventListener(){},addListener(){}});
       class P{constructor(){this.value=0}
         setValueAtTime(v){this.value=v;return this}
