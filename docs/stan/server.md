@@ -72,6 +72,16 @@ Windows; веде чат про сервер; compose-проєкт `museclass-pc
 + `ApiFlowTest` на `postgres:16-alpine`), jar зібрано, ~1,5 хв. Maven ставити
 не треба — у `server/` є Maven Wrapper (Maven 3.9.16): `./mvnw` / `.\mvnw.cmd`.
 
+**Помилки (2026-10-06).** Усі відповіді 4xx/5xx під `/api` — problem+json з
+`detail` українською, і ті, що не з нашого коду: зламаний JSON, не-UUID,
+неіснуючий шлях, 405/406/415, зламаний multipart (`ErrorHandler` успадковує
+`ResponseEntityExceptionHandler`), 401/403 від Spring Security
+(`SecurityProblems`, `WWW-Authenticate` лишається; окремі тексти для
+відсутнього, зіпсованого й простроченого токена), непередбачене — 500.
+Перевіряє `ApiFlowTest.everyErrorIsProblemJson`; `verify` — 27/27. Таблиця
+текстів — у [`docs/api.md`](../api.md). Поза `/api` (і для збоїв до Spring
+MVC, напр. у Tomcat) лишається стандартна сторінка Boot `/error`.
+
 Схема й усі 40 SQL-запитів (рядки витягуються прямо з Java-коду) на
 справжньому PostgreSQL 16 через prepared statements, 61 перевірка. Розбір
 MusicXML — 25 модульних тестів плюс прогін по 377 реальних файлах з тестового
