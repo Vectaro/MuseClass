@@ -45,6 +45,13 @@
 
 ## Локальна сесія на робочому ПК
 Claude Code на ПК Влада (Windows) працює з клоном у `C:\MuseClass`.
+- **Кожна локальна сесія — у своєму worktree**, не в спільній теці: інакше
+  незакомічене одного чату блокує `pull` іншому. `C:\MuseClass` (гілка `main`)
+  — сервер і загальне; Android — `C:\MuseClass-android`, гілка `android`
+  (`main` уже зайнятий основною текою). Гілка `android` стежить за
+  `origin/main`: `git pull --rebase` тягне main, пуш — `git push origin
+  HEAD:main`. Новий worktree: `git worktree add -b <гілка> C:\MuseClass-<ділянка> main`
+  і скопіювати незакомічені локальні файли (`android/local.properties`).
 - **Можна без питання:** `mvnw` (`server/`), `npm test` (`prototype/`),
   dev-сервер — тільки на портах 8081 (API) і 5433 (Postgres).
 - **Без слова Влада не чіпати:** бойовий compose-проєкт `museclass-pc` і том
