@@ -1,7 +1,8 @@
 # Сервер (museclass-server)
 
-Проєкт Maven, пакет `ua.museclass`, код — у `server/`. Повний опис API і
-запуску — у README всередині проєкту. Де й на чому він живе — у
+Проєкт Maven, пакет `ua.museclass`, код — у `server/`. Опис API для клієнта
+(Android) — [`docs/api.md`](../api.md), звірений з кодом і живим dev-сервером
+2026-10-06; змінив API — онови його. Запуск — у README всередині проєкту. Де й на чому він живе — у
 [`hardware.md`](hardware.md).
 
 **Структура (2026-10-05, Влад).** Точне дерево — у
@@ -105,10 +106,23 @@ Docker Desktop не перезапускався (dev-база подій не �
 цього знову healthy.
 
 **Dev** за розділом «Розробка» з `server/pc/README.md` працює як написано:
-`museclass-dev-db` (`postgres:16-alpine`) на 5433, `.\mvnw.cmd spring-boot:run`
+`museclass-dev-db` (`postgres:16-alpine`) на `127.0.0.1:5433` (з 2026-10-06
+тільки localhost, раніше слухала `0.0.0.0`), `.\mvnw.cmd spring-boot:run`
 з `DB_URL`/`JWT_SECRET`/`SERVER_PORT=8081`, старт ~5 с, health `UP`, бойовий
-не зачіпає. Dev-база порожня. Дивитися — будь-яким GUI на `localhost:5433`,
-`museclass`/`museclass`. Другий `spring-boot:run`, поки 8081 зайнятий, падає
+не зачіпає. Дивитися — будь-яким GUI на `localhost:5433`,
+`museclass`/`museclass`.
+
+**Тестові дані dev** — `python server/dev/seed_dev.py` (опис у
+`server/dev/README.md`): викладач `teacher@dev.museclass` / `teacher-dev-1`,
+учень `student@dev.museclass` / `student-dev-1` (trumpet, guitar), клас «Dev:
+оркестр» `DEV-..`, видані 4 демо з прототипу — бенд на 7 партій, «Щедрик»,
+«Ода» (обидві публічні), «Етюд». Через API, повторно не дублює, на 8080 і
+Funnel відмовляється. Партитури — `server/dev/seed/*.musicxml`, згенеровані
+`export-demos.js` з `toMusicXML()` прототипу. Прогнано на dev: усе видано,
+інструменти партій бенду впізнано, крім тромбона (`null`, коду для нього
+немає).
+
+Другий `spring-boot:run`, поки 8081 зайнятий, падає
 з `BUILD FAILURE` після ~8 с — це не поломка, а зайнятий порт.
 
 ## Не перевірено
