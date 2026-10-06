@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 4.0 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">
+<score-partwise version="4.0">
+  <work><work-title>Етюд: усе одразу</work-title></work>
+  <identification>
+    <creator type="composer">В. Сорока</creator>
+    <creator type="arranger">усе, що вміє рушій</creator>
+    <encoding><software>MuseClass</software></encoding>
+  </identification>
+  <part-list>
+    <score-part id="P1"><part-name>Фортепіано</part-name><score-instrument id="P1-I1"><instrument-name>Фортепіано</instrument-name></score-instrument></score-part>
+  </part-list>
+  <part id="P1">
+    <measure number="1">
+      <attributes>
+        <divisions>24</divisions>
+        <key><fifths>0</fifths></key>
+        <time><beats>4</beats><beat-type>4</beat-type></time>
+        <clef><sign>G</sign><line>2</line></clef>
+      </attributes>
+      <barline location="left"><bar-style>heavy-light</bar-style><repeat direction="forward"/></barline>
+      <direction placement="above"><direction-type><rehearsal>A</rehearsal><words>Andante</words><dynamics><mf/></dynamics></direction-type></direction>
+      <note><pitch><step>C</step><octave>4</octave></pitch><duration>24</duration><type>quarter</type><voice>1</voice><staff>1</staff><notations><articulations><accent/></articulations></notations></note>
+      <note><rest/><duration>24</duration><type>quarter</type></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>24</duration><type>quarter</type><voice>1</voice><staff>1</staff><notations><articulations><staccato/></articulations></notations></note>
+      <note><rest/><duration>24</duration><type>quarter</type></note>
+    </measure>
+    <measure number="2">
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>12</duration><type>eighth</type><voice>1</voice><staff>1</staff><notations><articulations><staccato/></articulations></notations></note>
+      <note><rest/><duration>12</duration><type>eighth</type></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>12</duration><type>eighth</type><voice>1</voice><staff>1</staff><notations><articulations><tenuto/></articulations></notations></note>
+      <note><pitch><step>C</step><octave>5</octave></pitch><duration>12</duration><type>eighth</type><voice>1</voice><staff>1</staff></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>12</duration><type>eighth</type><voice>1</voice><staff>1</staff></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>12</duration><type>eighth</type><voice>1</voice><staff>1</staff></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>12</duration><type>eighth</type><voice>1</voice><staff>1</staff></note>
+      <note><pitch><step>F</step><octave>4</octave></pitch><duration>12</duration><type>eighth</type><voice>1</voice><staff>1</staff></note>
+    </measure>
+    <measure number="3">
+      <note><pitch><step>F</step><alter>1</alter><octave>4</octave></pitch><duration>24</duration><type>quarter</type><voice>1</voice><staff>1</staff></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>24</duration><type>quarter</type><voice>1</voice><staff>1</staff></note>
+      <note><pitch><step>B</step><alter>-1</alter><octave>4</octave></pitch><duration>24</duration><type>quarter</type><voice>1</voice><staff>1</staff></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>24</duration><type>quarter</type><voice>1</voice><staff>1</staff></note>
+    </measure>
+    <measure number="4">
+      <direction placement="above"><direction-type><words>poco rit.</words></direction-type></direction>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>48</duration><type>half</type><voice>1</voice><staff>1</staff><notations><articulations><strong-accent/></articulations></notations></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>48</duration><tie type="start"/><type>half</type><voice>1</voice><staff>1</staff><notations><tied type="start"/></notations></note>
+    </measure>
+    <measure number="5">
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>48</duration><tie type="stop"/><type>half</type><voice>1</voice><staff>1</staff><notations><tied type="stop"/></notations></note>
+      <note><rest/><duration>48</duration><type>half</type></note>
+      <barline location="right"><ending number="1" type="stop"/></barline>
+      <barline location="right"><bar-style>light-heavy</bar-style><repeat direction="backward"/></barline>
+    </measure>
+    <measure number="6">
+      <barline location="left"><ending number="2" type="start"/></barline>
+      <direction placement="above"><direction-type><rehearsal>B</rehearsal><words>a tempo</words><dynamics><f/></dynamics></direction-type></direction>
+      <note><pitch><step>C</step><octave>5</octave></pitch><duration>8</duration><type>eighth</type><time-modification><actual-notes>3</actual-notes><normal-notes>2</normal-notes></time-modification><voice>1</voice><staff>1</staff><notations><slur type="start" number="1"/><tuplet type="start"/></notations></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>8</duration><type>eighth</type><time-modification><actual-notes>3</actual-notes><normal-notes>2</normal-notes></time-modification><voice>1</voice><staff>1</staff></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>8</duration><type>eighth</type><time-modification><actual-notes>3</actual-notes><normal-notes>2</normal-notes></time-modification><voice>1</voice><staff>1</staff><notations><tuplet type="stop"/></notations></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>8</duration><type>eighth</type><time-modification><actual-notes>3</actual-notes><normal-notes>2</normal-notes></time-modification><voice>1</voice><staff>1</staff><notations><tuplet type="start"/></notations></note>
+      <note><pitch><step>F</step><octave>4</octave></pitch><duration>8</duration><type>eighth</type><time-modification><actual-notes>3</actual-notes><normal-notes>2</normal-notes></time-modification><voice>1</voice><staff>1</staff></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>8</duration><type>eighth</type><time-modification><actual-notes>3</actual-notes><normal-notes>2</normal-notes></time-modification><voice>1</voice><staff>1</staff><notations><slur type="stop" number="1"/><tuplet type="stop"/></notations></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>24</duration><type>quarter</type><voice>1</voice><staff>1</staff></note>
+      <note><rest/><duration>24</duration><type>quarter</type></note>
+    </measure>
+    <measure number="7">
+      <direction placement="above"><direction-type><words>G.P.</words></direction-type></direction>
+      <note><rest/><duration>96</duration><type>whole</type></note>
+    </measure>
+    <measure number="8">
+      <direction placement="above"><direction-type><dynamics><p/></dynamics><wedge type="crescendo"/></direction-type></direction>
+      <note><pitch><step>C</step><octave>4</octave></pitch><duration>6</duration><type>16th</type><voice>1</voice><staff>1</staff></note>
+      <note><pitch><step>D</step><octave>4</octave></pitch><duration>6</duration><type>16th</type><voice>1</voice><staff>1</staff></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>6</duration><type>16th</type><voice>1</voice><staff>1</staff></note>
+      <note><pitch><step>F</step><octave>4</octave></pitch><duration>6</duration><type>16th</type><voice>1</voice><staff>1</staff></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>6</duration><type>16th</type><voice>1</voice><staff>1</staff></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>6</duration><type>16th</type><voice>1</voice><staff>1</staff></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>6</duration><type>16th</type><voice>1</voice><staff>1</staff></note>
+      <note><pitch><step>C</step><octave>5</octave></pitch><duration>6</duration><type>16th</type><voice>1</voice><staff>1</staff></note>
+      <note><rest/><duration>24</duration><type>quarter</type></note>
+      <note><rest/><duration>12</duration><type>eighth</type></note>
+      <note><rest/><duration>12</duration><type>eighth</type></note>
+    </measure>
+    <measure number="9">
+      <direction placement="above"><direction-type><rehearsal>C</rehearsal><dynamics><f/></dynamics><wedge type="stop"/></direction-type></direction>
+      <note><grace slash="yes"/><pitch><step>B</step><octave>4</octave></pitch><type>eighth</type></note>
+      <note><pitch><step>C</step><octave>5</octave></pitch><duration>24</duration><type>quarter</type><voice>1</voice><staff>1</staff><lyric number="1"><syllabic>single</syllabic><text>ой</text></lyric></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>24</duration><type>quarter</type><voice>1</voice><staff>1</staff><lyric number="1"><syllabic>single</syllabic><text>у</text></lyric></note>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>24</duration><type>quarter</type><voice>1</voice><staff>1</staff><lyric number="1"><syllabic>single</syllabic><text>лу</text></lyric></note>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>24</duration><type>quarter</type><voice>1</voice><staff>1</staff><lyric number="1"><syllabic>single</syllabic><text>зі</text></lyric></note>
+      <backup><duration>96</duration></backup>
+      <note><pitch><step>E</step><octave>4</octave></pitch><duration>24</duration><voice>2</voice><type>quarter</type><staff>1</staff></note>
+      <note><pitch><step>C</step><octave>4</octave></pitch><duration>24</duration><voice>2</voice><type>quarter</type><staff>1</staff></note>
+      <note><pitch><step>G</step><octave>3</octave></pitch><duration>24</duration><voice>2</voice><type>quarter</type><staff>1</staff></note>
+      <note><pitch><step>B</step><octave>3</octave></pitch><duration>24</duration><voice>2</voice><type>quarter</type><staff>1</staff></note>
+    </measure>
+    <measure number="10">
+      <attributes>
+        <key><fifths>1</fifths></key>
+        <time><beats>3</beats><beat-type>4</beat-type></time>
+      </attributes>
+      <direction placement="above"><direction-type><words>Meno mosso</words></direction-type></direction>
+      <note><pitch><step>G</step><octave>4</octave></pitch><duration>24</duration><type>quarter</type><voice>1</voice><staff>1</staff></note>
+      <note><pitch><step>A</step><octave>4</octave></pitch><duration>24</duration><type>quarter</type><voice>1</voice><staff>1</staff></note>
+      <note><pitch><step>B</step><octave>4</octave></pitch><duration>24</duration><type>quarter</type><voice>1</voice><staff>1</staff></note>
+    </measure>
+    <measure number="11">
+      <direction placement="above"><direction-type><words>rit.</words><words>Fine</words></direction-type></direction>
+      <note><pitch><step>C</step><octave>4</octave></pitch><duration>72</duration><type>half</type><dot/><voice>1</voice><staff>1</staff><notations><fermata/></notations></note>
+    </measure>
+  </part>
+</score-partwise>

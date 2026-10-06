@@ -48,20 +48,29 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        // java.time і нові частини java.util на API 24
+        isCoreLibraryDesugaringEnabled = true
     }
 }
 
 dependencies {
-    implementation(libs.activity.ktx)
+    implementation(project(":musicxml"))
+    implementation(libs.activity)
     implementation(libs.appcompat)
     implementation(libs.constraintlayout)
     implementation(libs.material)
+    implementation(libs.recyclerview)
+    implementation(libs.swiperefreshlayout)
+    implementation(libs.okhttp)
+    implementation(libs.gson)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
     testImplementation(libs.junit)
+    testImplementation(libs.okhttp.mockwebserver)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)
 }
 
-val checkReleaseApiUrl by tasks.registering {
+val checkReleaseApiUrl = tasks.register("checkReleaseApiUrl") {
     val url = releaseApiUrl
     doLast {
         if (url.isEmpty()) {
