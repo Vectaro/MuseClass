@@ -230,6 +230,61 @@ class ApiFlowTest {
         assertEquals(404, get("/api/scores/" + scoreId, student).status());
     }
 
+    /** Будь-яка помилка — problem+json зі status і detail українською, і ті, що не з нашого коду. */
+    @Test
+    void everyErrorIsProblemJson() throws Exception {
+        String suffix = UUID.randomUUID().toString().substring(0, 8);
+        String user = token(send("POST", "/api/auth/register", null,
+                obj("email", "errors-" + suffix + "@example.com", "password", "correct-horse", "displayName", "Помилка")), 201);
+
+        // токен: немає, зіпсований, прострочений — тіло є, WWW-Authenticate лишився
+        Res none = get("/api/me", null);
+        assertProblem(none, 401, "Потрібно увійти.");
+        assertTrue(none.headers().firstValue("WWW-Authenticate").orElse("").startsWith("Bearer"));
+        Res broken = get("/api/me", "not-a-token");
+        assertProblem(broken, 401, "Недійсний токен. Увійди знову.");
+        assertTrue(broken.headers().firstValue("WWW-Authenticate").orElse("").contains("invalid_token"));
+        assertProblem(get("/api/me", expiredToken()), 401, "Сесія закінчилась. Увійди знову.");
+
+        // помилки Spring MVC, до коду контролерів не доходять
+        assertProblem(send("POST", "/api/classes", user, "{broken"), 400,
+                "Тіло запиту не читається: потрібен коректний JSON.");
+        assertProblem(get("/api/classes/123", user), 400, "Некоректний ідентифікатор: 123");
+        assertProblem(get("/api/catalog?limit=abc", user), 400, "Параметр «limit» має неправильний формат: abc");
+        assertProblem(get("/api/nope", user), 404, "Такого шляху в API немає.");
+        Res method = send("PUT", "/api/classes", user, "{}");
+        assertProblem(method, 405, "Метод PUT тут не підтримується.");
+        assertTrue(method.headers().firstValue("Allow").isPresent());
+        assertProblem(send("POST", "/api/scores", user, "{}"), 415, "Непідтримуваний тип тіла запиту (Content-Type).");
+
+        // і наші власні — як і були
+        assertProblem(send("POST", "/api/auth/login", null, obj("email", "nobody-" + suffix + "@example.com",
+                "password", "whatever-123")), 401, "Невірна пошта або пароль.");
+    }
+
+    void assertProblem(Res r, int status, String detail) {
+        assertEquals(status, r.status(), r.body());
+        assertTrue(r.headers().firstValue("Content-Type").orElse("").startsWith("application/problem+json"),
+                r.headers().toString());
+        Map<String, Object> m = r.map();
+        assertEquals(status, ((Number) m.get("status")).intValue());
+        assertEquals(detail, m.get("detail"));
+    }
+
+    /** JWT, підписаний тим самим тестовим секретом, але прострочений годину тому. */
+    static String expiredToken() throws Exception {
+        java.util.Base64.Encoder b64 = java.util.Base64.getUrlEncoder().withoutPadding();
+        long now = System.currentTimeMillis() / 1000;
+        String header = b64.encodeToString("{\"alg\":\"HS256\"}".getBytes(StandardCharsets.UTF_8));
+        String claims = b64.encodeToString(("{\"iss\":\"museclass\",\"sub\":\"" + UUID.randomUUID()
+                + "\",\"iat\":" + (now - 7200) + ",\"exp\":" + (now - 3600) + "}").getBytes(StandardCharsets.UTF_8));
+        javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA256");
+        mac.init(new javax.crypto.spec.SecretKeySpec(
+                "test-secret-that-is-long-enough-for-hs256".getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+        String sig = b64.encodeToString(mac.doFinal((header + "." + claims).getBytes(StandardCharsets.UTF_8)));
+        return header + "." + claims + "." + sig;
+    }
+
     // ---------------------------------------------------------------- HTTP
 
     Res get(String path, String token) throws IOException, InterruptedException {

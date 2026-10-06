@@ -16,6 +16,7 @@ import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import ua.museclass.common.SecurityProblems;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -32,6 +33,7 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain api(HttpSecurity http) throws Exception {
+        SecurityProblems problems = new SecurityProblems();
         http
                 .csrf(c -> c.disable())
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -40,7 +42,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/actuator/health", "/actuator/health/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated())
-                .oauth2ResourceServer(o -> o.jwt(Customizer.withDefaults()));
+                // і для зіпсованого токена (фільтр Bearer), і для відсутнього (ExceptionTranslationFilter)
+                .oauth2ResourceServer(o -> o.jwt(Customizer.withDefaults())
+                        .authenticationEntryPoint(problems)
+                        .accessDeniedHandler(problems))
+                .exceptionHandling(e -> e.authenticationEntryPoint(problems).accessDeniedHandler(problems));
         return http.build();
     }
 
