@@ -26,12 +26,12 @@ STUDENT_INSTRUMENTS = ["trumpet", "guitar"]
 CLASS_NAME = "Dev: оркестр"
 CLASS_PREFIX = "DEV"
 
-# файл, rights, visibility. Видача класу сама робить приватну класною.
+# файл, kind, rights, visibility. Видача класу сама робить приватну класною.
 SCORES = [
-    ("band-march.musicxml", "original", "private"),
-    ("shchedryk.musicxml", "folk", "public"),
-    ("oda.musicxml", "public_domain", "public"),
-    ("etude.musicxml", "original", "private"),
+    ("band-march.musicxml", "other", "original", "private"),
+    ("shchedryk.musicxml", "folk", "folk", "public"),
+    ("oda.musicxml", "classical", "public_domain", "public"),
+    ("etude.musicxml", "technique", "original", "private"),
 ]
 
 
@@ -105,13 +105,14 @@ def main():
 
     mine = {s["title"]: s for s in ok(*call("GET", "/scores/mine", teacher), 200)}
     assigned = []
-    for fname, rights, visibility in SCORES:
+    for fname, kind, rights, visibility in SCORES:
         content = (SEED / fname).read_bytes()
         title = title_of(content)
         if title in mine:
             score_id, state = mine[title]["id"], "вже була"
+            ok(*call("PATCH", f"/scores/{score_id}", teacher, {"kind": kind, "rights": rights}), 200)
         else:
-            view = ok(*call("POST", "/scores", teacher, {"rights": rights, "visibility": visibility},
+            view = ok(*call("POST", "/scores", teacher, {"kind": kind, "rights": rights, "visibility": visibility},
                             files={"file": (fname, content)}), 201)
             score_id, state = view["score"]["id"], "нова"
         ok(*call("PUT", f"/classes/{klass['id']}/scores/{score_id}", teacher), 204)
@@ -125,8 +126,8 @@ def main():
     print(f"Учень:      {STUDENT['email']} / {STUDENT['password']}  (інструменти: {', '.join(STUDENT_INSTRUMENTS)})")
     print(f"Клас:       {klass['name']}, код {klass['code']}")
     for title, n, state in assigned:
-        print(f"  видано:   {title} — {n} партій ({state})")
-    print(f"Бібліотека учня: {len(library)} партитур")
+        print(f"  видано:   {title} — партій: {n} ({state})")
+    print(f"Бібліотека учня: партитур — {len(library)}")
 
 
 def title_of(content):
