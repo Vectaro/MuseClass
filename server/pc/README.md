@@ -105,7 +105,7 @@ Register-ScheduledTask -TaskName MuseClassBackup -Action $a -Trigger (New-Schedu
 іншому порту й з окремою базою, щоб не зачепити справжні дані:
 
 ```powershell
-docker run -d --name museclass-dev-db -p 5433:5432 `
+docker run -d --name museclass-dev-db -p 127.0.0.1:5433:5432 `
   -e POSTGRES_DB=museclass -e POSTGRES_USER=museclass -e POSTGRES_PASSWORD=museclass postgres:16-alpine
 
 $env:DB_URL = "jdbc:postgresql://localhost:5433/museclass"
@@ -114,6 +114,9 @@ $env:SERVER_PORT = "8081"
 cd C:\MuseClass\server
 .\mvnw.cmd spring-boot:run   # або Run у IntelliJ з тими ж змінними
 ```
+
+Dev-база слухає тільки `127.0.0.1`: пароль у неї відомий усім, тож з мережі
+(Wi-Fi, ZeroTier, Tailscale) її бачити не повинно.
 
 Емулятор Android бачить комп'ютер за адресою `10.0.2.2` (dev — `:8081`), телефон
 у тій самій Wi-Fi — за локальною IP комп'ютера. Бойовий сервер — за адресою
