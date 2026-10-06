@@ -55,7 +55,7 @@ public class ScoreActivity extends BaseActivity {
         background(() -> {
             Loaded l = new Loaded();
             l.view = api().score(id);
-            l.score = MusicXmlReader.read(api().scoreFile(id));
+            l.score = MusicXmlReader.read(app().scoreFiles().get(id));
             return l;
         }, this::show, e -> {
             progress.setVisibility(View.GONE);

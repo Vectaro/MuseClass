@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Резервна копія до Android 12. Токен входу не копіюємо: на новому пристрої — увійти заново. -->
+<!-- Резервна копія до Android 12. Токен входу не копіюємо: на новому пристрої — увійти заново.
+     Файли партитур — кеш, стягнуться знову. -->
 <full-backup-content>
     <exclude domain="sharedpref" path="session.xml" />
+    <exclude domain="file" path="scores/" />
 </full-backup-content>

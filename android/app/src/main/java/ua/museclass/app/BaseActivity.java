@@ -107,6 +107,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void toLogin() {
         session().clear();
+        app().scoreFiles().clear(); // копії файлів — попереднього користувача
         Intent i = new Intent(this, LoginActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);

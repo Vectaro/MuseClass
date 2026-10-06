@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Android 12+. Токен входу не йде ні в хмару, ні на інший пристрій. -->
+<!-- Android 12+. Токен входу не йде ні в хмару, ні на інший пристрій;
+     файли партитур — кеш, теж ні. -->
 <data-extraction-rules>
     <cloud-backup>
         <exclude domain="sharedpref" path="session.xml" />
+        <exclude domain="file" path="scores/" />
     </cloud-backup>
     <device-transfer>
         <exclude domain="sharedpref" path="session.xml" />
+        <exclude domain="file" path="scores/" />
     </device-transfer>
 </data-extraction-rules>

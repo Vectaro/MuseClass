@@ -84,11 +84,32 @@ public final class ApiClient {
         return call(get("/scores/" + id), Dto.ScoreView.class, true);
     }
 
-    /** Оригінальні байти файлу: .musicxml або .mxl. */
-    public byte[] scoreFile(String id) throws ApiException {
-        try (Response r = http.newCall(get("/scores/" + id + "/file")).execute()) {
+    /** Відповідь на запит файлу: або нові байти з ETag, або «не змінився» (304). */
+    public static final class FileResult {
+        /** null, якщо notModified. */
+        public final byte[] bytes;
+        /** Як прийшов у заголовку, з лапками; може бути null. */
+        public final String etag;
+        public final boolean notModified;
+
+        FileResult(byte[] bytes, String etag, boolean notModified) {
+            this.bytes = bytes;
+            this.etag = etag;
+            this.notModified = notModified;
+        }
+    }
+
+    /**
+     * Оригінальні байти файлу: .musicxml або .mxl. З etag збереженої копії
+     * шле If-None-Match — тоді сервер може відповісти 304 без тіла.
+     */
+    public FileResult scoreFile(String id, String etag) throws ApiException {
+        Request.Builder b = authed(new Request.Builder().url(base + "/scores/" + id + "/file").get());
+        if (etag != null) b.header("If-None-Match", etag);
+        try (Response r = http.newCall(b.build()).execute()) {
+            if (r.code() == 304) return new FileResult(null, etag, true);
             if (!r.isSuccessful()) throw error(r, true);
-            return body(r).bytes();
+            return new FileResult(body(r).bytes(), r.header("ETag"), false);
         } catch (IOException e) {
             throw ApiException.network(e);
         }

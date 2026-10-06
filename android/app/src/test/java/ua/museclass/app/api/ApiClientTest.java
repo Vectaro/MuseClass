@@ -189,9 +189,26 @@ public class ApiClientTest {
         assertEquals("mxl", v.score.format);
         assertEquals(2, v.parts.size());
         assertNull(v.parts.get(1).instrument);
-        assertArrayEquals(zip, api.scoreFile("s1"));
+        ApiClient.FileResult f = api.scoreFile("s1", null);
+        assertArrayEquals(zip, f.bytes);
+        assertEquals("\"abc\"", f.etag);
+        assertFalse(f.notModified);
         server.takeRequest();
-        assertEquals("/api/scores/s1/file", server.takeRequest().getPath());
+        RecordedRequest req = server.takeRequest();
+        assertEquals("/api/scores/s1/file", req.getPath());
+        assertNull(req.getHeader("If-None-Match"));
+    }
+
+    @Test
+    public void fileNotModified() throws Exception {
+        tokens.token = "jwt";
+        server.enqueue(new MockResponse().setResponseCode(304));
+        ApiClient.FileResult f = api.scoreFile("s1", "\"abc\"");
+        assertTrue(f.notModified);
+        assertNull(f.bytes);
+        RecordedRequest req = server.takeRequest();
+        assertEquals("\"abc\"", req.getHeader("If-None-Match"));
+        assertEquals("Bearer jwt", req.getHeader("Authorization"));
     }
 
     @Test
