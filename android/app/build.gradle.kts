@@ -1,6 +1,16 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
 }
+
+// Адреса бойового сервера не вшита в репо: її вписують у local.properties
+// рядком museclass.releaseApiUrl=https://.../api. Без неї release не збирається.
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
+}
+val releaseApiUrl = localProperties.getProperty("museclass.releaseApiUrl")?.trim().orEmpty()
 
 android {
     namespace = "ua.museclass.app"
@@ -18,8 +28,17 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     buildTypes {
+        debug {
+            // емулятор бачить ПК на 10.0.2.2, dev-сервер — порт 8081
+            buildConfigField("String", "API_BASE", "\"http://10.0.2.2:8081/api\"")
+        }
         release {
+            buildConfigField("String", "API_BASE", "\"$releaseApiUrl\"")
             optimization {
                 enable = true
                 packageScope = setOf("androidx.**", "kotlin.**", "kotlinx.**")
@@ -41,3 +60,18 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)
 }
+
+val checkReleaseApiUrl by tasks.registering {
+    val url = releaseApiUrl
+    doLast {
+        if (url.isEmpty()) {
+            throw GradleException(
+                "Немає адреси сервера для release: впиши museclass.releaseApiUrl у local.properties"
+            )
+        }
+        if (!url.startsWith("https://")) {
+            throw GradleException("museclass.releaseApiUrl має починатися з https://, зараз: $url")
+        }
+    }
+}
+tasks.named { it == "preReleaseBuild" }.configureEach { dependsOn(checkReleaseApiUrl) }
