@@ -31,6 +31,7 @@ public class LibraryActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        askLocalNetwork();
         setContentView(R.layout.activity_library);
         padForSystemBars(findViewById(R.id.root));
         MaterialToolbar toolbar = findViewById(R.id.toolbar);

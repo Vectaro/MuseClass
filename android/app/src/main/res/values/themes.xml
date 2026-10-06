@@ -1,8 +1,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.MuseClass" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- Вміст іде під статус-бар (edge-to-edge), тож колір іконок задаємо самі -->
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="Theme.MuseClass" parent="Base.Theme.MuseClass" />
