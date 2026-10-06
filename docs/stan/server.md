@@ -65,6 +65,12 @@ Windows; веде чат про сервер; compose-проєкт `museclass-pc
 учням.
 
 ## Перевірено
+**Збірка (2026-10-06).** `.\mvnw.cmd verify` з `server/` на робочому ПК
+(Windows 10, Temurin 21, Docker Desktop 29) пройшов з першого разу, `pom.xml`
+не правився: Spring Boot 4.1.1, Testcontainers 2.0.5, 26 тестів (25 модульних
++ `ApiFlowTest` на `postgres:16-alpine`), jar зібрано, ~1,5 хв. Maven ставити
+не треба — у `server/` є Maven Wrapper (Maven 3.9.16): `./mvnw` / `.\mvnw.cmd`.
+
 Схема й усі 40 SQL-запитів (рядки витягуються прямо з Java-коду) на
 справжньому PostgreSQL 16 через prepared statements, 61 перевірка. Розбір
 MusicXML — 25 модульних тестів плюс прогін по 377 реальних файлах з тестового
@@ -77,15 +83,12 @@ MusicXML — 25 модульних тестів плюс прогін по 377 �
 Інструменти цих перевірок — у [`server/dev/`](../../server/dev/README.md):
 `sql_check.py` (61 перевірка SQL) і `RealFilesSmoke.java` (розбір реальних
 файлів). 2026-10-05 обидва прогнані вже з репо: 61/61, 377/377. Новий запит у
-репозиторії — додавай перевірку в `sql_check.py`, поки немає справжньої збірки.
+репозиторії — перевірку в `sql_check.py` або в `ApiFlowTest`.
 
 Як перевіряється: SQL — на живому Postgres, розбір MusicXML — на реальних
 файлах, логіка HTTP — `ApiFlowTest` (потрібен Docker; піднімає свій Postgres
 через Testcontainers, бойову базу не чіпає).
 
 ## Не перевірено
-Справжня збірка й запуск Spring — Maven Central у пісочниці заблокований
-(перевірено ще раз 2026-09-29), Влад ще не збирав. Першим кроком — `mvn verify`
-на ПК. Якщо не збирається, найімовірніше винні назви стартерів Spring Boot 4
-або модулів Testcontainers 2 у `pom.xml`. `backup.ps1` і PowerShell-команди з
-README не запускались.
+Бойовий запуск через `docker compose` з `pc/` і реальний клієнт проти нього.
+`backup.ps1` і PowerShell-команди з `pc/README.md` не запускались.
