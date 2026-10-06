@@ -48,4 +48,9 @@ for(const sc of all){
   });
 }
 console.log('партій з неправильним початковим розміром/тональністю після імпорту:',impBad);
-if(bad||impBad)process.exitCode=1;
+/* Панель відтворення: перемикачі реприз і темпових написів мають бути.
+   Колись друга, застаріла копія функції їх тихо перекривала. */
+const vs=d.window.eval("state.view='s13';state.mode='part';const _h=playerSettingsHTML(SCORES[0].parts[0]);state.view=null;_h");
+const vsBad=['dorep','dotempo','metro','tosound','compress'].filter(k=>vs.indexOf('data-act="'+k+'"')<0);
+console.log(vsBad.length?'  FAIL  у панелі відтворення бракує: '+vsBad.join(', '):'  ok    панель відтворення: усі перемикачі на місці');
+if(bad||impBad||vsBad.length)process.exitCode=1;

@@ -177,7 +177,8 @@ sec('Плеєр');
   ok('панелі за замовчуванням немає',!a.$('.sheetpanel'));
   a.click(a.$('[data-act="vset"]'));
   ok('шестерня відкриває панель',!!a.$('.sheetpanel'));
-  ok('у панелі 5 перемикачів',a.$$('.sheetpanel .sw').length===5,a.$$('.sheetpanel .sw').length+'');
+  /* метроном, стрій, репризи, rit./accel., номери тактів, стискання пауз, екран */
+  ok('у панелі 7 перемикачів',a.$$('.sheetpanel .sw').length===7,a.$$('.sheetpanel .sw').length+'');
   ok('панель пояснює стрій цієї партії',/на 2 півтони нижче/.test(a.$('.sheetpanel').textContent));
 
   const nums=()=>(a.$('#viewer').innerHTML.match(/font-size="9\.5"/g)||[]).length;

@@ -2430,26 +2430,6 @@ function partsPanelHTML(sc){
     +'У витягнутій партії лишаються її ключ, тональність і стрій.</p>'
     +'</div></div>';
 }
-/* Налаштування відтворення живуть тут, у плеєрі, а не в профілі:
-   їх крутять з нотами перед очима. */
-function playerSettingsHTML(p){
-  const sw=(act,on)=>'<button class="sw" data-act="'+act+'" aria-pressed="'+on+'"></button>';
-  return '<div class="sheetpanel" data-act="vsetclose"><div class="sp-in">'
-    +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">'
-    +'<strong style="flex:1;font-size:15px">Відтворення</strong>'
-    +'<button class="icbtn" data-act="vset">✕</button></div>'
-    +'<div class="kv">Метроном'+sw('metro',state.metro)+'</div>'
-    +'<div class="kv">Враховувати стрій інструмента'+sw('tosound',state.toSounding)+'</div>'
-    +'<p class="sub" style="margin:-4px 0 0;font-size:11.5px">'
-    +(p.ts?esc(p.name)+' звучить на '+p.ts+' півтони нижче за написане.'
-         :'Ця партія в реальній тональності — на неї не впливає.')+'</p>'
-    +'<div class="kv">Номери тактів'+sw('barnum',state.barNums)+'</div>'
-    +'<div class="kv">Стискати довгі паузи'+sw('compress',state.compress)+'</div>'
-    +'<div class="kv">Тримати екран увімкненим'+sw('awake',state.keepAwake)+'</div>'
-    +'<p class="sub" style="margin:8px 0 0;font-size:11.5px">Темп — повзунком унизу, він змінюється на ходу.</p>'
-    +'</div></div>';
-}
-
 /* ============================== ПОДІЇ =============================== */
 function render(){
   tabsEl.classList.remove('hide');
