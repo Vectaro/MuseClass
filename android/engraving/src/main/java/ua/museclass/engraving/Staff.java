@@ -97,6 +97,11 @@ public final class Staff {
         public boolean barNumbers = true;
         /** У скільки разів розтягнути такти; 1 — як у прототипі. */
         public double stretch = 1;
+        /**
+         * Звідки починаються лінії стану. null — як у прототипі (padL − 8), і
+         * тоді ключ висить лівіше за лінії; правильно — під ключем, від лівого краю.
+         */
+        public Double staffStart;
     }
 
     /** Результат: фігури і ширина стану. */
@@ -391,7 +396,8 @@ public final class Staff {
 
         Result build() {
             for (int i = 0; i < 5; i++) {
-                s.add(new Shape.Line(padL - 8, top + i * 10, total - 6, top + i * 10, 1, .85f));
+                double x1 = o.staffStart != null ? o.staffStart : padL - 8;
+                s.add(new Shape.Line(x1, top + i * 10, total - 6, top + i * 10, 1, .85f));
             }
             clef(22);
             kx = 50;

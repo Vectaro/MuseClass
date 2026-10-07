@@ -1,5 +1,6 @@
 package ua.museclass.app;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +16,8 @@ import ua.museclass.musicxml.Part;
 import ua.museclass.musicxml.Score;
 
 /**
- * Партитура: поки без рендеру. Тягнемо картку й файл, розбираємо файл своїм
- * парсером і показуємо назву, партії та кількість тактів з нього.
+ * Партитура: тягнемо картку й файл, розбираємо файл своїм парсером і
+ * показуємо назву, партії та кількість тактів з нього. Тап по партії — її ноти.
  */
 public class ScoreActivity extends BaseActivity {
     static final String EXTRA_ID = "scoreId";
@@ -34,6 +35,7 @@ public class ScoreActivity extends BaseActivity {
     private TextView error;
     private ProgressBar progress;
     private LinearLayout parts;
+    private String id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +52,7 @@ public class ScoreActivity extends BaseActivity {
         progress = findViewById(R.id.progress);
         parts = findViewById(R.id.parts);
 
-        String id = getIntent().getStringExtra(EXTRA_ID);
+        id = getIntent().getStringExtra(EXTRA_ID);
         title.setText(getIntent().getStringExtra(EXTRA_TITLE));
         background(() -> {
             Loaded l = new Loaded();
@@ -83,8 +85,14 @@ public class ScoreActivity extends BaseActivity {
 
         LayoutInflater inf = LayoutInflater.from(this);
         parts.removeAllViews();
-        for (Part p : s.parts()) {
+        for (int pi = 0; pi < s.parts().size(); pi++) {
+            Part p = s.parts().get(pi);
             View row = inf.inflate(R.layout.item_part, parts, false);
+            final int index = pi;
+            row.setOnClickListener(v -> startActivity(new Intent(this, PartActivity.class)
+                    .putExtra(PartActivity.EXTRA_ID, id)
+                    .putExtra(PartActivity.EXTRA_PART, index)
+                    .putExtra(PartActivity.EXTRA_TITLE, info.title)));
             ((TextView) row.findViewById(R.id.name)).setText(p.name());
             StringBuilder d = new StringBuilder(clefName(p.clef()));
             d.append(" · ").append(p.meter());

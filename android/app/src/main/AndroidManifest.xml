@@ -33,6 +33,9 @@
         <activity
             android:name=".ScoreActivity"
             android:parentActivityName=".LibraryActivity" />
+        <activity
+            android:name=".PartActivity"
+            android:parentActivityName=".ScoreActivity" />
     </application>
 
 </manifest>

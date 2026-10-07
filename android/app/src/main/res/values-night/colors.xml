@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Аркуш і в темній темі — «папір», лише трохи тепліший, щоб не сліпив (як у прототипі) -->
+    <color name="sheet_paper">#FAF8F3</color>
+</resources>

@@ -2,4 +2,13 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Нотний аркуш: за замовчуванням білий «папір» в обох темах -->
+    <color name="sheet_paper">#FFFFFF</color>
+    <color name="sheet_ink">#1B1B1E</color>
+    <color name="sheet_muted">#8A8A92</color>
+    <!-- Інверсія (світлі ноти на темному) — пункт налаштувань «вигляд» -->
+    <color name="sheet_inverted_paper">#151828</color>
+    <color name="sheet_inverted_ink">#E9EAF3</color>
+    <color name="sheet_inverted_muted">#959DBE</color>
 </resources>

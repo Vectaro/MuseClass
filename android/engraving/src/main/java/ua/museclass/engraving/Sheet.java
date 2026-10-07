@@ -43,6 +43,9 @@ public final class Sheet {
         }
     }
 
+    /** Лінії стану — від лівого краю, ключ стоїть на них (прототип починає їх після ключа). */
+    static final double STAFF_START = 12;
+
     private Sheet() {
     }
 
@@ -87,6 +90,7 @@ public final class Sheet {
             o.end = last;
             o.barNumbers = opt.barNumbers;
             o.stretch = k;
+            o.staffStart = STAFF_START;
             Staff.Result r = Staff.render(items.subList(from, to), o);
             out.add(place(r, from, to, opt.pad));
             from = to;

@@ -24,6 +24,8 @@
     <string name="join_submit">Вступити</string>
     <string name="join_empty">Впиши код.</string>
 
+    <string name="sheet_system">Такти %1$d–%2$d</string>
+
     <string name="dot_join">%1$s · %2$s</string>
 
     <string name="clef_treble">скрипковий ключ</string>
