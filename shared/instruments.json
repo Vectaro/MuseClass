@@ -1,0 +1,72 @@
+{
+  "_doc": "Єдиний довідник інструментів MuseClass. Джерело правди для сервера (CHECK у БД, InstrumentDetector), прототипу й Android. Порядок масиву = порядок у UI. Правила впізнавання — у полі detect_order. Опис полів — docs/instruments.md.",
+  "version": 1,
+  "instruments": [
+    {"code":"piano",           "name":"Фортепіано",        "family":"keyboard",   "clef":"treble+bass", "transpose":0,   "gm":[1,2,3,4,5,6,7,8], "synth":"piano",
+     "keywords":["piano","pno","фортеп","піаніно","рояль","клавір","keyboard"]},
+    {"code":"accordion",       "name":"Баян / акордеон",   "family":"keyboard",   "clef":"treble+bass", "transpose":0,   "gm":[22,24],          "synth":"sax",
+     "keywords":["accordion","bayan","баян","акордеон","гармон"]},
+
+    {"code":"guitar",          "name":"Гітара",            "family":"plucked",    "clef":"treble",      "transpose":-12, "gm":[25,26,27,28,29,30,31,32], "synth":"guitar",
+     "keywords":["guitar","gtr","гітар"]},
+    {"code":"bass_guitar",     "name":"Бас-гітара",        "family":"plucked",    "clef":"bass",        "transpose":-12, "gm":[33,34,35,36,37,38,39,40], "synth":"bass",
+     "keywords":["bass guitar","electric bass","fretless bass","acoustic bass","бас-гітар","бас гітар","басгітар"]},
+    {"code":"ukulele",         "name":"Укулеле",           "family":"plucked",    "clef":"treble",      "transpose":0,   "gm":[],               "synth":"guitar",
+     "keywords":["ukulele","uke","укулеле"]},
+    {"code":"bandura",         "name":"Бандура",           "family":"plucked",    "clef":"treble+bass", "transpose":0,   "gm":[],               "synth":"bandura",
+     "keywords":["bandura","бандур"]},
+
+    {"code":"violin",          "name":"Скрипка",           "family":"strings",    "clef":"treble",      "transpose":0,   "gm":[41],             "synth":"violin",
+     "keywords":["violin","vln","скрипк"]},
+    {"code":"viola",           "name":"Альт",              "family":"strings",    "clef":"alto",        "transpose":0,   "gm":[42],             "synth":"violin",
+     "keywords":["viola","vla","альт"]},
+    {"code":"cello",           "name":"Віолончель",        "family":"strings",    "clef":"bass",        "transpose":0,   "gm":[43],             "synth":"violin",
+     "keywords":["cello","vlc","віолончел"]},
+    {"code":"double_bass",     "name":"Контрабас",         "family":"strings",    "clef":"bass",        "transpose":-12, "gm":[44],             "synth":"violin",
+     "keywords":["double bass","contrabass","kontrabass","контрабас"]},
+
+    {"code":"flute",           "name":"Флейта",            "family":"woodwind",   "clef":"treble",      "transpose":0,   "gm":[74],             "synth":"flute",
+     "keywords":["flute","флейт"]},
+    {"code":"recorder",        "name":"Блок-флейта",       "family":"woodwind",   "clef":"treble",      "transpose":12,  "gm":[75],             "synth":"flute",
+     "keywords":["recorder","блок-флейт","блокфлейт"]},
+    {"code":"sopilka",         "name":"Сопілка",           "family":"woodwind",   "clef":"treble",      "transpose":0,   "gm":[],               "synth":"flute",
+     "keywords":["sopilka","сопіл"]},
+    {"code":"oboe",            "name":"Гобой",             "family":"woodwind",   "clef":"treble",      "transpose":0,   "gm":[69,70],          "synth":"sax",
+     "keywords":["oboe","гобой","english horn","cor anglais","англійськ"]},
+    {"code":"clarinet",        "name":"Кларнет in B♭",     "family":"woodwind",   "clef":"treble",      "transpose":-2,  "gm":[72],             "synth":"sax",
+     "keywords":["clarinet","clar","кларнет"]},
+    {"code":"bassoon",         "name":"Фагот",             "family":"woodwind",   "clef":"bass",        "transpose":0,   "gm":[71],             "synth":"trombone",
+     "keywords":["bassoon","contrabassoon","fagott","фагот","контрафагот"]},
+    {"code":"saxophone_alto",  "name":"Альт-саксофон in E♭","family":"woodwind",  "clef":"treble",      "transpose":-9,  "gm":[65,66],          "synth":"sax",
+     "keywords":["alto sax","alto saxophone","альт-сакс","альт сакс","альтсакс"]},
+    {"code":"saxophone_tenor", "name":"Тенор-саксофон in B♭","family":"woodwind", "clef":"treble",      "transpose":-14, "gm":[67,68],          "synth":"sax",
+     "keywords":["tenor sax","tenor saxophone","тенор-сакс","тенор сакс","теноровий сакс"]},
+
+    {"code":"trumpet",         "name":"Труба in B♭",       "family":"brass",      "clef":"treble",      "transpose":-2,  "gm":[57,60],          "synth":"trumpet",
+     "keywords":["trumpet","tpt","trp","труба","cornet","корнет"]},
+    {"code":"french_horn",     "name":"Валторна in F",     "family":"brass",      "clef":"treble",      "transpose":-7,  "gm":[61],             "synth":"trombone",
+     "keywords":["french horn","horn","corno","валторн"]},
+    {"code":"trombone",        "name":"Тромбон",           "family":"brass",      "clef":"bass",        "transpose":0,   "gm":[58],             "synth":"trombone",
+     "keywords":["trombone","tbn","trb","тромбон"]},
+    {"code":"tuba",            "name":"Туба",              "family":"brass",      "clef":"bass",        "transpose":0,   "gm":[59],             "synth":"trombone",
+     "keywords":["tuba","туба"]},
+
+    {"code":"drums",           "name":"Ударні",            "family":"percussion", "clef":"perc",        "transpose":0,   "gm":[],               "synth":null,
+     "keywords":["drum","percussion","kit","ударн","барабан"]},
+    {"code":"voice",           "name":"Вокал",             "family":"voice",      "clef":"treble",      "transpose":0,   "gm":[53,54,55],       "synth":"voice",
+     "keywords":["voice","vocal","soprano","mezzo","alto voice","contralto","tenor","baritone","choir","вокал","голос","сопрано","тенор","баритон","хор","спів"]}
+  ],
+  "detect_order": [
+    "bandura","ukulele","bass_guitar","bassoon","double_bass",
+    "saxophone_alto","saxophone_tenor","guitar","accordion","piano",
+    "cello","viola","violin","recorder","sopilka","flute",
+    "oboe","clarinet","french_horn","trombone","tuba","trumpet","drums","voice"
+  ],
+  "fallback": {
+    "sax_without_kind": "saxophone_alto",
+    "midi_channel_10": "drums"
+  },
+  "renamed": {
+    "saxophone": "saxophone_alto"
+  }
+}
