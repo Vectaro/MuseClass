@@ -6,7 +6,7 @@
 
 Проганяє SQL-рядки, витягнуті просто з Java-репозиторіїв, на справжньому Postgres
 через prepared statements (psycopg3), і перевіряє правила доступу, ранжування,
-пошук, видачу класу. Схема — та сама міграція V1__init.sql.
+пошук, видачу класу. Схема — ті самі міграції, що накочує Flyway.
 """
 import os, re, sys, uuid, pathlib
 import psycopg
@@ -41,7 +41,9 @@ with psycopg.connect(DSN, autocommit=True) as admin:
 
 conn = psycopg.connect(DSN.replace("dbname=postgres", "dbname=mc_sqltest"), autocommit=True,
                        prepare_threshold=0)   # одразу серверні prepared statements, як у JDBC
-conn.execute((ROOT / "resources/db/migration/V1__init.sql").read_text(encoding="utf8"), prepare=False)
+# Усі міграції по черзі, як Flyway: V1__..., V2__... (сортування за номером версії)
+for mig in sorted((ROOT / "resources/db/migration").glob("V*__*.sql"), key=lambda f: int(f.name[1:].split("__")[0])):
+    conn.execute(mig.read_text(encoding="utf8"), prepare=False)
 
 def q(_n, **p):
     return conn.execute(SQL[_n], p).fetchall()

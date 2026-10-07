@@ -29,11 +29,20 @@ PGDSN="host=127.0.0.1 port=5432 user=postgres password=... dbname=postgres" pyth
 ```sh
 git clone --depth 1 --filter=blob:none --sparse https://github.com/opensheetmusicdisplay/opensheetmusicdisplay osmd
 git -C osmd sparse-checkout set test/data
-javac -encoding UTF-8 -d /tmp/rf src/main/java/ua/museclass/musicxml/*.java dev/RealFilesSmoke.java
-java -cp /tmp/rf RealFilesSmoke osmd/test/data
+./mvnw -q compile dependency:build-classpath -Dmdep.outputFile=target/cp.txt -Dmdep.includeScope=runtime
+CP="target/classes:$(cat target/cp.txt)"     # на Windows роздільник ; замість :
+javac -encoding UTF-8 -cp "$CP" -d /tmp/rf dev/RealFilesSmoke.java
+java -cp "/tmp/rf:$CP" RealFilesSmoke osmd/test/data
 ```
 
-Останній прогін (2026-10-05): `ok=377`, жодного `ERR`.
+Потрібен скомпільований проєкт: детектор інструментів читає довідник
+`museclass/instruments.json` з classpath (Maven кладе його туди з `shared/`)
+і парсить його Jackson'ом.
+
+Прогони: 2026-10-05 — `ok=377`, жодного `ERR`. 2026-10-07, після переходу на
+довідник з 24 інструментів — `ok=420` (набір OSMD підріс), 540 партій, жодного
+`ERR`; нерозпізнаних партій 63 (було 115 на тих самих файлах), жодна вже
+впізнана партія не змінила код, крім розщеплення `saxophone` на alto/tenor.
 
 ## seed_dev.py — тестові дані для dev-сервера
 Одна команда з кореня репо, поки dev-сервер працює на 8081 (запуск — у
