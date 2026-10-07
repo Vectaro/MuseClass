@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ua.museclass.app.ui.SerifText
+        style="@style/Mc.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:accessibilityHeading="true"
+        android:text="@string/onb_class_title" />
+
+    <TextView
+        style="@style/Mc.Sub"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/onb_class_sub" />
+
+    <EditText
+        android:id="@+id/cname"
+        style="@style/Mc.CodeField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start|center_vertical"
+        android:hint="@string/class_name_hint"
+        android:inputType="textCapSentences"
+        android:letterSpacing="0.07"
+        android:maxLength="80"
+        android:text="@string/onb_class_default" />
+
+    <!-- .codebox: код з'являється, коли сервер створить клас -->
+    <ua.museclass.app.ui.SerifText
+        android:id="@+id/codebox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_codebox"
+        android:gravity="center"
+        android:letterSpacing="0.22"
+        android:padding="13dp"
+        android:text="@string/code_hint"
+        android:textColor="@color/peri_ink"
+        android:textSize="27sp" />
+
+    <TextView
+        android:id="@+id/error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="9dp"
+        android:minHeight="18dp"
+        android:textColor="@color/red"
+        android:textSize="13.5sp" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:minHeight="16dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/create"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/class_create" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/skip"
+        style="@style/Mc.Button.Ghost"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="9dp"
+        android:text="@string/onb_class_skip" />
+</LinearLayout>

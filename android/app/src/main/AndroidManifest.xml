@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name=".OnboardingActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".LibraryActivity" />
         <activity android:name=".TabsActivity" />

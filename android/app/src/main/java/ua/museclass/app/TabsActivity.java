@@ -37,6 +37,7 @@ public class TabsActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        askLocalNetwork();
         setContentView(R.layout.activity_tabs);
         View root = findViewById(R.id.root);
         View tabs = findViewById(R.id.tabs);

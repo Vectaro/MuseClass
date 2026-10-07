@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ua.museclass.app.ui.SerifText
+        style="@style/Mc.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:accessibilityHeading="true"
+        android:text="@string/onb_role_title" />
+
+    <TextView
+        style="@style/Mc.Sub"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="18dp"
+        android:text="@string/onb_role_sub" />
+
+    <include
+        android:id="@+id/student"
+        layout="@layout/item_opt" />
+
+    <include
+        android:id="@+id/teacher"
+        layout="@layout/item_opt" />
+
+    <include
+        android:id="@+id/solo"
+        layout="@layout/item_opt" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:minHeight="16dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/next"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="@string/next" />
+</LinearLayout>

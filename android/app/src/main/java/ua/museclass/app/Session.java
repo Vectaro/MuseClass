@@ -21,7 +21,7 @@ public final class Session implements ApiClient.TokenStore {
         prefs = context.getSharedPreferences(FILE, Context.MODE_PRIVATE);
     }
 
-    void save(Dto.Auth auth) {
+    public void save(Dto.Auth auth) {
         prefs.edit()
                 .putString("token", auth.token)
                 .putString("expiresAt", auth.expiresAt)
@@ -31,7 +31,7 @@ public final class Session implements ApiClient.TokenStore {
     }
 
     /** Є токен і він ще не прострочений (з хвилиною запасу). */
-    boolean isActive() {
+    public boolean isActive() {
         if (prefs.getString("token", null) == null) return false;
         String exp = prefs.getString("expiresAt", null);
         if (exp == null) return true;
@@ -42,8 +42,16 @@ public final class Session implements ApiClient.TokenStore {
         }
     }
 
-    String displayName() {
+    public String displayName() {
         return prefs.getString("displayName", "");
+    }
+
+    public void setDisplayName(String name) {
+        prefs.edit().putString("displayName", name).apply();
+    }
+
+    public String userId() {
+        return prefs.getString("userId", null);
     }
 
     @Override

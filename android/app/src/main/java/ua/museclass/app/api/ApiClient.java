@@ -1,6 +1,7 @@
 package ua.museclass.app.api;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -12,6 +13,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -73,7 +75,36 @@ public final class ApiClient {
         return call(get("/me"), Dto.Profile.class, true);
     }
 
+    /** Змінити ім'я (PATCH /me). */
+    public Dto.Profile updateName(String displayName) throws ApiException {
+        JsonObject b = new JsonObject();
+        b.addProperty("displayName", displayName);
+        return call(send("PATCH", "/me", b), Dto.Profile.class, true);
+    }
+
+    /** Замінити інструменти (PUT /me/instruments); коди — як приймає сервер. */
+    public Dto.Profile setInstruments(List<String> codes) throws ApiException {
+        JsonObject b = new JsonObject();
+        JsonArray a = new JsonArray();
+        for (String c : codes) a.add(c);
+        b.add("instruments", a);
+        return call(send("PUT", "/me/instruments", b), Dto.Profile.class, true);
+    }
+
     // ---- класи ----
+
+    /** Усі мої класи: і де веду, і де вчуся. */
+    public List<Dto.ClassInfo> classes() throws ApiException {
+        Type t = new TypeToken<List<Dto.ClassInfo>>() { }.getType();
+        return call(get("/classes"), t, true);
+    }
+
+    /** Новий клас — я в ньому викладач; код генерує сервер. */
+    public Dto.ClassInfo createClass(String name) throws ApiException {
+        JsonObject b = new JsonObject();
+        b.addProperty("name", name);
+        return call(post("/classes", b, true), Dto.ClassInfo.class, true);
+    }
 
     /** Вступ за кодом. Сервер прощає регістр, пробіли й кириличні двійники. */
     public Dto.ClassInfo joinClass(String code) throws ApiException {
@@ -87,6 +118,39 @@ public final class ApiClient {
     public List<Dto.LibraryEntry> library() throws ApiException {
         Type t = new TypeToken<List<Dto.LibraryEntry>>() { }.getType();
         return call(get("/me/library"), t, true);
+    }
+
+    /** Публічний каталог: пошук у назві/авторах, фільтр жанру (null — усі). Спершу fits. */
+    public List<Dto.Summary> catalog(String q, String kind, int limit, int offset) throws ApiException {
+        HttpUrl.Builder u = HttpUrl.get(base + "/catalog").newBuilder()
+                .addQueryParameter("limit", String.valueOf(limit))
+                .addQueryParameter("offset", String.valueOf(offset));
+        if (q != null && !q.trim().isEmpty()) u.addQueryParameter("q", q.trim());
+        if (kind != null) u.addQueryParameter("kind", kind);
+        Type t = new TypeToken<List<Dto.Summary>>() { }.getType();
+        return call(authed(new Request.Builder().url(u.build()).get()).build(), t, true);
+    }
+
+    /** Мої партитури (я автор). */
+    public List<Dto.Summary> mine() throws ApiException {
+        Type t = new TypeToken<List<Dto.Summary>>() { }.getType();
+        return call(get("/scores/mine"), t, true);
+    }
+
+    /** Збережене, новіше першим. */
+    public List<Dto.Summary> saved() throws ApiException {
+        Type t = new TypeToken<List<Dto.Summary>>() { }.getType();
+        return call(get("/me/saved"), t, true);
+    }
+
+    /** Зберегти (true) або прибрати зі збереженого. */
+    public void setSaved(String scoreId, boolean on) throws ApiException {
+        Request r = on ? send("PUT", "/me/saved/" + scoreId, null) : send("DELETE", "/me/saved/" + scoreId, null);
+        try (Response res = http.newCall(r).execute()) {
+            if (!res.isSuccessful()) throw error(res, true);
+        } catch (IOException e) {
+            throw ApiException.network(e);
+        }
     }
 
     public Dto.ScoreView score(String id) throws ApiException {
@@ -133,6 +197,13 @@ public final class ApiClient {
     private Request post(String path, JsonElement json, boolean auth) {
         Request.Builder b = new Request.Builder().url(base + path).post(RequestBody.create(json.toString(), JSON));
         return (auth ? authed(b) : b).build();
+    }
+
+    /** PUT / PATCH / DELETE з токеном; тіло — JSON або порожнє. */
+    private Request send(String method, String path, JsonElement json) {
+        RequestBody body = json != null ? RequestBody.create(json.toString(), JSON)
+                : "DELETE".equals(method) ? null : RequestBody.create(new byte[0], null);
+        return authed(new Request.Builder().url(base + path).method(method, body)).build();
     }
 
     private Request.Builder authed(Request.Builder b) {

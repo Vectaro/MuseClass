@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Вітання: ключ, назва, підзаголовок по центру; кнопки внизу.
+     Замість «Продовжити з Google» — вхід і реєстрація поштою через наш API. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <!-- .mark -->
+        <ua.museclass.app.ui.SerifText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:importantForAccessibility="no"
+            android:includeFontPadding="false"
+            android:text="𝄞"
+            android:textColor="@color/text"
+            android:textSize="44sp" />
+
+        <ua.museclass.app.ui.SerifText
+            style="@style/Mc.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:accessibilityHeading="true"
+            android:text="@string/app_name" />
+
+        <TextView
+            style="@style/Mc.Sub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:maxWidth="290dp"
+            android:text="@string/onb_tagline" />
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/onb_login" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/register"
+        style="@style/Mc.Button.Ghost"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="9dp"
+        android:text="@string/onb_register" />
+</LinearLayout>

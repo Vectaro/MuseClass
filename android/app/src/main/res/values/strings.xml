@@ -7,17 +7,6 @@
     <string name="tab_me">Профіль</string>
     <string name="dlg_cancel">Скасувати</string>
 
-    <string name="login_tagline">Ноти класу — у кишені</string>
-    <string name="login_tab_login">Вхід</string>
-    <string name="login_tab_register">Реєстрація</string>
-    <string name="login_email">Пошта</string>
-    <string name="login_name">Ім\'я (його бачать у класі)</string>
-    <string name="login_password">Пароль</string>
-    <string name="login_enter">Увійти</string>
-    <string name="login_register">Зареєструватися</string>
-    <string name="login_fill_all">Заповни всі поля.</string>
-    <string name="login_short_password">Пароль — щонайменше 8 символів.</string>
-
     <string name="library_title">Моя бібліотека</string>
     <string name="library_empty">Тут з\'являться ноти, які тобі видадуть у класі.</string>
     <string name="logout">Вийти</string>
@@ -50,4 +39,54 @@
         <item quantity="many">%d партій</item>
         <item quantity="other">%d партій</item>
     </plurals>
+
+    <!-- онбординг: тексти з renderOnb() прототипу -->
+    <string name="onb_tagline">Ноти, які викладач роздає класу, і кавери, які ти пишеш сам.</string>
+    <string name="onb_login">Увійти з поштою</string>
+    <string name="onb_register">Створити акаунт з поштою</string>
+    <string name="dlg_login_title">Увійти</string>
+    <string name="dlg_login_ok">Увійти</string>
+    <string name="dlg_register_title">Створити акаунт</string>
+    <string name="dlg_register_note">Пошта — для входу. Пароль — щонайменше 8 символів.</string>
+    <string name="dlg_register_ok">Створити</string>
+    <string name="email_hint">пошта</string>
+    <string name="password_hint">пароль</string>
+    <string name="err_email">Перевір адресу — треба щось на кшталт імʼя@пошта.com</string>
+    <string name="err_password">Пароль закороткий: хоча б 8 символів</string>
+    <string name="err_fill">Заповни обидва поля</string>
+    <string name="onb_name_title">Як до тебе звертатись?</string>
+    <string name="onb_name_sub">Це імʼя бачитимуть викладач і однокласники. Змінити можна будь-коли в профілі.</string>
+    <string name="photo_add">Додати фото</string>
+    <string name="photo_change">Змінити фото</string>
+    <string name="photo_remove">Прибрати</string>
+    <string name="optional">Не обовʼязково</string>
+    <string name="name_hint">Імʼя</string>
+    <string name="photo_unreadable">Фото не читається</string>
+    <string name="name_needed">Введи імʼя — далі його можна змінити</string>
+    <string name="next">Далі</string>
+    <string name="onb_role_title">Як плануєш користуватись?</string>
+    <string name="onb_role_sub">Це стартовий сценарій, а не тип акаунту — клас можна створити чи приєднатись пізніше з профілю.</string>
+    <string name="role_student">Я вчусь у викладача</string>
+    <string name="role_student_sub">Введу код класу і побачу ноти, які він роздає</string>
+    <string name="role_teacher">Я викладаю</string>
+    <string name="role_teacher_sub">Створю клас, заллю ноти й роздам їх учням</string>
+    <string name="role_solo">Для себе</string>
+    <string name="role_solo_sub">Шукаю кавери й пишу власні партитури</string>
+    <string name="onb_code_title">Код класу</string>
+    <string name="onb_code_sub">Питай у викладача.</string>
+    <string name="code_hint">XXX-0X</string>
+    <string name="code_needed">Введи код</string>
+    <string name="join">Приєднатися</string>
+    <string name="skip">Пропустити</string>
+    <string name="onb_class_title">Твій перший клас</string>
+    <string name="onb_class_sub">Учні приєднаються за кодом або посиланням. Код можна перевипустити будь-коли.</string>
+    <string name="class_name_hint">НАЗВА</string>
+    <string name="onb_class_default">Фортепіано, 1 курс</string>
+    <string name="class_create">Створити клас</string>
+    <string name="onb_class_skip">Поки без класу</string>
+    <string name="class_name_needed">Введи назву — за нею ти відрізнятимеш групи</string>
+    <string name="onb_inst_title">На чому граєш?</string>
+    <string name="onb_inst_sub">Ноти з твоєю партією підніматимуться вище в пошуку. Решту каталогу це не ховає.</string>
+    <string name="done">Готово</string>
+    <string name="joined">Ти в класі «%1$s»</string>
 </resources>
