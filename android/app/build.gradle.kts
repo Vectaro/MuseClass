@@ -54,7 +54,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":musicxml"))
+    implementation(project(":engraving"))
     implementation(libs.activity)
     implementation(libs.appcompat)
     implementation(libs.constraintlayout)

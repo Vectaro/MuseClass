@@ -25,3 +25,4 @@ dependencyResolutionManagement {
 rootProject.name = "MuseClass"
 include(":app")
 include(":musicxml")
+include(":engraving")
