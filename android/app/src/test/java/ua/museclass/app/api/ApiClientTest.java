@@ -238,6 +238,75 @@ public class ApiClientTest {
     }
 
     @Test
+    public void catalogSendsQueryKindAndPaging() throws Exception {
+        tokens.token = "jwt";
+        server.enqueue(json(200, "[{\"id\":\"s1\",\"title\":\"Щедрик\",\"fits\":true,"
+                + "\"instruments\":[\"piano\",\"voice\"],\"visibility\":\"public\"}]"));
+        server.enqueue(json(200, "[]"));
+        List<Dto.Summary> l = api.catalog(" щед ", "folk", 30, 0);
+        assertEquals(1, l.size());
+        assertTrue(l.get(0).fits);
+        RecordedRequest r = server.takeRequest();
+        assertEquals("/api/catalog", r.getRequestUrl().encodedPath());
+        assertEquals("щед", r.getRequestUrl().queryParameter("q"));
+        assertEquals("folk", r.getRequestUrl().queryParameter("kind"));
+        assertEquals("30", r.getRequestUrl().queryParameter("limit"));
+        assertEquals("0", r.getRequestUrl().queryParameter("offset"));
+        api.catalog("", null, 30, 0);
+        RecordedRequest r2 = server.takeRequest();
+        assertNull(r2.getRequestUrl().queryParameter("q"));
+        assertNull(r2.getRequestUrl().queryParameter("kind"));
+    }
+
+    @Test
+    public void savedPutAndDelete() throws Exception {
+        tokens.token = "jwt";
+        server.enqueue(new MockResponse().setResponseCode(204));
+        server.enqueue(new MockResponse().setResponseCode(204));
+        api.setSaved("s1", true);
+        api.setSaved("s1", false);
+        RecordedRequest put = server.takeRequest();
+        assertEquals("PUT", put.getMethod());
+        assertEquals("/api/me/saved/s1", put.getPath());
+        assertEquals("Bearer jwt", put.getHeader("Authorization"));
+        RecordedRequest del = server.takeRequest();
+        assertEquals("DELETE", del.getMethod());
+        assertEquals("/api/me/saved/s1", del.getPath());
+    }
+
+    @Test
+    public void profileNameAndInstruments() throws Exception {
+        tokens.token = "jwt";
+        server.enqueue(json(200, "{\"displayName\":\"Анна\",\"instruments\":[]}"));
+        server.enqueue(json(200, "{\"displayName\":\"Анна\",\"instruments\":[\"piano\",\"trumpet\"]}"));
+        assertEquals("Анна", api.updateName("Анна").displayName);
+        assertEquals(2, api.setInstruments(java.util.Arrays.asList("trumpet", "piano")).instruments.size());
+        RecordedRequest a = server.takeRequest();
+        assertEquals("PATCH", a.getMethod());
+        assertEquals("/api/me", a.getPath());
+        assertEquals("{\"displayName\":\"Анна\"}", a.getBody().readUtf8());
+        RecordedRequest b = server.takeRequest();
+        assertEquals("PUT", b.getMethod());
+        assertEquals("/api/me/instruments", b.getPath());
+        assertEquals("{\"instruments\":[\"trumpet\",\"piano\"]}", b.getBody().readUtf8());
+    }
+
+    @Test
+    public void classesListAndCreate() throws Exception {
+        tokens.token = "jwt";
+        server.enqueue(json(200, "[{\"id\":\"c1\",\"name\":\"Dev: оркестр\",\"role\":\"student\",\"students\":3}]"));
+        server.enqueue(json(201, "{\"id\":\"c2\",\"code\":\"GIT-3K\",\"name\":\"Гітара\",\"role\":\"teacher\"}"));
+        assertEquals("student", api.classes().get(0).role);
+        Dto.ClassInfo c = api.createClass("Гітара");
+        assertEquals("GIT-3K", c.code);
+        server.takeRequest();
+        RecordedRequest r = server.takeRequest();
+        assertEquals("POST", r.getMethod());
+        assertEquals("/api/classes", r.getPath());
+        assertEquals("{\"name\":\"Гітара\"}", r.getBody().readUtf8());
+    }
+
+    @Test
     public void detailOfIgnoresJunk() {
         assertNull(ApiClient.detailOf("не json"));
         assertNull(ApiClient.detailOf("[1,2]"));
