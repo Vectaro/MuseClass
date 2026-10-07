@@ -47,7 +47,11 @@ services:
       retries: 10
 
   api:
-    build: ..
+    build:
+      context: ..
+      # довідник інструментів shared/instruments.json — поза server/, окремим контекстом
+      additional_contexts:
+        shared: ../../shared
     restart: unless-stopped
     logging: *logging
     depends_on:

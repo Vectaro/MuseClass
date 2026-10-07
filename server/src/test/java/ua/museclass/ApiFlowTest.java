@@ -108,6 +108,15 @@ class ApiFlowTest {
         assertEquals(200, instr.status(), instr.body());
         assertEquals(List.of("trumpet"), instr.map().get("instruments"));
         assertEquals(400, send("PUT", "/api/me/instruments", student, "{\"instruments\":[\"theremin\"]}").status());
+        assertEquals(400, send("PUT", "/api/me/instruments", student, "{\"instruments\":[\"saxophone\"]}").status(),
+                "старий код перейменовано на saxophone_alto");
+        // CHECK у БД (міграція) і довідник shared/instruments.json мають збігатися: усі 24 коди одним запитом
+        List<String> all = ua.museclass.musicxml.Instruments.get().codes;
+        Res allInstr = send("PUT", "/api/me/instruments", student,
+                "{\"instruments\":[\"" + String.join("\",\"", all) + "\"]}");
+        assertEquals(200, allInstr.status(), allInstr.body());
+        assertEquals(all.stream().sorted().toList(), allInstr.map().get("instruments"));
+        assertEquals(200, send("PUT", "/api/me/instruments", student, "{\"instruments\":[\"trumpet\"]}").status());
 
         // --- клас
         Res created = send("POST", "/api/classes", teacher, obj("name", "Фортепіано, 3 клас", "codePrefix", "pno"));

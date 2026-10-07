@@ -9,6 +9,11 @@ ENV MAVEN_OPTS="-Xmx512m"
 COPY pom.xml .
 # Окремий шар із залежностями: при зміні коду вони не качаються заново
 RUN mvn -q -B dependency:go-offline
+# Довідник інструментів живе в корені репо (shared/), поза контекстом server/.
+# Приходить окремим build-контекстом: compose — additional_contexts.shared,
+# вручну — docker build --build-context shared=../shared . (з server/).
+# Maven бере його з ../shared, тобто /shared.
+COPY --from=shared instruments.json /shared/instruments.json
 COPY src ./src
 RUN mvn -q -B -DskipTests package
 

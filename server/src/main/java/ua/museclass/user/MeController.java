@@ -41,7 +41,8 @@ public class MeController {
 
     public record InstrumentsRequest(
             @NotNull(message = "Передай список інструментів.")
-            @Size(max = 10, message = "Забагато інструментів.") List<String> instruments) {}
+            // захист від сміття; унікальних кодів після нормалізації і так не більше, ніж у довіднику
+            @Size(max = 100, message = "Забагато інструментів.") List<String> instruments) {}
 
     private final UserRepository users;
     private final ScoreService scores;
@@ -63,7 +64,7 @@ public class MeController {
         return profile(me);
     }
 
-    /** Замінює список цілком. Коди: piano, guitar, voice, violin, trumpet, flute, bass_guitar, drums, saxophone, bandura. */
+    /** Замінює список цілком. Коди — з shared/instruments.json. */
     @PutMapping("/instruments")
     @Transactional
     public Profile instruments(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody InstrumentsRequest req) {

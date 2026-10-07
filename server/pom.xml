@@ -84,6 +84,32 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <!-- Довідник інструментів — один на весь репозиторій (shared/), спільний
+                 з прототипом і Android. Копіюється в classpath як museclass/instruments.json.
+                 У Docker shared/ приходить окремим build-контекстом (див. Dockerfile). -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>shared-instruments</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}/museclass</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/../shared</directory>
+                                    <includes>
+                                        <include>instruments.json</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

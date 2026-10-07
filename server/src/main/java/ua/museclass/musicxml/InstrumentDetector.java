@@ -5,61 +5,54 @@ import java.util.Locale;
 import java.util.Set;
 
 /**
- * Визначає інструмент партії за назвою і MIDI-даними.
- * Коди збігаються з переліком у прототипі й перевіркою в БД.
+ * Визначає інструмент партії за назвою і MIDI-даними. Усі правила — з
+ * довідника shared/instruments.json ({@link Instruments}), опис — у
+ * docs/instruments.md.
  *
  * Назва важить більше за MIDI-програму: редактори часто лишають
  * фортепіанний звук за замовчуванням навіть для інших партій.
  */
 public final class InstrumentDetector {
 
-    public static final Set<String> CODES = Set.of(
-            "piano", "guitar", "voice", "violin", "trumpet", "flute",
-            "bass_guitar", "drums", "saxophone", "bandura");
+    /** Коди, які приймає API і БД. */
+    public static final Set<String> CODES = Set.copyOf(Instruments.get().codes);
 
-    private record Rule(String code, List<String> keywords) {}
-
-    // Порядок важливий: «бас-гітара» раніше за «гітару», саксофони раніше за
-    // голоси (alto/tenor sax), бандура раніше за все інше.
-    private static final List<Rule> RULES = List.of(
-            new Rule("bandura", List.of("bandura", "бандур")),
-            new Rule("bass_guitar", List.of("bass guitar", "electric bass", "fretless bass",
-                    "acoustic bass", "бас-гітар", "бас гітар", "басгітар")),
-            new Rule("saxophone", List.of("sax", "саксофон")),
-            new Rule("guitar", List.of("guitar", "гітар", "gtr")),
-            new Rule("piano", List.of("piano", "pno", "фортеп", "піаніно", "рояль", "клавір", "keyboard")),
-            new Rule("violin", List.of("violin", "vln", "скрипк")),
-            new Rule("trumpet", List.of("trumpet", "tpt", "trp", "труба", "cornet", "корнет")),
-            new Rule("flute", List.of("flute", "флейт")),
-            new Rule("drums", List.of("drum", "percussion", "ударн", "барабан")),
-            new Rule("voice", List.of("voice", "vocal", "soprano", "mezzo", "tenor", "baritone",
-                    "choir", "вокал", "голос", "сопрано", "тенор", "баритон", "хор", "спів")));
+    /** Саксофон без уточнення виду; вид — за кодами saxophone_* з довідника. */
+    private static final String[] SAX_WORDS = {"sax", "сакс"};
+    static final String SAX_PREFIX = "saxophone_";
 
     private InstrumentDetector() {}
 
     public static String detect(String partName, String instrumentName, Integer midiProgram, Integer midiChannel) {
+        Instruments dict = Instruments.get();
         String hay = ((instrumentName == null ? "" : instrumentName) + " "
                 + (partName == null ? "" : partName)).toLowerCase(Locale.ROOT);
-        for (Rule r : RULES) {
-            for (String k : r.keywords()) {
-                if (hay.contains(k)) return r.code();
+
+        // 1. за назвою, у порядку detect_order: перший збіг перемагає
+        List<Instruments.Entry> order = dict.detectOrder;
+        for (int i = 0; i < order.size(); i++) {
+            for (String k : order.get(i).keywords()) {
+                if (hay.contains(k)) return order.get(i).code();
+            }
+            // 2. «Sax» без уточнення — одразу після саксофонів з довідника, ще до
+            //    вокалу: інакше «Baritone Saxophone» став би голосом. Назва важливіша
+            //    за MIDI, але якщо програма каже, який саме саксофон, — віримо їй.
+            if (i == dict.lastSaxIndex && containsAny(hay, SAX_WORDS)) {
+                String byProgram = midiProgram == null ? null : dict.byProgram.get(midiProgram);
+                return byProgram != null && byProgram.startsWith(SAX_PREFIX) ? byProgram : dict.saxWithoutKind;
             }
         }
-        if (midiChannel != null && midiChannel == 10) return "drums";
-        if (midiProgram != null) return byProgram(midiProgram);
+
+        // 3. назва не допомогла: 10-й канал — ударні, далі програма General MIDI
+        if (midiChannel != null && midiChannel == 10) return dict.midiChannel10;
+        if (midiProgram != null) return dict.byProgram.get(midiProgram);
         return null;
     }
 
-    /** General MIDI, нумерація з 1, як у MusicXML. */
-    static String byProgram(int p) {
-        if (p >= 1 && p <= 8) return "piano";
-        if (p >= 25 && p <= 32) return "guitar";
-        if (p >= 33 && p <= 40) return "bass_guitar";
-        if (p == 41) return "violin";
-        if (p >= 53 && p <= 55) return "voice";
-        if (p == 57) return "trumpet";
-        if (p >= 65 && p <= 68) return "saxophone";
-        if (p == 74) return "flute";
-        return null;
+    private static boolean containsAny(String hay, String[] words) {
+        for (String w : words) {
+            if (hay.contains(w)) return true;
+        }
+        return false;
     }
 }
