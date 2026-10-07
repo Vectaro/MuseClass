@@ -63,8 +63,12 @@ Gradle), щоб перемикання було одним рядком.
 | PATCH | `/me` | `{displayName}` | профіль |
 | PUT | `/me/instruments` | `{instruments: ["trumpet", ...]}` | профіль |
 
-Коди інструментів: `piano`, `guitar`, `voice`, `violin`, `trumpet`, `flute`,
-`bass_guitar`, `drums`, `saxophone`, `bandura` — ті самі десять, що в прототипі.
+Коди інструментів — 24, зі спільного довідника
+[`shared/instruments.json`](../shared/instruments.json) (опис —
+[`docs/instruments.md`](../docs/instruments.md)). Maven кладе його в classpath,
+Docker отримує `shared/` окремим build-контекстом (`additional_contexts` у
+`compose.yaml`); вручну — `docker build --build-context shared=../shared .`
+з `server/`. Новий інструмент — у довідник і нова міграція з CHECK.
 
 ### Класи
 

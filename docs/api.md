@@ -78,8 +78,16 @@
 
 ## Довідники
 
-**Інструменти** (`instrument`, `instruments[]`): `piano`, `guitar`, `voice`,
-`violin`, `trumpet`, `flute`, `bass_guitar`, `drums`, `saxophone`, `bandura`.
+**Інструменти** (`instrument`, `instruments[]`) — 24 коди зі спільного
+довідника [`shared/instruments.json`](../shared/instruments.json) (опис —
+[`instruments.md`](instruments.md)). Список, українські назви, строї й порядок
+для UI клієнт бере звідти ж, а не тримає свій:
+`piano`, `accordion`, `guitar`, `bass_guitar`, `ukulele`, `bandura`, `violin`,
+`viola`, `cello`, `double_bass`, `flute`, `recorder`, `sopilka`, `oboe`,
+`clarinet`, `bassoon`, `saxophone_alto`, `saxophone_tenor`, `trumpet`,
+`french_horn`, `trombone`, `tuba`, `drums`, `voice`.
+Старий код `saxophone` (до 2026-10-07) більше не приймається → 400; у даних
+сервера він уже замінений на `saxophone_alto` / `saxophone_tenor`.
 
 **kind** (жанр): `classical`, `folk`, `cover`, `technique`, `other`.
 **rights**: `public_domain`, `folk`, `arrangement`, `original`, `unknown`.
@@ -118,7 +126,7 @@
 ```
 - `composer`, `arranger` можуть бути `null`.
 - `instruments` — різні впізнані інструменти партій, за абеткою, без
-  повторів; невпізнані партії (напр. тромбон) сюди не потрапляють. Може бути `[]`.
+  повторів; невпізнані партії (напр. арфа) сюди не потрапляють. Може бути `[]`.
 - `fits` — у партитурі є партія під один з інструментів поточного
   користувача.
 
@@ -130,14 +138,16 @@
           "sha256":"e2278bbf...","createdAt":"...","updatedAt":"...",
           "ownerId":"uuid","ownerName":"Оксана Кравець","saved":false},
  "parts":[{"position":0,"partId":"P1","name":"Труба 1 in B♭","instrument":"trumpet"},
-          {"position":3,"partId":"P4","name":"Тромбон","instrument":null}],
+          {"position":3,"partId":"P4","name":"Тромбон","instrument":"trombone"}],
  "canEdit":false}
 ```
 - `format` — `musicxml` або `mxl`.
 - `sha256` — те саме значення, що в `ETag` файлу (без лапок).
 - `saved` — поточний користувач зберіг партитуру.
 - `parts` — у порядку партитури (`position` з 0). `partId` — id партії з
-  MusicXML. `instrument` — код або `null`, якщо не впізнано.
+  MusicXML. `instrument` — код або `null`, якщо не впізнано
+  (арфа, литаври тощо). Як сервер впізнає партію — `docs/instruments.md`,
+  «Впізнавання партії».
 - `canEdit` — поточний користувач — автор.
 
 **LibraryEntry**
@@ -161,8 +171,8 @@
   порожнє. Пошта зайнята → 409 «Акаунт з такою поштою вже є.»
 - `login`: пошта без урахування регістру. Невірна пошта **або** пароль → 401
   «Невірна пошта або пароль.» (не розрізняє, що саме).
-- `PUT /me/instruments` замінює список цілком; `[]` — очистити. До 10
-  елементів, дублікати зливаються. Невідомий код → 400
+- `PUT /me/instruments` замінює список цілком; `[]` — очистити. До 100
+  елементів, дублікати й регістр зливаються (унікальних кодів — не більше 24). Невідомий код → 400
   «Невідомий інструмент: <код>».
 
 ## Класи
