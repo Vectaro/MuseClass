@@ -70,17 +70,48 @@ tailscale funnel status    # публічна адреса https://<машина
 Оновлення: `git pull; docker compose up -d --build`. Міграції бази Flyway
 накочує сам при старті.
 
-Бекап: `.\backup.ps1` кладе дамп у `backups\` і тримає останні 14. Щоденний
-запуск через Планувальник завдань:
+Бекап: `.\backup.ps1` кладе дамп (`pg_dump -Fc`) у `backups\` і тримає
+останні 14. Кожен запуск дописує рядок у `backup.log` поруч — `ok <файл>
+(<розмір>)` або `ПОМИЛКА: ...`; при помилці код виходу 1. Без параметрів
+бере контейнер `db` проєкту `museclass-pc`; інший контейнер —
+`.\backup.ps1 -Container museclass-dev-db -OutDir backups\dev` (так
+перевірялось на dev).
+
+Щоденний запуск через Планувальник завдань:
 
 ```powershell
 $a = New-ScheduledTaskAction -Execute powershell.exe `
   -Argument '-NoProfile -ExecutionPolicy Bypass -File "C:\MuseClass\server\pc\backup.ps1"'
-Register-ScheduledTask -TaskName MuseClassBackup -Action $a -Trigger (New-ScheduledTaskTrigger -Daily -At 3:30)
+$s = New-ScheduledTaskSettingsSet -StartWhenAvailable
+Register-ScheduledTask -TaskName MuseClassBackup -Action $a -Settings $s `
+  -Trigger (New-ScheduledTaskTrigger -Daily -At 3:30)
 ```
 
-Відновлення — у коментарі в самому `backup.ps1`. Дампи бажано час від часу
-копіювати кудись, крім цього ж диска.
+`-StartWhenAvailable` — якщо о 3:30 ПК вимкнений або спить, бекап зробиться
+при наступному ввімкненні, а не пропуститься. Завдання працює, лише поки ти
+залогінений: Docker Desktop живе в сесії користувача, без неї бекапити нема
+з чого. Чи спрацювало — дивись `backup.log`.
+
+Дампи бажано час від часу копіювати кудись, крім цього ж диска.
+
+### Відновлення з бекапу
+
+`--clean --if-exists` спершу видаляє все наявне в базі, тож поточні дані
+замінюються даними з дампу. API на час відновлення зупини, щоб він не писав
+у базу посередині.
+
+```powershell
+cd C:\MuseClass\server\pc
+docker compose stop api
+docker compose cp backups\<файл>.dump db:/tmp/restore.dump
+docker compose exec -T db pg_restore -U museclass -d museclass --clean --if-exists /tmp/restore.dump
+docker compose exec -T db rm -f /tmp/restore.dump
+docker compose start api
+```
+
+Dev-база — те саме, але через `docker cp ... museclass-dev-db:/tmp/restore.dump`
+і `docker exec museclass-dev-db pg_restore ...`; dev-сервер на час відновлення
+зупини.
 
 `.gitattributes` (спільний, у корені репо й `server/`) тримає `Dockerfile`, `.sh` і YAML з LF-кінцями рядків навіть
 на Windows. Інакше git з `autocrlf` зламав би їх для Linux-контейнерів.
@@ -130,5 +161,10 @@ Testcontainers, тому Docker Desktop має бути запущений. Бо
 
 ## Не перевірено
 
-`backup.ps1` і PowerShell-команди з цього README ще не запускались: там, де вони
-писалися, PowerShell не було. Перевірити після першого запуску на ПК.
+Перевірено на ПК 2026-10-07: розділ «Розробка»; `backup.ps1` на dev-базі
+(дамп → пересоздати контейнер → `pg_restore` → усі дані на місці, і з
+`powershell.exe -File`, як із Планувальника, зокрема шлях з помилкою).
+
+Не запускались: `backup.ps1` без параметрів на бойовій базі, команди
+Планувальника, відновлення через `docker compose` на бойовій, «Запуск на
+Windows» з нуля.
