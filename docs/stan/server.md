@@ -27,9 +27,8 @@ Windows; веде чат про сервер; compose-проєкт `museclass-pc
 загубилось.
 
 ## Що вміє
-- **Акаунти:** реєстрація, вхід, JWT на 30 днів, профіль, інструменти (ті самі
-  10 кодів, що в прототипі: piano, guitar, voice, violin, trumpet, flute,
-  bass_guitar, drums, saxophone, bandura).
+- **Акаунти:** реєстрація, вхід, JWT на 30 днів, профіль, інструменти (24
+  коди зі спільного довідника `shared/instruments.json`).
 - **Класи:** коди `XXX-0X` (як `PNO-3A`), префікс викладач задає сам або
   випадковий. У випадковій частині немає I, O, 0, 1. Вступ за кодом прощає
   регістр, відсутній дефіс і кириличні двійники латиниці. Перевипуск коду,
@@ -71,6 +70,27 @@ Windows; веде чат про сервер; compose-проєкт `museclass-pc
 не правився: Spring Boot 4.1.1, Testcontainers 2.0.5, 26 тестів (25 модульних
 + `ApiFlowTest` на `postgres:16-alpine`), jar зібрано, ~1,5 хв. Maven ставити
 не треба — у `server/` є Maven Wrapper (Maven 3.9.16): `./mvnw` / `.\mvnw.cmd`.
+
+**Інструменти (2026-10-07).** Сервер на спільному довіднику
+`shared/instruments.json` (24 коди). Maven копіює його в classpath як
+`museclass/instruments.json` (`maven-resources-plugin`, `copy-resources`);
+Docker отримує `shared/` окремим build-контекстом — `additional_contexts` у
+`pc/` і `pi/compose.yaml`, `COPY --from=shared` у Dockerfile (образ зібрано під
+тестовим тегом, у jar є довідник і V2). `Instruments` читає і перевіряє
+довідник (повтори кодів, повнота `detect_order`, унікальність `gm`, відомі
+коди в `fallback`/`renamed`); `InstrumentDetector` — keywords за
+`detect_order`, «sax» без уточнення одразу після саксофонів (до вокалу, інакше
+«Baritone Saxophone» ставав `voice`; програма 65–68 уточнює вид), далі канал
+10 і `gm`. Слова `sax`/`сакс` поки в коді, див. `open.md`. Міграція V2:
+`saxophone` → `saxophone_alto` в `user_instruments`, у партіях тенор — за
+назвою або програмою 67/68; CHECK на 24 коди в `user_instruments` і (новий)
+`score_parts`. Ліміт `PUT /me/instruments` — 100 замість 10 (інакше не обрати
+більше 10 з 24). Перевірено: `verify` 32/32 (усі `name` з довідника, приклади
+з `docs/instruments.md`, усі 24 коди проходять CHECK одним запитом, `saxophone`
+→ 400); V2 на окремій базі зі старими даними; `sql_check.py` (тепер накочує
+всі міграції) — усе гаразд; OSMD, 420 файлів / 540 партій — нерозпізнаних 63
+замість 115, жодна впізнана партія не змінила код, крім розщеплення
+саксофонів; seed на dev — тромбон у бенді `trombone`.
 
 **Помилки (2026-10-06).** Усі відповіді 4xx/5xx під `/api` — problem+json з
 `detail` українською, і ті, що не з нашого коду: зламаний JSON, не-UUID,
