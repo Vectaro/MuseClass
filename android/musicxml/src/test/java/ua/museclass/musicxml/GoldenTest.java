@@ -68,16 +68,9 @@ public class GoldenTest {
             jp.addProperty("name", p.name());
             jp.addProperty("inst", p.instrument());
             jp.addProperty("clef", p.clef());
-            // відома розбіжність: прототип пише партії ОСТАННІЙ розмір і тональність,
-            // ми — початкові, а зміни лишаються в тактах
-            Meter meter = p.meter();
-            int fifths = p.fifths();
-            for (Measure m : p.measures()) {
-                if (m.bar() != null && m.bar().meter() != null) meter = m.bar().meter();
-                if (m.bar() != null && m.bar().fifths() != null) fifths = m.bar().fifths();
-            }
-            jp.add("meter", ints(meter.beats, meter.beatType));
-            jp.addProperty("fifths", fifths);
+            // і прототип, і ми — початкові розмір і тональність; зміни лежать у тактах
+            jp.add("meter", ints(p.meter().beats, p.meter().beatType));
+            jp.addProperty("fifths", p.fifths());
             jp.addProperty("ts", p.transpose());
             JsonObject bars = new JsonObject();
             JsonObject v2 = new JsonObject();

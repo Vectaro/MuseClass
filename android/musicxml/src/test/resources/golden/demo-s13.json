@@ -8,10 +8,10 @@
    "inst": "Фортепіано",
    "clef": "treble",
    "meter": [
-    3,
+    4,
     4
    ],
-   "fifths": 1,
+   "fifths": 0,
    "ts": 0,
    "bars": {
     "0": {
