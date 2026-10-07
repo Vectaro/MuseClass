@@ -37,6 +37,7 @@ import ua.museclass.app.api.Dto;
 import ua.museclass.app.ui.Avatar;
 import ua.museclass.app.ui.ClassDialogs;
 import ua.museclass.app.ui.Page;
+import ua.museclass.app.ui.Uk;
 import ua.museclass.app.ui.Photos;
 import ua.museclass.app.ui.Picks;
 import ua.museclass.app.ui.ThemeMode;
@@ -139,7 +140,7 @@ public class ProfileFragment extends TabFragment {
 
         LinearLayout account = v.findViewById(R.id.account);
         int n = host().app().scoreFiles().count();
-        Page.kv(account, getString(R.string.me_offline), getResources().getQuantityString(R.plurals.scores, n, n));
+        Page.kv(account, getString(R.string.me_offline), Uk.plural(requireContext(), R.plurals.scores, n));
         Page.kv(account, getString(R.string.me_format), getString(R.string.me_format_value));
         Page.kv(account, getString(R.string.me_lang), getString(R.string.me_lang_value));
 

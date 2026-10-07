@@ -6,39 +6,10 @@
     <string name="tab_lib">Бібліотека</string>
     <string name="tab_me">Профіль</string>
     <string name="dlg_cancel">Скасувати</string>
-
-    <string name="library_title">Моя бібліотека</string>
-    <string name="library_empty">Тут з\'являться ноти, які тобі видадуть у класі.</string>
     <string name="logout">Вийти</string>
-    <string name="library_joined">Ти в класі «%1$s».</string>
-
-    <string name="join_title">Вступити в клас</string>
-    <string name="join_hint">Код класу від викладача у вигляді PNO-3A. Регістр і дефіс — як завгодно.</string>
-    <string name="join_code">Код класу</string>
-    <string name="join_submit">Вступити</string>
-    <string name="join_empty">Впиши код.</string>
 
     <string name="sheet_system">Такти %1$d–%2$d</string>
-
-    <string name="dot_join">%1$s · %2$s</string>
-
-    <string name="clef_treble">скрипковий ключ</string>
     <string name="clef_bass">басовий ключ</string>
-    <string name="clef_alto">альтовий ключ</string>
-    <string name="clef_perc">ударні</string>
-
-    <plurals name="measures">
-        <item quantity="one">%d такт</item>
-        <item quantity="few">%d такти</item>
-        <item quantity="many">%d тактів</item>
-        <item quantity="other">%d тактів</item>
-    </plurals>
-    <plurals name="parts">
-        <item quantity="one">%d партія</item>
-        <item quantity="few">%d партії</item>
-        <item quantity="many">%d партій</item>
-        <item quantity="other">%d партій</item>
-    </plurals>
 
     <!-- онбординг: тексти з renderOnb() прототипу -->
     <string name="onb_tagline">Ноти, які викладач роздає класу, і кавери, які ти пишеш сам.</string>
@@ -180,5 +151,58 @@
         <item quantity="few">%d партитури</item>
         <item quantity="many">%d партитур</item>
         <item quantity="other">%d партитури</item>
+    </plurals>
+
+    <!-- Переглядач (renderViewer) -->
+    <string name="v_export">Експорт MusicXML</string>
+    <string name="v_pencil">Олівець</string>
+    <string name="v_save">Зберегти</string>
+    <string name="v_parts">Партії</string>
+    <string name="v_settings">Налаштування відтворення</string>
+    <string name="v_mode_score">Партитура</string>
+    <string name="v_mode_part">Партія</string>
+    <string name="v_add_part">+ партія</string>
+    <string name="v_play">Грати</string>
+    <string name="v_tempo">Темп</string>
+    <string name="v_bpm">%1$d уд/хв</string>
+    <string name="v_metro">Метроном</string>
+    <string name="v_saved">Збережено — буде доступне офлайн</string>
+    <string name="v_unsaved">Прибрано зі збереженого</string>
+    <string name="v_pencil_on">Олівець — наступний крок роботи</string>
+    <string name="v_pencil_off">Олівець вимкнено</string>
+    <string name="v_sounds_lower">звучить на %1$s нижче</string>
+    <string name="v_sounds_higher">звучить на %1$s вище</string>
+    <string name="v_playback">Відтворення</string>
+    <string name="v_close_panel">Закрити</string>
+    <string name="v_tosound">Враховувати стрій інструмента</string>
+    <string name="v_tosound_none">Ця партія в реальній тональності — на неї не впливає.</string>
+    <string name="v_dorep">Повторювати репризи</string>
+    <string name="v_dotempo">Слухатись rit. і accel.</string>
+    <string name="v_barnum">Номери тактів</string>
+    <string name="v_compress">Стискати довгі паузи</string>
+    <string name="v_awake">Тримати екран увімкненим</string>
+    <string name="v_awake_on">Екран не гаситиметься під час гри</string>
+    <string name="v_awake_off">Екран гаситиметься як завжди</string>
+    <string name="v_tempo_hint">Темп — повзунком унизу, він змінюється на ходу.</string>
+    <string name="v_parts_title">Партії · %1$d</string>
+    <string name="v_yours">твій</string>
+    <string name="v_pull">Витягти цю партію</string>
+    <string name="v_whole_score">Показати партитуру цілком</string>
+    <string name="v_pull_all">Витягти всі партії окремими файлами</string>
+    <string name="v_whole_file">Уся партитура одним файлом</string>
+    <string name="v_parts_note">У витягнутій партії лишаються її ключ, тональність і стрій.</string>
+    <string name="v_perc_staff">ударний стан</string>
+    <string name="v_tuning">стрій: %1$s</string>
+    <string name="v_bars">%1$d т.</string>
+    <string name="stub_export">Експорт файлу — наступний крок роботи</string>
+    <string name="stub_play">Звук — наступний крок роботи: поки лише ноти</string>
+    <string name="stub_score_mode">Партитура цілком — наступний крок рендера; поки по партіях</string>
+    <string name="stub_add_part">Додавання партії — наступний крок роботи</string>
+    <string name="stub_extract">Витягання партій — наступний крок роботи</string>
+    <plurals name="semitones">
+        <item quantity="one">%d півтон</item>
+        <item quantity="few">%d півтони</item>
+        <item quantity="many">%d півтонів</item>
+        <item quantity="other">%d півтона</item>
     </plurals>
 </resources>

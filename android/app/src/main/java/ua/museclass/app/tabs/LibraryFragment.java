@@ -26,6 +26,7 @@ import ua.museclass.app.TabsActivity;
 import ua.museclass.app.api.Dto;
 import ua.museclass.app.ui.ClassDialogs;
 import ua.museclass.app.ui.Page;
+import ua.museclass.app.ui.Uk;
 import ua.museclass.app.ui.ScoreViews;
 
 /**
@@ -116,7 +117,7 @@ public class LibraryFragment extends TabFragment {
             TextView name = strong(top, c.name, 15);
             name.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
             top.addView(classBadge(R.string.lib_you_teach));
-            Page.sub(card, getResources().getQuantityString(R.plurals.students, c.students, c.students)
+            Page.sub(card, Uk.plural(requireContext(), R.plurals.students, c.students)
                     + " · " + getString(R.string.lib_code, c.code), 2, 8);
             List<Dto.Summary> list = issued(d, c.id);
             LinearLayout l = Page.list(card);
@@ -133,8 +134,7 @@ public class LibraryFragment extends TabFragment {
             List<Dto.Summary> list = issued(d, c.id);
             Page.rule(page);
             Page.sec(page, c.name, 0, 0);
-            Page.sub(page, c.teacherName + " · " + getResources().getQuantityString(R.plurals.issued,
-                    list.size(), list.size()), 13.5f, 13.5f); // <p class="sub"> з типовим відступом 1em
+            Page.sub(page, c.teacherName + " · " + Uk.plural(requireContext(), R.plurals.issued, list.size()), 13.5f, 13.5f); // <p class="sub"> з типовим відступом 1em
             rows(Page.list(page), list);
         }
 

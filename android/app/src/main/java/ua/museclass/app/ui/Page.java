@@ -19,6 +19,8 @@ import ua.museclass.app.R;
 
 /** Цеглинки сторінок прототипу: .h-sec, .sub, .staffrule, .rail, .list, .empty, .card2, .btn. */
 public final class Page {
+    private static final String KV = "kv";
+
     private Page() {
     }
 
@@ -129,9 +131,11 @@ public final class Page {
     /** Рядок «назва — значення» (.kv): 14 / 13 приглушене праворуч, відступ 9, волосяна лінія між рядками. */
     public static TextView kv(ViewGroup parent, CharSequence label, CharSequence value) {
         Context c = parent.getContext();
-        // попередній рядок отримує лінію знизу: у прототипі її немає лише в останнього
-        if (parent.getChildCount() > 0) parent.getChildAt(parent.getChildCount() - 1).setBackgroundResource(R.drawable.bg_kv);
+        // попередній рядок .kv отримує лінію знизу: у прототипі її немає лише в останнього
+        View prev = parent.getChildCount() > 0 ? parent.getChildAt(parent.getChildCount() - 1) : null;
+        if (prev != null && KV.equals(prev.getTag())) prev.setBackgroundResource(R.drawable.bg_kv);
         LinearLayout r = new LinearLayout(c);
+        r.setTag(KV);
         r.setOrientation(LinearLayout.HORIZONTAL);
         r.setGravity(Gravity.CENTER_VERTICAL);
         r.setPadding(0, dp(c, 9), 0, dp(c, 9));

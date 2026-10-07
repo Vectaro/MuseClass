@@ -15,7 +15,7 @@ import java.util.List;
 
 import ua.museclass.app.Instruments;
 import ua.museclass.app.R;
-import ua.museclass.app.ScoreActivity;
+import ua.museclass.app.ViewerActivity;
 import ua.museclass.app.api.Dto;
 
 /**
@@ -100,10 +100,10 @@ public final class ScoreViews {
         t.setVisibility(View.VISIBLE);
     }
 
-    /** Відкрити партитуру. Переглядач за прототипом — наступним кроком; поки сторінка партитури. */
+    /** Відкрити партитуру в переглядачі. */
     public static void open(Activity a, Dto.Summary s) {
-        a.startActivity(new Intent(a, ScoreActivity.class)
-                .putExtra(ScoreActivity.EXTRA_ID, s.id)
-                .putExtra(ScoreActivity.EXTRA_TITLE, s.title));
+        a.startActivity(new Intent(a, ViewerActivity.class)
+                .putExtra(ViewerActivity.EXTRA_ID, s.id)
+                .putExtra(ViewerActivity.EXTRA_TITLE, s.title));
     }
 }

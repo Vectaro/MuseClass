@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- #viewer: .vtop, .modebar, .partbar, #sheet, .dock; шторки — поверх (.sheetpanel) -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/pult">
+
+    <LinearLayout
+        android:id="@+id/column"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- .vtop -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_bottomline"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="14dp"
+            android:paddingTop="12dp"
+            android:paddingRight="14dp"
+            android:paddingBottom="12dp">
+
+            <TextView
+                android:id="@+id/close"
+                style="@style/Mc.IconButton"
+                android:contentDescription="@string/back"
+                android:text="‹" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <ua.museclass.app.ui.SerifText
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:includeFontPadding="false"
+                    android:singleLine="true"
+                    android:textColor="@color/text"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/sub"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:textColor="@color/muted"
+                    android:textSize="11.5sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/export"
+                style="@style/Mc.IconButton"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@string/v_export"
+                android:text="⤓" />
+
+            <TextView
+                android:id="@+id/pencil"
+                style="@style/Mc.IconButton"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@string/v_pencil"
+                android:text="✎" />
+
+            <TextView
+                android:id="@+id/save"
+                style="@style/Mc.IconButton"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@string/v_save"
+                android:text="☆" />
+
+            <TextView
+                android:id="@+id/parts"
+                style="@style/Mc.IconButton"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@string/v_parts"
+                android:text="≡" />
+
+            <TextView
+                android:id="@+id/vset"
+                style="@style/Mc.IconButton"
+                android:layout_marginStart="8dp"
+                android:contentDescription="@string/v_settings"
+                android:text="⚙" />
+        </LinearLayout>
+
+        <!-- .modebar: лише для кількох партій -->
+        <LinearLayout
+            android:id="@+id/modebar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_bottomline"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="14dp"
+            android:paddingTop="8dp"
+            android:paddingRight="14dp"
+            android:paddingBottom="8dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/mode_score"
+                style="@style/Mc.ModeChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/v_mode_score" />
+
+            <TextView
+                android:id="@+id/mode_part"
+                style="@style/Mc.ModeChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:text="@string/v_mode_part" />
+
+            <TextView
+                android:id="@+id/mhint"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="end"
+                android:singleLine="true"
+                android:textColor="@color/muted"
+                android:textSize="11.5sp" />
+        </LinearLayout>
+
+        <!-- .partbar -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_bottomline"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/partbar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="14dp"
+                android:paddingTop="9dp"
+                android:paddingRight="14dp"
+                android:paddingBottom="10dp" />
+        </HorizontalScrollView>
+
+        <!-- #sheet: папір -->
+        <FrameLayout
+            android:id="@+id/page"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/sheet"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingTop="16dp"
+                android:paddingBottom="24dp" />
+
+            <ProgressBar
+                android:id="@+id/progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+
+            <TextView
+                android:id="@+id/error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:padding="32dp"
+                android:textColor="#5A5A64"
+                android:textSize="13.5sp"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <!-- .dock -->
+        <LinearLayout
+            android:id="@+id/dock"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_topline"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="14dp"
+            android:paddingTop="10dp"
+            android:paddingRight="14dp"
+            android:paddingBottom="10dp">
+
+            <TextView
+                android:id="@+id/play"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:background="@drawable/bg_play"
+                android:contentDescription="@string/v_play"
+                android:gravity="center"
+                android:text="▶"
+                android:textColor="@color/on_accent"
+                android:textSize="17sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/v_tempo"
+                        android:textColor="@color/muted"
+                        android:textSize="11.5sp" />
+
+                    <TextView
+                        android:id="@+id/bpm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/muted"
+                        android:textSize="11.5sp" />
+                </LinearLayout>
+
+                <SeekBar
+                    android:id="@+id/tempo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:max="140"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:progressBackgroundTint="@color/muted"
+                    android:progressTint="@color/amber"
+                    android:thumbTint="@color/amber" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/metro"
+                style="@style/Mc.IconButton"
+                android:contentDescription="@string/v_metro"
+                android:text="◷" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- .sheetpanel: затемнення і шторка знизу -->
+    <FrameLayout
+        android:id="@+id/panel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/scrim_sheet"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/panel_in"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="@drawable/bg_sheetpanel"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingTop="14dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="16dp" />
+    </FrameLayout>
+</FrameLayout>

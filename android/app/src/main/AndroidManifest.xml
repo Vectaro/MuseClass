@@ -27,12 +27,7 @@
             android:name=".OnboardingActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".TabsActivity" />
-        <activity
-            android:name=".ScoreActivity"
-            android:parentActivityName=".LibraryActivity" />
-        <activity
-            android:name=".PartActivity"
-            android:parentActivityName=".ScoreActivity" />
+        <activity android:name=".ViewerActivity" />
     </application>
 
 </manifest>

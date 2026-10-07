@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- .prow.on: тло pult3, радіус 9 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners android:radius="9dp" />
+    <solid android:color="@color/pult3" />
+</shape>
