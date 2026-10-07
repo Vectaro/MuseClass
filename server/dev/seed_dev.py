@@ -111,13 +111,16 @@ def main():
         if title in mine:
             score_id, state = mine[title]["id"], "вже була"
             ok(*call("PATCH", f"/scores/{score_id}", teacher, {"kind": kind, "rights": rights}), 200)
+            # та сама версія файлу ще раз: сервер заново розпізнає інструменти партій
+            # (після зміни довідника старі партії інакше лишились би як були)
+            ok(*call("PUT", f"/scores/{score_id}/file", teacher, files={"file": (fname, content)}), 200)
         else:
             view = ok(*call("POST", "/scores", teacher, {"kind": kind, "rights": rights, "visibility": visibility},
                             files={"file": (fname, content)}), 201)
             score_id, state = view["score"]["id"], "нова"
         ok(*call("PUT", f"/classes/{klass['id']}/scores/{score_id}", teacher), 204)
         parts = ok(*call("GET", f"/scores/{score_id}", teacher), 200)["parts"]
-        assigned.append((title, len(parts), state))
+        assigned.append((title, [pt["instrument"] or "?" for pt in parts], state))
 
     library = ok(*call("GET", "/me/library", student), 200)
 
@@ -125,8 +128,8 @@ def main():
     print(f"Викладач:   {TEACHER['email']} / {TEACHER['password']}")
     print(f"Учень:      {STUDENT['email']} / {STUDENT['password']}  (інструменти: {', '.join(STUDENT_INSTRUMENTS)})")
     print(f"Клас:       {klass['name']}, код {klass['code']}")
-    for title, n, state in assigned:
-        print(f"  видано:   {title} — партій: {n} ({state})")
+    for title, instruments, state in assigned:
+        print(f"  видано:   {title} ({state}): {', '.join(instruments)}")
     print(f"Бібліотека учня: партитур — {len(library)}")
 
 
