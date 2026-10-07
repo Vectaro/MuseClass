@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- renderMe(): картка з аватаром та іменем, вигляд, інструменти, класи, акаунт -->
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/page"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="18dp"
+        android:paddingTop="18dp"
+        android:paddingRight="18dp"
+        android:paddingBottom="28dp">
+
+        <ua.museclass.app.ui.SerifText
+            style="@style/Mc.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/tab_me" />
+
+        <!-- .card2 з аватаром -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_card"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="14dp">
+
+            <ua.museclass.app.ui.Avatar
+                android:id="@+id/avatar"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:clickable="true"
+                android:contentDescription="@string/photo_change"
+                android:focusable="true" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="13dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <!-- ім'я редагується на місці: без тла, лінія знизу -->
+                <EditText
+                    android:id="@+id/name"
+                    style="@style/Mc.Strong"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_kv_line"
+                    android:hint="@string/name_hint"
+                    android:imeOptions="actionDone"
+                    android:importantForAutofill="no"
+                    android:inputType="textPersonName|textCapWords"
+                    android:maxLength="40"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
+                    android:singleLine="true"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/who"
+                    style="@style/Mc.Sub"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/photo"
+                style="@style/Mc.Button.Ghost"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/photodel"
+                style="@style/Mc.Button.Ghost"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:text="@string/photo_remove_long"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <ua.museclass.app.ui.SerifText
+            style="@style/Mc.Sec"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="26dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/me_look" />
+
+        <TextView
+            style="@style/Mc.Sub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-6dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/me_look_sub" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/themes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="2dp"
+            app:chipSpacingHorizontal="8dp"
+            app:chipSpacingVertical="8dp" />
+
+        <ua.museclass.app.ui.SerifText
+            style="@style/Mc.Sec"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="26dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/me_inst" />
+
+        <TextView
+            style="@style/Mc.Sub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-6dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/me_inst_sub" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/inst"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="2dp"
+            app:chipSpacingHorizontal="8dp"
+            app:chipSpacingVertical="8dp" />
+
+        <ua.museclass.app.ui.SerifText
+            style="@style/Mc.Sec"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="26dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/me_classes" />
+
+        <LinearLayout
+            android:id="@+id/classes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical"
+            android:paddingLeft="14dp"
+            android:paddingTop="14dp"
+            android:paddingRight="14dp"
+            android:paddingBottom="14dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/joinprompt"
+                style="@style/Mc.Button.Ghost"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/me_enter_code" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/mkclass"
+                style="@style/Mc.Button.Peri"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:text="@string/class_create" />
+        </LinearLayout>
+
+        <ua.museclass.app.ui.SerifText
+            style="@style/Mc.Sec"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="26dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/me_account" />
+
+        <LinearLayout
+            android:id="@+id/account"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical"
+            android:paddingLeft="14dp"
+            android:paddingTop="14dp"
+            android:paddingRight="14dp"
+            android:paddingBottom="14dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/logout"
+            style="@style/Mc.Button.Ghost"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:text="@string/logout" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

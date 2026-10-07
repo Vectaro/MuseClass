@@ -150,4 +150,35 @@
         <item quantity="many">видав %d нот</item>
         <item quantity="other">видав %d нот</item>
     </plurals>
+
+    <!-- Профіль (renderMe) -->
+    <string name="photo_remove_long">Прибрати фото</string>
+    <string name="photo_removed">Фото прибрано</string>
+    <string name="me_look">Вигляд</string>
+    <string name="me_look_sub">«Як у системі» стежить за налаштуванням телефона й перемикається разом з ним.</string>
+    <string name="theme_system">Як у системі</string>
+    <string name="theme_light">Світла</string>
+    <string name="theme_dark">Темна</string>
+    <string name="theme_follow">Тема — як у системі</string>
+    <string name="theme_fixed">Тема зафіксована</string>
+    <string name="me_inst">Інструменти</string>
+    <string name="me_inst_sub">Впливає на порядок видачі, не на доступ.</string>
+    <string name="me_classes">Класи</string>
+    <string name="me_no_classes">Ще ніде не числишся</string>
+    <string name="me_enter_code">Ввести код</string>
+    <string name="me_account">Акаунт</string>
+    <string name="me_offline">Офлайн-копії</string>
+    <string name="me_format">Формат обміну</string>
+    <string name="me_format_value">MusicXML 4.0</string>
+    <string name="me_lang">Мова</string>
+    <string name="me_lang_value">Українська</string>
+    <string name="me_teacher">Викладач</string>
+    <string name="me_student">Учень</string>
+    <string name="me_no_inst">інструмент не вибрано</string>
+    <plurals name="scores">
+        <item quantity="one">%d партитура</item>
+        <item quantity="few">%d партитури</item>
+        <item quantity="many">%d партитур</item>
+        <item quantity="other">%d партитури</item>
+    </plurals>
 </resources>

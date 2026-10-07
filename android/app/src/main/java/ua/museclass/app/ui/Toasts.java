@@ -21,7 +21,22 @@ import ua.museclass.app.R;
 public final class Toasts {
     private static final int TAG = R.id.mc_toast;
 
+    /** Тост, що має пережити перестворення екрана (зміна теми). */
+    private static CharSequence pending;
+
     private Toasts() {
+    }
+
+    public static void later(CharSequence msg) {
+        pending = msg;
+    }
+
+    /** Показати відкладений тост, якщо є (кличе екран після створення). */
+    public static void flush(Activity a) {
+        if (pending == null) return;
+        CharSequence m = pending;
+        pending = null;
+        a.getWindow().getDecorView().post(() -> show(a, m));
     }
 
     public static void show(Activity a, CharSequence msg) {

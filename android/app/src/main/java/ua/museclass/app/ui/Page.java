@@ -126,6 +126,32 @@ public final class Page {
         return l;
     }
 
+    /** Рядок «назва — значення» (.kv): 14 / 13 приглушене праворуч, відступ 9, волосяна лінія між рядками. */
+    public static TextView kv(ViewGroup parent, CharSequence label, CharSequence value) {
+        Context c = parent.getContext();
+        // попередній рядок отримує лінію знизу: у прототипі її немає лише в останнього
+        if (parent.getChildCount() > 0) parent.getChildAt(parent.getChildCount() - 1).setBackgroundResource(R.drawable.bg_kv);
+        LinearLayout r = new LinearLayout(c);
+        r.setOrientation(LinearLayout.HORIZONTAL);
+        r.setGravity(Gravity.CENTER_VERTICAL);
+        r.setPadding(0, dp(c, 9), 0, dp(c, 9));
+        TextView l = new TextView(c);
+        l.setText(label);
+        l.setTextColor(ContextCompat.getColor(c, R.color.text));
+        l.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        r.addView(l, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+        TextView v = new TextView(c);
+        v.setText(value);
+        v.setTextColor(ContextCompat.getColor(c, R.color.muted));
+        v.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+        LinearLayout.LayoutParams vp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        vp.setMarginStart(dp(c, 10));
+        if (value != null) r.addView(v, vp);
+        parent.addView(r);
+        return l;
+    }
+
     /** Кнопка на всю ширину: kind — R.layout.btn_amber / btn_ghost / btn_peri. */
     public static MaterialButton button(ViewGroup parent, int kind, CharSequence text, float top) {
         MaterialButton b = (MaterialButton) LayoutInflater.from(parent.getContext()).inflate(kind, parent, false);

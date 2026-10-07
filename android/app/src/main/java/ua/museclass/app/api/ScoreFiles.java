@@ -70,6 +70,12 @@ public final class ScoreFiles {
         return r.bytes;
     }
 
+    /** Скільки партитур лежить на диску (офлайн-копії). */
+    public int count() {
+        File[] files = dir.listFiles((d, n) -> n.endsWith(".bin"));
+        return files == null ? 0 : files.length;
+    }
+
     /** Стерти всі копії — при виході з акаунта. */
     public void clear() {
         File[] files = dir.listFiles();

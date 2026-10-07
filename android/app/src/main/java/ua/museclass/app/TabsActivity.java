@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import ua.museclass.app.tabs.HomeFragment;
 import ua.museclass.app.tabs.LibraryFragment;
 import ua.museclass.app.tabs.ProfileFragment;
+import ua.museclass.app.ui.Toasts;
 
 /**
  * Головний екран після входу: три вкладки, як #tabs прототипу. Кожен перехід
@@ -57,6 +58,12 @@ public class TabsActivity extends BaseActivity {
         if (savedInstanceState != null) tab = savedInstanceState.getString(STATE_TAB, TAB_HOME);
         else if (getIntent().getStringExtra(STATE_TAB) != null) tab = getIntent().getStringExtra(STATE_TAB);
         show(tab, savedInstanceState == null);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Toasts.flush(this);
     }
 
     @Override
