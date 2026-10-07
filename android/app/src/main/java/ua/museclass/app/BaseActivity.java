@@ -27,23 +27,23 @@ public abstract class BaseActivity extends AppCompatActivity {
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
     private static final String TAG = "MuseClass";
 
-    protected interface Work<T> {
+    public interface Work<T> {
         T run() throws Exception;
     }
 
-    protected interface Done<T> {
+    public interface Done<T> {
         void accept(T value);
     }
 
-    protected MuseClassApp app() {
+    public MuseClassApp app() {
         return (MuseClassApp) getApplication();
     }
 
-    protected ApiClient api() {
+    public ApiClient api() {
         return app().api();
     }
 
-    protected Session session() {
+    public Session session() {
         return app().session();
     }
 
@@ -51,7 +51,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      * Робота у фоні, результат — на головному потоці, якщо екран ще живий.
      * Помилка «сесія закінчилась» сама веде на вхід.
      */
-    protected <T> void background(Work<T> work, Done<T> ok, Done<Exception> fail) {
+    public <T> void background(Work<T> work, Done<T> ok, Done<Exception> fail) {
         IO.execute(() -> {
             T value = null;
             Exception error = null;
@@ -77,7 +77,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     /** Текст помилки для людини. */
-    protected static String messageOf(Exception e) {
+    public static String messageOf(Exception e) {
         if (e instanceof ApiException) return e.getMessage();
         if (e instanceof ua.museclass.musicxml.MusicXmlException) {
             return "Не вдалося прочитати ноти: " + e.getMessage();
@@ -105,7 +105,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         requestPermissions(new String[]{LOCAL_NETWORK}, 1);
     }
 
-    protected void toLogin() {
+    public void toLogin() {
         session().clear();
         app().scoreFiles().clear(); // копії файлів — попереднього користувача
         Intent i = new Intent(this, LoginActivity.class);
@@ -115,7 +115,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     /** Edge-to-edge обов'язковий з API 35: відсуваємо вміст від смуг і клавіатури. */
-    protected static void padForSystemBars(View root) {
+    public static void padForSystemBars(View root) {
         ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
             Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.ime());
             v.setPadding(bars.left, bars.top, bars.right, bars.bottom);

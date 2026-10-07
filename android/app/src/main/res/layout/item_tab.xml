@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- #tabs button: значок 22 dp (у прототипі — символ Serif 19), підпис 11.5, відступ 11/4, проміжок 3 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackgroundBorderless"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingLeft="4dp"
+    android:paddingTop="11dp"
+    android:paddingRight="4dp"
+    android:paddingBottom="11dp">
+
+    <ImageView
+        android:id="@+id/ic"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:importantForAccessibility="no" />
+
+    <TextView
+        android:id="@+id/label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:textSize="11.5sp" />
+</LinearLayout>

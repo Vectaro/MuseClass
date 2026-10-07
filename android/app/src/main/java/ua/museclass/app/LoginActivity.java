@@ -100,7 +100,7 @@ public class LoginActivity extends BaseActivity {
 
     private void signedIn(Dto.Auth auth) {
         session().save(auth);
-        Intent i = new Intent(this, LibraryActivity.class);
+        Intent i = new Intent(this, TabsActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
         finish();

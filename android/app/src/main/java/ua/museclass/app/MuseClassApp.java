@@ -23,15 +23,15 @@ public final class MuseClassApp extends Application {
         scoreFiles = new ScoreFiles(new File(getFilesDir(), "scores"), api);
     }
 
-    Session session() {
+    public Session session() {
         return session;
     }
 
-    ApiClient api() {
+    public ApiClient api() {
         return api;
     }
 
-    ScoreFiles scoreFiles() {
+    public ScoreFiles scoreFiles() {
         return scoreFiles;
     }
 }

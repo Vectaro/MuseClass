@@ -27,6 +27,7 @@
             android:name=".LoginActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".LibraryActivity" />
+        <activity android:name=".TabsActivity" />
         <activity
             android:name=".JoinClassActivity"
             android:windowSoftInputMode="stateVisible|adjustResize" />

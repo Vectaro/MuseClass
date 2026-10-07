@@ -9,7 +9,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Class<?> next = session().isActive() ? LibraryActivity.class : LoginActivity.class;
+        Class<?> next = session().isActive() ? TabsActivity.class : LoginActivity.class;
         startActivity(new Intent(this, next));
         finish();
     }
