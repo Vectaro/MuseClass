@@ -20,8 +20,8 @@ import ua.museclass.musicxml.Score;
  * показуємо назву, партії та кількість тактів з нього. Тап по партії — її ноти.
  */
 public class ScoreActivity extends BaseActivity {
-    static final String EXTRA_ID = "scoreId";
-    static final String EXTRA_TITLE = "title";
+    public static final String EXTRA_ID = "scoreId";
+    public static final String EXTRA_TITLE = "title";
 
     /** Що прийшло з сервера і що з нього розібрано. */
     private static final class Loaded {

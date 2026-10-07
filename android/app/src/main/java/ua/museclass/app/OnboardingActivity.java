@@ -417,7 +417,7 @@ public class OnboardingActivity extends BaseActivity {
         done.setOnClickListener(x -> {
             done.setEnabled(false);
             List<String> codes = new ArrayList<>();
-            for (String c : inst) codes.add(Instruments.toServer(c));
+            codes.addAll(inst);
             background(() -> api().setInstruments(codes), p -> toTabs(), e -> {
                 done.setEnabled(true);
                 Toasts.show(this, messageOf(e));

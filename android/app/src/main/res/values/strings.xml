@@ -89,4 +89,30 @@
     <string name="onb_inst_sub">Ноти з твоєю партією підніматимуться вище в пошуку. Решту каталогу це не ховає.</string>
     <string name="done">Готово</string>
     <string name="joined">Ти в класі «%1$s»</string>
+
+    <!-- Головна (renderHome) -->
+    <string name="search_hint">Назва, автор, інструмент</string>
+    <string name="search_clear">Очистити пошук</string>
+    <string name="kind_all">Усі</string>
+    <string name="kind_cover">Кавер</string>
+    <string name="kind_folk">Народна</string>
+    <string name="kind_classical">Класика</string>
+    <string name="kind_technique">Техніка</string>
+    <string name="home_for_you">Під твій інструмент</string>
+    <string name="home_popular">Популярне зараз</string>
+    <string name="home_catalog_empty">У каталозі поки порожньо.</string>
+    <string name="home_own">Свої ноти</string>
+    <string name="home_own_sub">Набери кавер сам або підтягни готовий файл з MuseScore, Sibelius чи Finale — .musicxml і стиснений .mxl.</string>
+    <string name="open_editor">Відкрити редактор</string>
+    <string name="import_xml">Імпортувати MusicXML</string>
+    <string name="write_notes">Написати ноти</string>
+    <string name="home_nothing">Нічого не знайшли. Спробуй іншу назву або зніми фільтр — а якщо цих нот немає ніде, їх можна набрати або імпортувати.</string>
+    <string name="home_found">Знайдено %1$d</string>
+    <string name="stub_editor">Редактор — наступний крок роботи</string>
+    <string name="stub_import">Імпорт файлу — наступний крок роботи</string>
+    <string name="fit_part">є партія: %1$s</string>
+    <string name="badge_interactive">Інтерактив</string>
+    <string name="badge_xml">MusicXML</string>
+    <string name="badge_class">Клас</string>
+    <string name="badge_me">Тільки я</string>
 </resources>
