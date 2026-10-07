@@ -22,6 +22,7 @@
     <EditText
         android:id="@+id/cname"
         style="@style/Mc.CodeField"
+        android:importantForAutofill="no"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="start|center_vertical"

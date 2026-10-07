@@ -15,9 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="2dp"
-        android:fontFamily="@font/instrument_sans"
-        android:textFontWeight="600"
-        android:textStyle="bold"
+        style="@style/Mc.Strong"
         android:textColor="@color/text"
         android:textSize="15sp" />
 

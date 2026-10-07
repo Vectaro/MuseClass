@@ -26,11 +26,7 @@
         <activity
             android:name=".OnboardingActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".LibraryActivity" />
         <activity android:name=".TabsActivity" />
-        <activity
-            android:name=".JoinClassActivity"
-            android:windowSoftInputMode="stateVisible|adjustResize" />
         <activity
             android:name=".ScoreActivity"
             android:parentActivityName=".LibraryActivity" />

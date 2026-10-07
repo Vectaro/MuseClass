@@ -43,12 +43,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="1dp"
-        android:fontFamily="@font/instrument_sans"
+        style="@style/Mc.Strong"
         android:lineSpacingMultiplier="1.05"
-        android:textColor="@color/text"
-        android:textFontWeight="600"
-        android:textSize="13.5sp"
-        android:textStyle="bold" />
+        android:textSize="13.5sp" />
 
     <TextView
         android:id="@+id/author"

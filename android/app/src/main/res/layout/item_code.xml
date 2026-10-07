@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- .code: поле коду класу XXX-0X -->
+<EditText xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Mc.CodeField"
+    android:importantForAutofill="no"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:hint="@string/code_hint"
+    android:maxLength="7" />

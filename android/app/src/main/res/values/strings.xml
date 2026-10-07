@@ -115,4 +115,39 @@
     <string name="badge_xml">MusicXML</string>
     <string name="badge_class">Клас</string>
     <string name="badge_me">Тільки я</string>
+
+    <!-- Бібліотека (renderLib) і діалоги класів -->
+    <string name="lib_teaching">Мої класи · %1$d</string>
+    <string name="lib_more_class">+ ще один</string>
+    <string name="lib_you_teach">ти ведеш</string>
+    <string name="lib_code">код %1$s</string>
+    <string name="lib_class_empty">У класі ще немає нот. Залий партитуру — вона зʼявиться в усіх одразу.</string>
+    <string name="lib_assign">Видати ноти класу</string>
+    <string name="stub_assign">Вибір нот для класу — наступний крок роботи</string>
+    <string name="lib_saved">Збережене</string>
+    <string name="lib_saved_empty">Порожньо. Відкрий будь-які ноти й натисни зірку — вони будуть тут навіть офлайн.</string>
+    <string name="lib_mine">Мої ноти</string>
+    <string name="lib_write">Написати</string>
+    <string name="lib_import">Імпорт</string>
+    <string name="lib_join_title">Приєднатись до класу</string>
+    <string name="lib_join_sub">Введи код від викладача.</string>
+    <string name="dlg_join_title">Приєднатися до класу</string>
+    <string name="dlg_join_note">Код дає викладач.</string>
+    <string name="dlg_mkclass_title">Новий клас</string>
+    <string name="dlg_mkclass_note">Класів може бути скільки завгодно — окремий на кожну групу чи вік.</string>
+    <string name="dlg_mkclass_hint">Наприклад: Гітара, 2 клас</string>
+    <string name="dlg_mkclass_ok">Створити</string>
+    <string name="class_created">Клас «%1$s» створено, код %2$s</string>
+    <plurals name="students">
+        <item quantity="one">%d учень</item>
+        <item quantity="few">%d учні</item>
+        <item quantity="many">%d учнів</item>
+        <item quantity="other">%d учнів</item>
+    </plurals>
+    <plurals name="issued">
+        <item quantity="one">видав %d ноту</item>
+        <item quantity="few">видав %d ноти</item>
+        <item quantity="many">видав %d нот</item>
+        <item quantity="other">видав %d нот</item>
+    </plurals>
 </resources>

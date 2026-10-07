@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- API 28+: ті самі стилі з точною вагою шрифту (600 / 500), щоб і запасний
+     шрифт кирилиці взяв її. Блоки скопійовано з values/styles.xml — правити разом. -->
+<resources>
+    <style name="Mc.Strong">
+        <item name="android:fontFamily">@font/instrument_sans</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text</item>
+        <item name="android:textFontWeight">600</item>
+    </style>
+    <style name="Mc.Button" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/btn_amber_bg</item>
+        <item name="android:textColor">@color/btn_amber_text</item>
+        <item name="android:textSize">14.5sp</item>
+        <item name="android:fontFamily">@font/instrument_sans</item>
+        <!-- до API 28 — жирний; точна вага (600/500) — values-v28/styles.xml -->
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="cornerRadius">11dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="elevation">0dp</item>
+        <item name="android:textFontWeight">600</item>
+    </style>
+    <style name="Mc.Button.Ghost">
+        <item name="backgroundTint">@android:color/transparent</item>
+        <item name="android:textColor">@color/btn_ghost_text</item>
+        <item name="strokeColor">@color/line</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="android:fontFamily">@font/instrument_sans</item>
+        <!-- до API 28 — жирний; точна вага (600/500) — values-v28/styles.xml -->
+        <item name="android:textStyle">normal</item>
+        <item name="rippleColor">@color/line</item>
+        <item name="android:textFontWeight">500</item>
+    </style>
+    <style name="Mc.Badge">
+        <item name="android:textSize">9.5sp</item>
+        <item name="android:fontFamily">@font/instrument_sans</item>
+        <!-- до API 28 — жирний; точна вага (600/500) — values-v28/styles.xml -->
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:paddingRight">5dp</item>
+        <item name="android:paddingTop">2.5dp</item>
+        <item name="android:paddingBottom">2.5dp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:background">@drawable/bg_badge_dark</item>
+        <item name="android:textFontWeight">600</item>
+    </style>
+</resources>

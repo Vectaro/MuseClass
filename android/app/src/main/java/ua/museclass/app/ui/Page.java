@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 
 import com.google.android.material.button.MaterialButton;
 
@@ -40,7 +41,7 @@ public final class Page {
         t.setTextAppearance(R.style.Mc_Sec);
         t.setTypeface(Fonts.serif(c)); // setTextAppearance скидає шрифт
         t.setText(text);
-        t.setAccessibilityHeading(true);
+        ViewCompat.setAccessibilityHeading(t, true);
         parent.addView(t, lp(c, top, bottom));
         return t;
     }
