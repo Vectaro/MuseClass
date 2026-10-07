@@ -1,10 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Токени з :root prototype/index.html, без вигадок. Темна тема — values-night. -->
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- пульт: тло застосунку, поверхні (картки, поля, таби), вибране -->
+    <color name="pult">#F4F2EC</color>
+    <color name="pult2">#FFFFFF</color>
+    <color name="pult3">#EAE6DC</color>
+    <color name="line">#DAD5C7</color>
+    <!-- волосяна лінія між рядками списку: rgba(0,0,0,.09) -->
+    <color name="hair">#17000000</color>
+    <color name="paper">#FFFFFF</color>
+    <color name="peri">#5566D8</color>
+    <color name="peri_ink">#3C4BC0</color>
+    <color name="on_peri">#FFFFFF</color>
+    <color name="text">#1C1C1F</color>
+    <color name="muted">#66666F</color>
+    <color name="accent_ink">#8A5D00</color>
+    <color name="on_accent">#1B1B1E</color>
+    <color name="page">#E3E0D8</color>
+    <!-- однакові в обох темах -->
+    <color name="amber">#F0B429</color>
+    <color name="red">#D2483A</color>
+    <!-- затемнення під шторкою і модалкою: rgba(0,0,0,.45) / .5 -->
+    <color name="scrim_sheet">#73000000</color>
+    <color name="scrim_modal">#80000000</color>
+    <!-- тінь обкладинки: 0 2px 0 rgba(0,0,0,.35) -->
+    <color name="cover_shadow">#59000000</color>
+
+    <!-- бейджі (.badge): тло і текст -->
+    <color name="badge_dark">#1B1B1E</color>
+    <color name="badge_midi">#9FE8C8</color>
+    <color name="badge_pdf">#C9CEEA</color>
+    <color name="badge_xml">#F0A8C8</color>
+    <color name="badge_class">#4A5BD4</color>
+    <color name="badge_me">#EFEBE1</color>
 
     <!-- Нотний аркуш: за замовчуванням білий «папір» в обох темах -->
-    <color name="sheet_paper">#FFFFFF</color>
+    <color name="sheet_paper">@color/paper</color>
     <color name="sheet_ink">#1B1B1E</color>
     <color name="sheet_muted">#8A8A92</color>
     <!-- Інверсія (світлі ноти на темному) — пункт налаштувань «вигляд» -->

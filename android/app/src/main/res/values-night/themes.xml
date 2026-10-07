@@ -1,7 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.MuseClass" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Вміст іде під статус-бар (edge-to-edge), тож колір іконок задаємо самі -->
+    <style name="Theme.MuseClass" parent="Base.Theme.MuseClass">
+        <!-- темне тло — світлі іконки статус-бару -->
         <item name="android:windowLightStatusBar">false</item>
     </style>
 </resources>

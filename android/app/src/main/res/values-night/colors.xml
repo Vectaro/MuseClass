@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Темна тема прототипу (@media prefers-color-scheme: dark). Аркуш лишається «папером», трохи теплішим. -->
 <resources>
-    <!-- Аркуш і в темній темі — «папір», лише трохи тепліший, щоб не сліпив (як у прототипі) -->
-    <color name="sheet_paper">#FAF8F3</color>
+    <color name="pult">#151828</color>
+    <color name="pult2">#232842</color>
+    <color name="pult3">#2C3252</color>
+    <color name="line">#373E62</color>
+    <!-- rgba(55,62,98,.55) -->
+    <color name="hair">#8C373E62</color>
+    <color name="paper">#FAF8F3</color>
+    <color name="peri">#8FA0FF</color>
+    <color name="peri_ink">#8FA0FF</color>
+    <color name="on_peri">#141733</color>
+    <color name="text">#E9EAF3</color>
+    <color name="muted">#959DBE</color>
+    <color name="accent_ink">#F0B429</color>
+    <color name="on_accent">#1B1B1E</color>
+    <color name="page">#0E1019</color>
 </resources>

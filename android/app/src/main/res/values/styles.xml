@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Компоненти з CSS прототипу; 1 css-піксель ≈ 1 dp (вікно 400 px ≈ телефон 411 dp). -->
+<resources>
+    <!-- корінь для Mc.* (крапка в назві — неявний батько) -->
+    <style name="Mc" />
+
+    <!-- .h-title / .h-sec: Instrument Serif; шрифт ставить SerifText (запасний serif для кирилиці) -->
+    <style name="Mc.Title">
+        <item name="android:textSize">30sp</item>
+        <item name="android:textColor">@color/text</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+    <style name="Mc.Sec">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/text</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+    <!-- .sub -->
+    <style name="Mc.Sub">
+        <item name="android:textSize">13.5sp</item>
+        <item name="android:textColor">@color/muted</item>
+        <item name="android:lineSpacingMultiplier">1.1</item>
+    </style>
+
+    <!-- .btn: бурштинова, на всю ширину, 600 -->
+    <style name="Mc.Button" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/btn_amber_bg</item>
+        <item name="android:textColor">@color/btn_amber_text</item>
+        <item name="android:textSize">14.5sp</item>
+        <item name="android:fontFamily">@font/instrument_sans_semibold</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="cornerRadius">11dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="elevation">0dp</item>
+    </style>
+    <!-- .btn.ghost: прозора з рамкою, 500 -->
+    <style name="Mc.Button.Ghost">
+        <item name="backgroundTint">@android:color/transparent</item>
+        <item name="android:textColor">@color/btn_ghost_text</item>
+        <item name="strokeColor">@color/line</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="android:fontFamily">@font/instrument_sans_medium</item>
+        <item name="rippleColor">@color/line</item>
+    </style>
+    <!-- .btn.peri -->
+    <style name="Mc.Button.Peri">
+        <item name="backgroundTint">@color/btn_peri_bg</item>
+        <item name="android:textColor">@color/on_peri</item>
+    </style>
+
+    <!-- .chip -->
+    <style name="Mc.Chip">
+        <item name="android:background">@drawable/bg_chip</item>
+        <item name="android:textColor">@color/chip_text</item>
+        <item name="android:textSize">12.5sp</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:paddingTop">6dp</item>
+        <item name="android:paddingBottom">6dp</item>
+        <item name="android:singleLine">true</item>
+    </style>
+    <!-- .pick button -->
+    <style name="Mc.Pick">
+        <item name="android:background">@drawable/bg_pick</item>
+        <item name="android:textColor">@color/pick_text</item>
+        <item name="android:textSize">13.5sp</item>
+        <item name="android:paddingLeft">13dp</item>
+        <item name="android:paddingRight">13dp</item>
+        <item name="android:paddingTop">9dp</item>
+        <item name="android:paddingBottom">9dp</item>
+        <item name="android:singleLine">true</item>
+    </style>
+    <!-- .icbtn: 34×34 -->
+    <style name="Mc.IconButton">
+        <item name="android:layout_width">34dp</item>
+        <item name="android:layout_height">34dp</item>
+        <item name="android:background">@drawable/bg_icbtn</item>
+        <item name="android:textColor">@color/icbtn_text</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+    <!-- .partbar button -->
+    <style name="Mc.PartChip">
+        <item name="android:background">@drawable/bg_partchip</item>
+        <item name="android:textColor">@color/partchip_text</item>
+        <item name="android:textSize">12.5sp</item>
+        <item name="android:paddingLeft">11dp</item>
+        <item name="android:paddingRight">11dp</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:singleLine">true</item>
+    </style>
+    <!-- .modebar button -->
+    <style name="Mc.ModeChip" parent="Mc.PartChip">
+        <item name="android:background">@drawable/bg_modechip</item>
+        <item name="android:textColor">@color/chip_text</item>
+        <item name="android:paddingLeft">13dp</item>
+        <item name="android:paddingRight">13dp</item>
+    </style>
+    <!-- .badge -->
+    <style name="Mc.Badge">
+        <item name="android:textSize">9.5sp</item>
+        <item name="android:fontFamily">@font/instrument_sans_semibold</item>
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:paddingRight">5dp</item>
+        <item name="android:paddingTop">2.5dp</item>
+        <item name="android:paddingBottom">2.5dp</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:background">@drawable/bg_badge_dark</item>
+    </style>
+    <!-- .code: велике поле коду класу -->
+    <style name="Mc.CodeField">
+        <item name="android:background">@drawable/bg_field</item>
+        <item name="android:padding">13dp</item>
+        <item name="android:textColor">@color/text</item>
+        <item name="android:textColorHint">@color/muted</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:letterSpacing">0.27</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:inputType">textCapCharacters|textNoSuggestions</item>
+        <item name="android:importantForAutofill">no</item>
+    </style>
+    <!-- .fld: поле в модалці -->
+    <style name="Mc.Field">
+        <item name="android:background">@drawable/bg_fld</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:paddingTop">11dp</item>
+        <item name="android:paddingBottom">11dp</item>
+        <item name="android:textColor">@color/text</item>
+        <item name="android:textColorHint">@color/muted</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:singleLine">true</item>
+    </style>
+</resources>

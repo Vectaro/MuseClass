@@ -32,6 +32,13 @@ android {
         buildConfig = true
     }
 
+    // Спільні довідники (shared/instruments.json) — у застосунок як є, без копій у репо
+    sourceSets {
+        getByName("main") {
+            assets.srcDir("../../shared")
+        }
+    }
+
     buildTypes {
         debug {
             // емулятор бачить ПК на 10.0.2.2, dev-сервер — порт 8081

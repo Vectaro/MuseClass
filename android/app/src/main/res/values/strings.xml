@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">MuseClass</string>
     <string name="back">Назад</string>
+    <string name="dlg_done">Готово</string>
+    <string name="dlg_cancel">Скасувати</string>
 
     <string name="login_tagline">Ноти класу — у кишені</string>
     <string name="login_tab_login">Вхід</string>

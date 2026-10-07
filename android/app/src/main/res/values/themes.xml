@@ -1,8 +1,28 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+    <!-- Кольори — токени прототипу (colors.xml / values-night). Компоненти Material
+         беремо лише як основу: вигляд задають стилі Mc.* у styles.xml. -->
     <style name="Base.Theme.MuseClass" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/amber</item>
+        <item name="colorOnPrimary">@color/on_accent</item>
+        <item name="colorSecondary">@color/peri</item>
+        <item name="colorOnSecondary">@color/on_peri</item>
+        <item name="colorError">@color/red</item>
+        <item name="android:colorBackground">@color/pult</item>
+        <item name="android:windowBackground">@color/pult</item>
+        <item name="colorSurface">@color/pult2</item>
+        <item name="colorOnSurface">@color/text</item>
+        <item name="colorOnSurfaceVariant">@color/muted</item>
+        <item name="colorOutline">@color/line</item>
+        <item name="android:textColorPrimary">@color/text</item>
+        <item name="android:textColorSecondary">@color/muted</item>
+        <item name="android:textColorHint">@color/muted</item>
+        <item name="android:fontFamily">@font/instrument_sans</item>
+        <item name="fontFamily">@font/instrument_sans</item>
         <!-- Вміст іде під статус-бар (edge-to-edge), тож колір іконок задаємо самі -->
         <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">@color/pult2</item>
+        <item name="materialButtonStyle">@style/Mc.Button</item>
+        <item name="colorControlActivated">@color/amber</item>
     </style>
 
     <style name="Theme.MuseClass" parent="Base.Theme.MuseClass" />
